@@ -11,7 +11,7 @@ export default async function MenuPage() {
   const categories = await getMenuData();
 
   return (
-    <div className="min-h-screen pt-20 pb-16">
+    <div className="flex-1 pt-28 pb-12">
       <div className="container mx-auto px-4 md:px-8">
         
         {/* Page Header */}

@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function AboutPage() {
   return (
-    <div className="flex-1 pt-16 pb-16 bg-background">
+    <div className="flex-1 pt-28 pb-12 bg-background">
       <div className="container mx-auto px-4 md:px-8 max-w-6xl">
         
         {/* Header */}
