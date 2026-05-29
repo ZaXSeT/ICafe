@@ -1,6 +1,10 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import { prisma } from "@/lib/prisma";
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  adapter: PrismaAdapter(prisma),
   providers: [
     Credentials({
       name: "Credentials",
@@ -11,9 +15,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
         
-        // MOCK AUTHENTICATION for testing without a database
-        if (credentials.email === "test@example.com" && credentials.password === "password") {
-          return { id: "1", name: "Test User", email: "test@example.com", role: "USER" };
+        // Find user in database
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email as string },
+        });
+
+        // Basic plain text comparison for MVP. In production, use bcrypt!
+        if (user && user.password === credentials.password) {
+          return { id: user.id, name: user.name, email: user.email, role: user.role };
         }
 
         return null;
