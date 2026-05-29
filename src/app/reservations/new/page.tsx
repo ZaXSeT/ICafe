@@ -16,10 +16,10 @@ export default function NewReservationPage() {
   const [selectedTime, setSelectedTime] = useState<string>("12:00 PM");
 
   return (
-    <div className="min-h-screen pt-20 pb-24 flex flex-col items-center bg-background px-4">
+    <div className="flex-1 pt-28 pb-12 flex flex-col items-center bg-background px-4">
       
       {/* Header */}
-      <div className="text-center max-w-xl mx-auto mb-8 md:mb-12 pt-4">
+      <div className="text-center max-w-xl mx-auto mb-6 pt-2">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-heading font-bold mb-3">Book a Table</h1>
         <p className="text-muted-foreground text-base md:text-lg">
           Select an available table for today.
