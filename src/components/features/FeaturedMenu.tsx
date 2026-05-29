@@ -22,10 +22,10 @@ const featuredItems = [
 
 export function FeaturedMenu() {
   return (
-    <section className="py-16 md:py-24 bg-background">
+    <section className="pt-8 pb-16 md:pt-12 md:pb-24 bg-background">
       <div className="container mx-auto px-4 md:px-8">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 md:mb-16 gap-4">
-          <div className="mb-10 md:mb-16">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 md:mb-10 gap-4">
+          <div>
             <h2 className="font-heading text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-foreground">A Taste of Art</h2>
             <p className="text-muted-foreground text-base md:text-lg max-w-md">
               Carefully crafted beverages and pastries that look as beautiful as they taste.
