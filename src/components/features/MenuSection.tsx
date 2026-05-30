@@ -90,7 +90,7 @@ export function MenuSection({ categories, isLoggedIn }: { categories: Category[]
           </div>
 
           {/* Desktop: Card Grid */}
-          <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-4 gap-4">
             {category.menuItems.map(item => (
               <div
                 key={item.id}
@@ -103,18 +103,18 @@ export function MenuSection({ categories, isLoggedIn }: { categories: Category[]
                       alt={item.name}
                       fill
                       style={{ objectFit: "cover" }}
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 25vw"
                       className="group-hover:scale-105 transition-transform duration-500"
                     />
                   </div>
                 )}
-                <div className="p-5 flex flex-col flex-1">
-                  <div className="flex justify-between items-start gap-3 mb-3">
+                <div className="p-4 flex flex-col flex-1">
+                  <div className="flex justify-between items-start gap-2 mb-2">
                     <div className="min-w-0">
-                      <h3 className="font-semibold text-lg font-heading leading-normal pb-1">{item.name}</h3>
-                      <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{item.description}</p>
+                      <h3 className="font-semibold text-base font-heading leading-tight pb-0.5">{item.name}</h3>
+                      <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{item.description}</p>
                     </div>
-                    <span className="font-bold text-base font-heading text-primary flex-shrink-0">${item.price.toFixed(2)}</span>
+                    <span className="font-bold text-sm font-heading text-primary flex-shrink-0">${item.price.toFixed(2)}</span>
                   </div>
 
                   <div className="mt-auto pt-4 flex justify-end">
