@@ -14,9 +14,16 @@ export function RegisterForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitted(true);
+
+    if (!name || name.length < 3 || !/^[a-zA-Z0-9_ ]+$/.test(name)) return;
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
+    if (!password || password.length < 8) return;
+
     if (password !== confirm) {
       toast.error("Passwords do not match");
       return;
@@ -30,7 +37,7 @@ export function RegisterForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} noValidate className="space-y-4">
       {/* Full Name */}
       <div className="space-y-1.5">
         <label htmlFor="name" className="text-sm font-semibold text-foreground">
@@ -54,16 +61,16 @@ export function RegisterForm() {
             maxLength={30}
             pattern="^[a-zA-Z0-9_ ]+$"
             className={`w-full pl-10 pr-4 py-3 rounded-xl border text-foreground placeholder:text-muted-foreground/60 text-sm outline-none transition-all focus:ring-2 ${
-              name && (name.length < 3 || !/^[a-zA-Z0-9_ ]+$/.test(name))
+              (isSubmitted || name) && (!name || name.length < 3 || !/^[a-zA-Z0-9_ ]+$/.test(name))
                 ? "border-destructive focus:border-destructive focus:ring-destructive/20 bg-destructive/5"
                 : "border-border/40 bg-foreground/[0.03] focus:border-primary focus:ring-primary/20"
             }`}
           />
         </div>
-        {name && name.length < 3 && (
+        {(isSubmitted || name) && (!name || name.length < 3) && (
           <p className="text-xs text-destructive mt-1">Username must be at least 3 characters</p>
         )}
-        {name && !/^[a-zA-Z0-9_ ]+$/.test(name) && (
+        {(isSubmitted || name) && name.length >= 3 && !/^[a-zA-Z0-9_ ]+$/.test(name) && (
           <p className="text-xs text-destructive mt-1">Only letters, numbers, spaces, and underscores allowed</p>
         )}
       </div>
@@ -84,13 +91,13 @@ export function RegisterForm() {
             required
             maxLength={50}
             className={`w-full pl-10 pr-4 py-3 rounded-xl border text-foreground placeholder:text-muted-foreground/60 text-sm outline-none transition-all focus:ring-2 ${
-              email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+              (isSubmitted || email) && (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
                 ? "border-destructive focus:border-destructive focus:ring-destructive/20 bg-destructive/5"
                 : "border-border/40 bg-foreground/[0.03] focus:border-primary focus:ring-primary/20"
             }`}
           />
         </div>
-        {email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && (
+        {(isSubmitted || email) && (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) && (
           <p className="text-xs text-destructive mt-1">Please enter a valid email address</p>
         )}
       </div>
@@ -112,7 +119,7 @@ export function RegisterForm() {
             minLength={8}
             maxLength={64}
             className={`w-full pl-10 pr-12 py-3 rounded-xl border text-foreground placeholder:text-muted-foreground/60 text-sm outline-none transition-all focus:ring-2 ${
-              password && password.length < 8
+              (isSubmitted || password) && (!password || password.length < 8)
                 ? "border-destructive focus:border-destructive focus:ring-destructive/20 bg-destructive/5"
                 : "border-border/40 bg-foreground/[0.03] focus:border-primary focus:ring-primary/20"
             }`}
@@ -125,7 +132,7 @@ export function RegisterForm() {
             {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>
         </div>
-        {password && password.length < 8 && (
+        {(isSubmitted || password) && (!password || password.length < 8) && (
           <p className="text-xs text-destructive mt-1">Password must be at least 8 characters</p>
         )}
       </div>
