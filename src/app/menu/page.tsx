@@ -15,11 +15,11 @@ export default async function MenuPage() {
   const isLoggedIn = !!session;
 
   return (
-    <div className="flex-1 pt-28 pb-12">
+    <div className="flex-1 pt-24 pb-12">
       <div className="container mx-auto px-4 md:px-8">
         
         {/* Page Header */}
-        <div className="text-center max-w-2xl mx-auto mb-8 md:mb-12 pt-4">
+        <div className="text-center max-w-2xl mx-auto mb-6 md:mb-8">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-heading font-bold mb-2 md:mb-4">Our Menu</h1>
           <p className="text-sm md:text-lg text-muted-foreground">
             Crafted with love, served with care.
@@ -27,7 +27,7 @@ export default async function MenuPage() {
         </div>
 
         {/* Category Pills — horizontal scroll on mobile */}
-        <div className="flex overflow-x-auto gap-2 md:gap-3 pb-3 mb-8 md:mb-12 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0 md:justify-center">
+        <div className="flex overflow-x-auto gap-2 md:gap-3 pb-3 mb-6 md:mb-8 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0 md:justify-center">
           {categories.map((cat: { id: string; name: string }) => (
             <a
               key={cat.id}

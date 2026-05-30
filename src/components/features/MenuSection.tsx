@@ -37,10 +37,10 @@ export function MenuSection({ categories, isLoggedIn }: { categories: Category[]
   };
 
   return (
-    <div className="space-y-12 md:space-y-16">
+    <div className="space-y-10 md:space-y-12">
       {categories.map(category => (
-        <section key={category.id} className="scroll-mt-28" id={category.name.toLowerCase().replace(/\s+/g, '-')}>
-          <div className="mb-6">
+        <section key={category.id} className="scroll-mt-24" id={category.name.toLowerCase().replace(/\s+/g, '-')}>
+          <div className="mb-4">
             <h2 className="text-2xl md:text-3xl font-heading font-bold">{category.name}</h2>
             {category.description && (
               <p className="text-muted-foreground mt-1 text-sm md:text-base">{category.description}</p>
@@ -97,7 +97,7 @@ export function MenuSection({ categories, isLoggedIn }: { categories: Category[]
                 className="group relative bg-background border border-border/30 rounded-2xl overflow-hidden hover:border-primary/30 hover:shadow-lg transition-all duration-300 flex flex-col"
               >
                 {item.image && (
-                  <div className="relative aspect-[4/3] w-full overflow-hidden">
+                  <div className="relative aspect-[3/2] w-full overflow-hidden">
                     <Image
                       src={item.image}
                       alt={item.name}
