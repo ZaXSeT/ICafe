@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Plus, Check } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 interface MenuItem {
   id: string;
@@ -20,10 +21,15 @@ interface Category {
   menuItems: MenuItem[];
 }
 
-export function MenuSection({ categories }: { categories: Category[] }) {
+export function MenuSection({ categories, isLoggedIn }: { categories: Category[], isLoggedIn: boolean }) {
+  const router = useRouter();
   const [addedItems, setAddedItems] = useState<Record<string, boolean>>({});
 
   const handleAddToCart = (id: string) => {
+    if (!isLoggedIn) {
+      router.push("/login");
+      return;
+    }
     setAddedItems(prev => ({ ...prev, [id]: true }));
     setTimeout(() => {
       setAddedItems(prev => ({ ...prev, [id]: false }));

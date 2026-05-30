@@ -7,8 +7,12 @@ export const metadata = {
   description: "Browse our premium selection of coffees, pastries, and more.",
 };
 
+import { auth } from "@/auth";
+
 export default async function MenuPage() {
   const categories = await getMenuData();
+  const session = await auth();
+  const isLoggedIn = !!session;
 
   return (
     <div className="flex-1 pt-28 pb-12">
@@ -36,7 +40,7 @@ export default async function MenuPage() {
         </div>
 
         {/* Menu Grid */}
-        <MenuSection categories={categories as { id: string; name: string; items: any[] }[]} />
+        <MenuSection categories={categories as any} isLoggedIn={isLoggedIn} />
 
       </div>
     </div>
