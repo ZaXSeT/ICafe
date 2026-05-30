@@ -15,7 +15,7 @@ export default async function MenuPage() {
   const isLoggedIn = !!session;
 
   return (
-    <div className="flex-1 pt-24 pb-12">
+    <div className="flex-1 pt-32 pb-12">
       <div className="container mx-auto px-4 md:px-8">
         
         {/* Page Header */}
