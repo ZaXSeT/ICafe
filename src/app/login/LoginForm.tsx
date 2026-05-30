@@ -31,9 +31,19 @@ export function LoginForm() {
       });
 
       if (res?.error) {
-        toast.error("Invalid credentials", {
-          description: "Please check your email and password.",
+        // NextAuth might return 'CredentialsSignin' for bad password, or our custom error message
+        const errorMessage = res.error === "CredentialsSignin" || !res.error.includes("verify")
+          ? "Invalid credentials"
+          : res.error.replace("Error: ", "");
+
+        toast.error(errorMessage, {
+          description: errorMessage === "Invalid credentials" ? "Please check your email and password." : "Check your inbox for the OTP.",
         });
+        
+        // If they need to verify, we could redirect them to the verify page
+        if (res.error.includes("verify")) {
+          router.push(`/verify?email=${encodeURIComponent(email)}`);
+        }
       } else {
         toast.success("Welcome back!");
         router.push("/");

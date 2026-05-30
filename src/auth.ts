@@ -21,7 +21,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         });
 
         // Basic plain text comparison for MVP. In production, use bcrypt!
-        if (user && user.password === credentials.password) {
+        // We will update this to bcrypt since we just installed it.
+        const bcrypt = require("bcryptjs");
+        const passwordsMatch = user.password && await bcrypt.compare(credentials.password as string, user.password);
+
+        if (user && (passwordsMatch || user.password === credentials.password)) {
+          // If password matches but email is not verified
+          if (!user.emailVerified) {
+            throw new Error("Please verify your email address first.");
+          }
+
           return { id: user.id, name: user.name, email: user.email, role: user.role };
         }
 

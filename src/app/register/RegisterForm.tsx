@@ -29,11 +29,27 @@ export function RegisterForm() {
       return;
     }
     setIsLoading(true);
-    setTimeout(() => {
-      toast.success("Account created! Please sign in.");
-      router.push("/login");
+
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.error || "Registration failed");
+      } else {
+        toast.success("Account created! Please verify your email.");
+        router.push(`/verify?email=${encodeURIComponent(email)}`);
+      }
+    } catch (error) {
+      toast.error("An unexpected error occurred");
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   return (
