@@ -41,6 +41,10 @@ export function RegisterForm() {
             type="text"
             placeholder="John Doe"
             required
+            minLength={3}
+            maxLength={30}
+            pattern="^[a-zA-Z0-9_ ]+$"
+            title="Username must be 3-30 characters and can only contain letters, numbers, spaces, and underscores."
             className="w-full pl-10 pr-4 py-3 rounded-xl border border-border/40 bg-foreground/[0.03] text-foreground placeholder:text-muted-foreground/60 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
           />
         </div>
@@ -58,6 +62,7 @@ export function RegisterForm() {
             type="email"
             placeholder="you@example.com"
             required
+            maxLength={50}
             className="w-full pl-10 pr-4 py-3 rounded-xl border border-border/40 bg-foreground/[0.03] text-foreground placeholder:text-muted-foreground/60 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
           />
         </div>
@@ -77,6 +82,8 @@ export function RegisterForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            minLength={8}
+            maxLength={64}
             className="w-full pl-10 pr-12 py-3 rounded-xl border border-border/40 bg-foreground/[0.03] text-foreground placeholder:text-muted-foreground/60 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
           />
           <button
@@ -103,6 +110,8 @@ export function RegisterForm() {
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
             required
+            minLength={8}
+            maxLength={64}
             className={`w-full pl-10 pr-12 py-3 rounded-xl border text-foreground placeholder:text-muted-foreground/60 text-sm outline-none transition-all focus:ring-2 ${
               confirm && password !== confirm
                 ? "border-destructive focus:border-destructive focus:ring-destructive/20 bg-destructive/5"

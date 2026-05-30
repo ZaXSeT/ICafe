@@ -56,6 +56,7 @@ export function LoginForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            maxLength={50}
             className="w-full pl-10 pr-4 py-3 rounded-xl border border-border/40 bg-foreground/3 text-foreground placeholder:text-muted-foreground/60 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
           />
         </div>
@@ -80,6 +81,8 @@ export function LoginForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            minLength={8}
+            maxLength={64}
             className="w-full pl-10 pr-12 py-3 rounded-xl border border-border/40 bg-foreground/3 text-foreground placeholder:text-muted-foreground/60 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
           />
           <button
