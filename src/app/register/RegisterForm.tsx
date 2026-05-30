@@ -10,6 +10,8 @@ export function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
 
@@ -40,6 +42,13 @@ export function RegisterForm() {
             id="name"
             type="text"
             placeholder="John Doe"
+            value={name}
+            onChange={(e) => {
+              const val = e.target.value;
+              if (val.length <= 30) {
+                setName(val);
+              }
+            }}
             required
             minLength={3}
             maxLength={30}
@@ -61,6 +70,8 @@ export function RegisterForm() {
             id="email"
             type="email"
             placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
             maxLength={50}
             className="w-full pl-10 pr-4 py-3 rounded-xl border border-border/40 bg-foreground/[0.03] text-foreground placeholder:text-muted-foreground/60 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
