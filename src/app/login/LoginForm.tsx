@@ -57,9 +57,16 @@ export function LoginForm() {
             onChange={(e) => setEmail(e.target.value)}
             required
             maxLength={50}
-            className="w-full pl-10 pr-4 py-3 rounded-xl border border-border/40 bg-foreground/3 text-foreground placeholder:text-muted-foreground/60 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+            className={`w-full pl-10 pr-4 py-3 rounded-xl border text-foreground placeholder:text-muted-foreground/60 text-sm outline-none transition-all focus:ring-2 ${
+              email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+                ? "border-destructive focus:border-destructive focus:ring-destructive/20 bg-destructive/5"
+                : "border-border/40 bg-foreground/[0.03] focus:border-primary focus:ring-primary/20"
+            }`}
           />
         </div>
+        {email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && (
+          <p className="text-xs text-destructive mt-1">Please enter a valid email address</p>
+        )}
       </div>
 
       {/* Password */}
@@ -83,7 +90,11 @@ export function LoginForm() {
             required
             minLength={8}
             maxLength={64}
-            className="w-full pl-10 pr-12 py-3 rounded-xl border border-border/40 bg-foreground/3 text-foreground placeholder:text-muted-foreground/60 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+            className={`w-full pl-10 pr-12 py-3 rounded-xl border text-foreground placeholder:text-muted-foreground/60 text-sm outline-none transition-all focus:ring-2 ${
+              password && password.length < 8
+                ? "border-destructive focus:border-destructive focus:ring-destructive/20 bg-destructive/5"
+                : "border-border/40 bg-foreground/[0.03] focus:border-primary focus:ring-primary/20"
+            }`}
           />
           <button
             type="button"
@@ -93,6 +104,9 @@ export function LoginForm() {
             {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>
         </div>
+        {password && password.length < 8 && (
+          <p className="text-xs text-destructive mt-1">Password must be at least 8 characters</p>
+        )}
       </div>
 
       {/* Submit */}
