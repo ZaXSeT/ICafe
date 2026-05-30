@@ -32,16 +32,17 @@ export function LoginForm() {
 
       if (res?.error) {
         // NextAuth might return 'CredentialsSignin' for bad password, or our custom error message
-        const errorMessage = res.error === "CredentialsSignin" || !res.error.includes("verify")
-          ? "Invalid credentials"
-          : res.error.replace("Error: ", "");
+        const isUnverified = res.error === "unverified_email" || res.error.includes("verify") || res.error.includes("Unverified");
+        const errorMessage = isUnverified
+          ? "Please verify your email first"
+          : "Invalid credentials";
 
         toast.error(errorMessage, {
           description: errorMessage === "Invalid credentials" ? "Please check your email and password." : "Check your inbox for the OTP.",
         });
         
-        // If they need to verify, we could redirect them to the verify page
-        if (res.error.includes("verify")) {
+        // If they need to verify, redirect them to the verify page
+        if (isUnverified) {
           router.push(`/verify?email=${encodeURIComponent(email)}`);
         }
       } else {

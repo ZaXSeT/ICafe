@@ -24,24 +24,41 @@ export async function POST(req: Request) {
       where: { email },
     });
 
+    let userId = "";
+
     if (existingUser) {
-      return NextResponse.json(
-        { error: "User with this email already exists" },
-        { status: 400 }
-      );
+      if (existingUser.emailVerified) {
+        return NextResponse.json(
+          { error: "User with this email already exists" },
+          { status: 400 }
+        );
+      } else {
+        // User exists but is unverified. 
+        // Update their password to the new one and prepare to send a new OTP.
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await prisma.user.update({
+          where: { email },
+          data: { password: hashedPassword, name }
+        });
+        userId = existingUser.id;
+
+        // Clean up any old tokens for this email to prevent spam/confusion
+        await prisma.verificationToken.deleteMany({
+          where: { identifier: email }
+        });
+      }
+    } else {
+      // Create new user
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const user = await prisma.user.create({
+        data: {
+          name,
+          email,
+          password: hashedPassword,
+        },
+      });
+      userId = user.id;
     }
-
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create the user (unverified by default because emailVerified is null)
-    const user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-      },
-    });
 
     // Generate OTP
     const otp = generateOTP();
@@ -64,7 +81,7 @@ export async function POST(req: Request) {
     await sendOTP(email, otp);
 
     return NextResponse.json(
-      { message: "User registered successfully. Please verify your email.", userId: user.id },
+      { message: "User registered successfully. Please verify your email.", userId: userId },
       { status: 201 }
     );
   } catch (error) {
