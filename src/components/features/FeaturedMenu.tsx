@@ -39,7 +39,7 @@ export function FeaturedMenu() {
             <motion.div
               key={item.id}
               className={`relative flex flex-col h-[55vw] sm:h-[40vw] md:h-full min-h-[300px] lg:min-h-[380px] flex-shrink-0 w-[75vw] sm:w-[55vw] md:w-auto rounded-2xl overflow-hidden group cursor-pointer shadow-sm hover:shadow-xl transition-shadow snap-start ${
-                i === 0 ? "md:col-span-2 md:row-span-2" : "md:col-span-1"
+                i === 0 ? "md:col-span-2" : "md:col-span-1"
               }`}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
