@@ -7,7 +7,7 @@ export default function AboutPage() {
         
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <h1 className="text-4xl md:text-6xl font-heading font-bold mb-4 text-foreground">Our Story</h1>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-heading font-bold mb-4 text-foreground">Our Story</h1>
           <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
             Welcome to ICafe. We started with a simple vision: to create a space where the warmth of community meets the perfection of artisanal coffee.
           </p>
