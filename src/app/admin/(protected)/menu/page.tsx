@@ -117,7 +117,7 @@ export default function AdminMenuPage() {
   return (
     <div className="max-w-6xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-heading font-bold text-stone-800 mb-2">Menu Management</h1>
+        <h1 className="text-3xl font-heading font-bold text-stone-800 mb-3">Menu Management</h1>
         <p className="text-stone-500">Add or remove items from your cafe menu.</p>
       </div>
 

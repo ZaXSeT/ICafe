@@ -1,87 +1,45 @@
 "use server";
 
 import { getStaffSession } from "./staff.actions";
-
-// Global state to store mock orders in memory during development
-const mockOrders: any[] = [
-  {
-    id: "mock-1",
-    type: "ONLINE",
-    tableNumber: "T1",
-    status: "CONFIRMED",
-    createdAt: new Date().toISOString(),
-    order: {
-      total: 12.5,
-      items: [
-        { name: "Cappuccino", quantity: 2, price: 4.5 },
-        { name: "Blueberry Muffin", quantity: 1, price: 3.5 }
-      ]
-    }
-  },
-  {
-    id: "mock-2",
-    type: "POS",
-    tableNumber: "T3",
-    status: "COMPLETED",
-    createdAt: new Date(Date.now() - 3600000).toISOString(),
-    order: {
-      total: 8.0,
-      items: [
-        { name: "Flat White", quantity: 2, price: 4.0 }
-      ]
-    }
-  }
-];
+import { collection, getDocs, addDoc, updateDoc, doc, query, orderBy, limit, getDoc, where } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 export async function getAdminOrders() {
   const session = await getStaffSession();
   if (!session) throw new Error("Unauthorized");
 
-  const hasAdminCredentials = !!process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
-
-  if (!hasAdminCredentials) {
-    // Return mock orders from memory, sorted by newest first
-    return [...mockOrders].sort((a, b) => 
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
-  }
-
   try {
-    const { adminDb } = await import("@/lib/firebase-admin");
-    
     // Fetch online reservations
-    const reservationsSnapshot = await adminDb.collection("reservations")
-      .orderBy("createdAt", "desc")
-      .limit(50)
-      .get();
+    const resRef = collection(db, "reservations");
+    const resQuery = query(resRef, orderBy("createdAt", "desc"), limit(50));
+    const reservationsSnapshot = await getDocs(resQuery);
       
-    const reservations = reservationsSnapshot.docs.map(doc => {
-      const data = doc.data();
+    const reservations = reservationsSnapshot.docs.map(d => {
+      const data = d.data();
       return {
-        id: doc.id,
+        id: d.id,
         type: "ONLINE",
         tableNumber: data.tableNumber,
         status: data.status,
-        createdAt: data.createdAt ? data.createdAt.toDate().toISOString() : new Date().toISOString(),
+        createdAt: data.createdAt?.toDate ? data.createdAt.toDate().toISOString() : new Date().toISOString(),
         order: data.order || null,
         notes: data.notes
       };
     });
 
     // Fetch POS orders
-    const posSnapshot = await adminDb.collection("pos_orders")
-      .orderBy("createdAt", "desc")
-      .limit(50)
-      .get();
+    const posRef = collection(db, "pos_orders");
+    const posQuery = query(posRef, orderBy("createdAt", "desc"), limit(50));
+    const posSnapshot = await getDocs(posQuery);
       
-    const posOrders = posSnapshot.docs.map(doc => {
-      const data = doc.data();
+    const posOrders = posSnapshot.docs.map(d => {
+      const data = d.data();
       return {
-        id: doc.id,
+        id: d.id,
         type: "POS",
         tableNumber: data.tableNumber || "Takeaway",
         status: data.status,
-        createdAt: data.createdAt ? data.createdAt.toDate().toISOString() : new Date().toISOString(),
+        createdAt: data.createdAt?.toDate ? data.createdAt.toDate().toISOString() : new Date().toISOString(),
         order: data.order || null,
         notes: data.notes
       };
@@ -103,31 +61,43 @@ export async function completeOrder(id: string, type: "ONLINE" | "POS") {
   const session = await getStaffSession();
   if (!session) throw new Error("Unauthorized");
 
-  const hasAdminCredentials = !!process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
-
-  if (!hasAdminCredentials) {
-    // Update mock order in memory
-    const orderIndex = mockOrders.findIndex(o => o.id === id);
-    if (orderIndex >= 0) {
-      mockOrders[orderIndex] = {
-        ...mockOrders[orderIndex],
-        status: "COMPLETED",
-        completedAt: new Date().toISOString(),
-        completedBy: session.name
-      };
-    }
-    return { success: true };
-  }
-
   try {
-    const { adminDb } = await import("@/lib/firebase-admin");
     const collectionName = type === "ONLINE" ? "reservations" : "pos_orders";
+    const orderDoc = doc(db, collectionName, id);
     
-    await adminDb.collection(collectionName).doc(id).update({
+    // Get the order to find the table number before completing it
+    const orderSnap = await getDoc(orderDoc);
+    const orderData = orderSnap.data();
+
+    // Mark order as completed
+    await updateDoc(orderDoc, {
       status: "COMPLETED",
       completedAt: new Date(),
       completedBy: session.name
     });
+
+    // Free up the table if there is an associated table number (works for both ONLINE and POS)
+    if (orderData) {
+      if (orderData.tableId) {
+        await updateDoc(doc(db, "tables", orderData.tableId), {
+          status: "AVAILABLE"
+        });
+      } else if (orderData.tableNumber && orderData.tableNumber !== "Takeaway") {
+        // Fallback in case tableId wasn't saved, try to find by table number
+        // Extract integer if it's formatted as "Table 1"
+        const numStr = String(orderData.tableNumber).replace(/\D/g, "");
+        const num = parseInt(numStr, 10);
+        
+        if (!isNaN(num)) {
+          const { setDoc } = await import("firebase/firestore");
+          await setDoc(doc(db, "tables", `table-${num}`), {
+            id: `table-${num}`,
+            number: num,
+            status: "AVAILABLE"
+          }, { merge: true });
+        }
+      }
+    }
 
     return { success: true };
   } catch (e) {
@@ -136,43 +106,38 @@ export async function completeOrder(id: string, type: "ONLINE" | "POS") {
   }
 }
 
-export async function createPosOrder(order: any, tableNumber: string = "Takeaway", notes: string = "") {
+export async function createPosOrder(order: any, tableNumber: string = "Takeaway", notes: string = "", paymentMethod: string = "Cash") {
   const session = await getStaffSession();
   if (!session) throw new Error("Unauthorized");
 
-  const hasAdminCredentials = !!process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
-
-  if (!hasAdminCredentials) {
-    // Save mock order in memory
-    const newOrder = {
-      id: `pos-${Math.floor(Math.random() * 10000)}`,
-      type: "POS",
-      tableNumber,
-      status: "COMPLETED", // POS orders are typically completed instantly
-      notes,
-      order,
-      createdAt: new Date().toISOString()
-    };
-    mockOrders.push(newOrder);
-
-    return { 
-      success: true, 
-      orderId: newOrder.id,
-      createdAt: newOrder.createdAt
-    };
-  }
-
   try {
-    const { adminDb } = await import("@/lib/firebase-admin");
-    const docRef = await adminDb.collection("pos_orders").add({
+    const isTakeaway = tableNumber === "Takeaway";
+    const status = isTakeaway ? "COMPLETED" : "IN_PROGRESS";
+
+    const docRef = await addDoc(collection(db, "pos_orders"), {
       staffId: session.id,
       staffName: session.name,
       tableNumber,
-      status: "COMPLETED",
+      status,
       notes,
+      paymentMethod,
       order,
       createdAt: new Date()
     });
+
+    // If it's dine-in, mark the table as RESERVED
+    if (!isTakeaway) {
+      const numStr = String(tableNumber).replace(/\D/g, "");
+      const num = parseInt(numStr, 10);
+      if (!isNaN(num)) {
+        const { setDoc } = await import("firebase/firestore");
+        await setDoc(doc(db, "tables", `table-${num}`), {
+          id: `table-${num}`,
+          number: num,
+          status: "RESERVED"
+        }, { merge: true });
+      }
+    }
 
     return { 
       success: true, 

@@ -4,11 +4,24 @@ import { useEffect, useState, useRef } from "react";
 import { getMenuData } from "@/app/actions/menu.actions";
 import { createPosOrder } from "@/app/actions/admin.actions";
 import { getStaffSession } from "@/app/actions/staff.actions";
+import { collection, onSnapshot } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 import { useCart } from "@/components/providers/CartContext";
 import { InvoiceData, InvoicePrint } from "@/components/features/InvoicePrint";
 import { Plus, Minus, Trash2, Coffee, Printer, Loader2, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import Image from "next/image";
+
+const MOCK_TABLES = [
+  { id: "table-1", number: 1, capacity: 2, status: "AVAILABLE", location: "Window" },
+  { id: "table-2", number: 2, capacity: 2, status: "AVAILABLE", location: "Window" },
+  { id: "table-3", number: 3, capacity: 4, status: "AVAILABLE", location: "Main Floor" },
+  { id: "table-4", number: 4, capacity: 4, status: "AVAILABLE", location: "Main Floor" },
+  { id: "table-5", number: 5, capacity: 6, status: "AVAILABLE", location: "Patio" },
+  { id: "table-6", number: 6, capacity: 2, status: "AVAILABLE", location: "Bar" },
+  { id: "table-7", number: 7, capacity: 8, status: "AVAILABLE", location: "Private Room" },
+  { id: "table-8", number: 8, capacity: 4, status: "AVAILABLE", location: "Patio" },
+];
 
 export default function POSPage() {
   const [categories, setCategories] = useState<any[]>([]);
@@ -18,10 +31,12 @@ export default function POSPage() {
   
   const [tableNumber, setTableNumber] = useState("Takeaway");
   const [notes, setNotes] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("Cash");
   const [staffName, setStaffName] = useState("Staff");
   
   const { items, addToCart, removeFromCart, updateQuantity, clearCart, cartTotal } = useCart();
   const [activeInvoice, setActiveInvoice] = useState<InvoiceData | null>(null);
+  const [tables, setTables] = useState<any[]>([]);
 
   // Custom table dropdown state
   const [tableDropdownOpen, setTableDropdownOpen] = useState(false);
@@ -40,7 +55,29 @@ export default function POSPage() {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    
+    // Listen to live tables
+    const unsubscribe = onSnapshot(collection(db, "tables"), (snapshot) => {
+      if (snapshot.empty) {
+        setTables(MOCK_TABLES);
+      } else {
+        const tableData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        
+        // Merge with mock tables to ensure all tables are always displayed
+        const mergedTables = MOCK_TABLES.map(mockTable => {
+          const firestoreTable = tableData.find(t => t.id === mockTable.id);
+          return firestoreTable ? { ...mockTable, ...firestoreTable } : mockTable;
+        });
+
+        mergedTables.sort((a: any, b: any) => a.number - b.number);
+        setTables(mergedTables);
+      }
+    });
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      unsubscribe();
+    };
   }, []);
 
   const loadMenu = async () => {
@@ -75,7 +112,7 @@ export default function POSPage() {
         }))
       };
 
-      const res = await createPosOrder(orderData, tableNumber, notes);
+      const res = await createPosOrder(orderData, tableNumber, notes, paymentMethod);
       
       if (res.success) {
         toast.success("Order completed!");
@@ -88,7 +125,8 @@ export default function POSPage() {
           createdAt: res.createdAt!,
           status: "COMPLETED",
           order: orderData,
-          notes
+          notes,
+          paymentMethod
         };
         
         setActiveInvoice(invoice);
@@ -97,6 +135,7 @@ export default function POSPage() {
         clearCart();
         setTableNumber("Takeaway");
         setNotes("");
+        setPaymentMethod("Cash");
         
         // Trigger print
         setTimeout(() => {
@@ -199,22 +238,48 @@ export default function POSPage() {
                   }`}
                 >
                   <div className="max-h-48 overflow-y-auto p-1 scrollbar-hide">
-                    {["Takeaway", "Table 1", "Table 2", "Table 3", "Table 4", "Table 5", "Table 6", "Table 7", "Table 8"].map(option => (
-                      <div
-                        key={option}
-                        className={`px-3 py-2 rounded-md cursor-pointer text-sm transition-colors ${
-                          tableNumber === option 
-                            ? "bg-amber-50 text-amber-800 font-semibold" 
-                            : "text-stone-600 hover:bg-stone-50"
-                        }`}
-                        onClick={() => {
-                          setTableNumber(option);
-                          setTableDropdownOpen(false);
-                        }}
-                      >
-                        {option}
-                      </div>
-                    ))}
+                    <div
+                      key="Takeaway"
+                      className={`px-3 py-2 rounded-md cursor-pointer text-sm transition-colors ${
+                        tableNumber === "Takeaway" 
+                          ? "bg-amber-50 text-amber-800 font-semibold" 
+                          : "text-stone-600 hover:bg-stone-50"
+                      }`}
+                      onClick={() => {
+                        setTableNumber("Takeaway");
+                        setTableDropdownOpen(false);
+                      }}
+                    >
+                      Takeaway
+                    </div>
+                    {tables.map(t => {
+                      const optionStr = `Table ${t.number}`;
+                      const isAvailable = t.status === "AVAILABLE";
+                      return (
+                        <div
+                          key={t.id}
+                          className={`px-3 py-2 rounded-md text-sm transition-colors flex justify-between items-center ${
+                            !isAvailable ? "opacity-50 cursor-not-allowed bg-stone-50" : 
+                            tableNumber === optionStr 
+                              ? "bg-amber-50 text-amber-800 font-semibold cursor-pointer" 
+                              : "text-stone-600 hover:bg-stone-50 cursor-pointer"
+                          }`}
+                          onClick={() => {
+                            if (isAvailable) {
+                              setTableNumber(optionStr);
+                              setTableDropdownOpen(false);
+                            }
+                          }}
+                        >
+                          <span>{optionStr}</span>
+                          {!isAvailable && (
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500 bg-stone-200 px-1.5 py-0.5 rounded">
+                              {t.status}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
@@ -274,11 +339,31 @@ export default function POSPage() {
           </div>
 
           <div className="p-4 border-t border-stone-200 bg-stone-50/80 flex-shrink-0">
-            <div className="flex justify-between items-center mb-4">
-              <span className="font-bold text-stone-600">Total Amount</span>
-              <span className="text-2xl font-bold text-amber-700">${cartTotal.toFixed(2)}</span>
+          <div className="flex justify-between items-center mb-4">
+            <span className="font-bold text-stone-600">Total Amount</span>
+            <span className="text-2xl font-bold text-amber-700">${cartTotal.toFixed(2)}</span>
+          </div>
+          
+          <div className="mb-4">
+            <p className="text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">Payment Method</p>
+            <div className="grid grid-cols-3 gap-2">
+              {["Cash", "Card", "QRIS"].map(method => (
+                <button
+                  key={method}
+                  onClick={() => setPaymentMethod(method)}
+                  className={`py-2 px-1 text-sm font-bold rounded-lg transition-all border ${
+                    paymentMethod === method 
+                      ? "bg-amber-100 text-amber-800 border-amber-300 ring-1 ring-amber-400/50" 
+                      : "bg-white text-stone-600 border-stone-200 hover:bg-stone-50"
+                  }`}
+                >
+                  {method}
+                </button>
+              ))}
             </div>
-            <div className="flex gap-2">
+          </div>
+
+          <div className="flex gap-2">
               <button
                 onClick={clearCart}
                 disabled={items.length === 0}

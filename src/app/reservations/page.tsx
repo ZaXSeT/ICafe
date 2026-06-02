@@ -13,27 +13,24 @@ interface Table {
   id: string;
   number: number;
   capacity: number;
-  status: "AVAILABLE" | "OCCUPIED" | "RESERVED" | "OUT_OF_SERVICE";
+  status: "AVAILABLE" | "RESERVED" | "OUT_OF_SERVICE";
   location: string;
 }
 
 const STATUS_COLORS: Record<string, string> = {
   AVAILABLE: "shadow-sm border-transparent",
-  OCCUPIED: "bg-stone-50/50 border-stone-200",
   RESERVED: "bg-stone-50/50 border-stone-200",
   OUT_OF_SERVICE: "bg-stone-100 border-stone-200",
 };
 
 const STATUS_DOT: Record<string, string> = {
   AVAILABLE: "bg-amber-500",
-  OCCUPIED: "bg-rose-500",
   RESERVED: "bg-stone-500",
   OUT_OF_SERVICE: "bg-stone-300",
 };
 
 const STATUS_LABELS: Record<string, string> = {
   AVAILABLE: "Available",
-  OCCUPIED: "Occupied",
   RESERVED: "Reserved",
   OUT_OF_SERVICE: "Out of Service",
 };
@@ -94,7 +91,7 @@ export default function ReservationsPage() {
           // even if only some are seeded in Firestore
           const mergedTables = MOCK_TABLES.map(mockTable => {
             const firestoreTable = tableData.find(t => t.id === mockTable.id);
-            return firestoreTable || mockTable;
+            return firestoreTable ? { ...mockTable, ...firestoreTable } : mockTable;
           });
 
           mergedTables.sort((a, b) => a.number - b.number);
@@ -139,6 +136,13 @@ export default function ReservationsPage() {
 
     // If it's already selected, go to checkout
     if (selectedTable?.id === table.id) {
+      if (items.length === 0) {
+        toast.error("Cart is empty", {
+          description: "Please order at least one menu item to reserve a table.",
+        });
+        return;
+      }
+      
       setBookingId(table.id); // Show loader just in case
       sessionStorage.setItem("icafe_pending_reservation", JSON.stringify(table));
       router.push("/checkout");

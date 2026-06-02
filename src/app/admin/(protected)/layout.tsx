@@ -4,6 +4,7 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { LayoutDashboard, Coffee, Users, TerminalSquare } from "lucide-react";
 import { LogoutButton } from "@/components/features/LogoutButton";
+import { TabAuthGuard } from "@/components/features/TabAuthGuard";
 
 export default async function AdminLayout({
   children,
@@ -25,6 +26,7 @@ export default async function AdminLayout({
 
   return (
     <div className="min-h-screen bg-stone-50 flex">
+      <TabAuthGuard />
       {/* Sidebar Navigation */}
       <aside className="w-64 bg-white border-r border-stone-200 flex flex-col hidden md:flex h-screen sticky top-0">
         <div className="p-6 border-b border-stone-100 flex items-center justify-between">

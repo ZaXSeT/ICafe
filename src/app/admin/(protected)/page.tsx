@@ -74,12 +74,13 @@ export default function AdminDashboardPage() {
           </button>
         </div>
 
-        <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-stone-50/80 border-b border-stone-200 text-stone-500 text-xs uppercase tracking-wider">
+        <div className="bg-white rounded-2xl border border-stone-200 shadow-sm flex flex-col h-[calc(100vh-12rem)] overflow-hidden">
+          <div className="overflow-auto flex-1">
+            <table className="w-full text-left border-collapse relative">
+              <thead className="sticky top-0 z-10 shadow-sm">
+                <tr className="bg-stone-50 border-b border-stone-200 text-stone-500 text-xs uppercase tracking-wider">
                   <th className="p-4 font-bold whitespace-nowrap">Time</th>
+                  <th className="p-4 font-bold">Order ID</th>
                   <th className="p-4 font-bold">Table</th>
                   <th className="p-4 font-bold">Type</th>
                   <th className="p-4 font-bold">Status</th>
@@ -93,8 +94,11 @@ export default function AdminDashboardPage() {
                     <td className="p-4 text-sm text-stone-500 whitespace-nowrap font-medium">
                       {new Date(order.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                     </td>
+                    <td className="p-4 font-mono text-xs text-stone-500 uppercase">
+                      {order.id.slice(-6)}
+                    </td>
                     <td className="p-4 font-bold text-stone-800">
-                      {order.tableNumber}
+                      {String(order.tableNumber).replace("Table ", "")}
                     </td>
                     <td className="p-4">
                       <span className={`inline-flex px-2 py-1 rounded border text-[11px] font-bold tracking-wider uppercase ${
@@ -141,7 +145,7 @@ export default function AdminDashboardPage() {
                 ))}
                 {orders.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="p-12 text-center text-stone-500">
+                    <td colSpan={7} className="p-12 text-center text-stone-500">
                       <div className="flex flex-col items-center gap-2">
                         <Clock className="w-8 h-8 text-stone-300 mb-2" />
                         <p className="font-medium text-stone-600">No orders found</p>

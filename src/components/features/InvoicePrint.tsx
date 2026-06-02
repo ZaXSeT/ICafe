@@ -18,6 +18,7 @@ export interface InvoiceData {
     }[];
   } | null;
   notes?: string;
+  paymentMethod?: string;
 }
 
 interface InvoicePrintProps {
@@ -36,6 +37,18 @@ export const InvoicePrint = forwardRef<HTMLDivElement, InvoicePrintProps>(
         ref={ref} 
         className="hidden print:block w-full max-w-[80mm] mx-auto text-black bg-white font-mono text-sm leading-tight p-4"
       >
+        <style dangerouslySetInnerHTML={{ __html: `
+          @media print {
+            @page {
+              margin: 0;
+              size: 80mm auto;
+            }
+            body {
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
+          }
+        `}} />
         <div className="text-center mb-6">
           <h1 className="text-xl font-bold mb-1">ICAFE</h1>
           <p className="text-xs">123 Coffee Street</p>
@@ -64,10 +77,16 @@ export const InvoicePrint = forwardRef<HTMLDivElement, InvoicePrintProps>(
             <span>Table:</span>
             <span>{invoice.tableNumber}</span>
           </div>
-          <div className="flex justify-between">
-            <span>Cashier:</span>
+          <div className="flex justify-between mt-1">
+            <span>Staff:</span>
             <span>{staffName}</span>
           </div>
+          {invoice.paymentMethod && (
+            <div className="flex justify-between mt-1">
+              <span>Pay Method:</span>
+              <span>{invoice.paymentMethod}</span>
+            </div>
+          )}
         </div>
 
         <div className="border-b border-dashed border-black pb-2 mb-2 text-xs">

@@ -31,17 +31,16 @@ export async function loginStaff(pin: string) {
     // Determine base domain to share cookie across admin/pos subdomains
     const headersList = await headers();
     const host = headersList.get("host") || "";
-    const baseDomain = host.includes("localhost") ? undefined : host.replace(/^[^.]+\./g, "");
+    const baseDomain = host.includes("localhost") ? undefined : host.replace(/^[^.]+\./g, ".");
 
-    // Set a session cookie
+    // Set a session cookie (expires when browser closes)
     const cookieStore = await cookies();
     const cookieOptions: any = {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24, // 1 day
       path: "/",
     };
-    
+
     if (baseDomain) {
       cookieOptions.domain = baseDomain;
     }
@@ -56,7 +55,7 @@ export async function loginStaff(pin: string) {
 export async function logoutStaff() {
   const headersList = await headers();
   const host = headersList.get("host") || "";
-  const baseDomain = host.includes("localhost") ? undefined : host.replace(/^[^.]+\./g, "");
+  const baseDomain = host.includes("localhost") ? undefined : host.replace(/^[^.]+\./g, ".");
 
   const cookieStore = await cookies();
   const cookieOptions: any = {
@@ -144,4 +143,24 @@ export async function deleteStaff(id: string) {
     console.error(e);
     return { success: false, error: "Failed to delete" };
   }
+}
+
+export async function setStaffSession(sessionData: any) {
+  const headersList = await headers();
+  const host = headersList.get("host") || "";
+  const baseDomain = host.includes("localhost") ? undefined : host.replace(/^[^.]+\./g, ".");
+
+  const cookieStore = await cookies();
+  const cookieOptions: any = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+  };
+
+  if (baseDomain) {
+    cookieOptions.domain = baseDomain;
+  }
+
+  cookieStore.set("staff_session", JSON.stringify(sessionData), cookieOptions);
+  return { success: true };
 }

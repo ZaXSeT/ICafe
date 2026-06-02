@@ -2,7 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 
-// Mock data as fallback (in case Firestore is empty or has no data seeded yet)
+import { collection, getDocs, addDoc, setDoc, deleteDoc, doc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+
+// Mock data as fallback for auto-seeding
 const INITIAL_CATEGORIES = [
   {
     id: "cat-1",
@@ -32,36 +35,9 @@ const INITIAL_CATEGORIES = [
   }
 ];
 
-// Ensure mock data persists across Next.js thread boundaries in development
-const globalForMock = globalThis as unknown as {
-  __MOCK_CATEGORIES: any[];
-  __NEXT_ITEM_ID: number;
-};
-
-if (!globalForMock.__MOCK_CATEGORIES) {
-  globalForMock.__MOCK_CATEGORIES = INITIAL_CATEGORIES;
-  globalForMock.__NEXT_ITEM_ID = 100;
-}
-
-const MOCK_CATEGORIES = globalForMock.__MOCK_CATEGORIES;
-
 export async function addMenuItem(categoryId: string, item: any) {
-  const hasAdminCredentials = !!process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
-
-  if (!hasAdminCredentials) {
-    const cat = MOCK_CATEGORIES.find(c => c.id === categoryId);
-    if (cat) {
-      const newItem = { ...item, id: `item-${globalForMock.__NEXT_ITEM_ID++}`, isAvailable: true, isNew: true };
-      cat.menuItems.push(newItem);
-      revalidatePath("/", "layout");
-      return { success: true, item: newItem };
-    }
-    return { success: false, error: "Category not found" };
-  }
-
   try {
-    const { adminDb } = await import("@/lib/firebase-admin");
-    const docRef = await adminDb.collection("categories").doc(categoryId).collection("menuItems").add({
+    const docRef = await addDoc(collection(db, "categories", categoryId, "menuItems"), {
       ...item,
       isAvailable: true,
       isNew: true,
@@ -70,65 +46,55 @@ export async function addMenuItem(categoryId: string, item: any) {
     revalidatePath("/", "layout");
     return { success: true, item: { id: docRef.id, ...item, isAvailable: true, isNew: true } };
   } catch (e) {
+    console.error("Error adding menu item:", e);
     return { success: false, error: "Failed to add to database" };
   }
 }
 
 export async function deleteMenuItem(categoryId: string, itemId: string) {
-  const hasAdminCredentials = !!process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
-
-  if (!hasAdminCredentials) {
-    const cat = MOCK_CATEGORIES.find(c => c.id === categoryId);
-    if (cat) {
-      cat.menuItems = cat.menuItems.filter((i: any) => i.id !== itemId);
-      revalidatePath("/", "layout");
-      return { success: true };
-    }
-    return { success: false };
-  }
-
   try {
-    const { adminDb } = await import("@/lib/firebase-admin");
-    await adminDb.collection("categories").doc(categoryId).collection("menuItems").doc(itemId).delete();
+    await deleteDoc(doc(db, "categories", categoryId, "menuItems", itemId));
     revalidatePath("/", "layout");
     return { success: true };
   } catch (e) {
+    console.error("Error deleting menu item:", e);
     return { success: false, error: "Failed to delete from database" };
   }
 }
 
 export async function getMenuData() {
-  // Check if Firebase Admin credentials are configured
-  const hasAdminCredentials = !!process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
-
-  if (!hasAdminCredentials) {
-    // No admin credentials configured, use mock data directly
-    // This avoids the "Could not load default credentials" error
-    return MOCK_CATEGORIES;
-  }
-
   try {
-    // Dynamically import to avoid module-level initialization errors
-    const { adminDb } = await import("@/lib/firebase-admin");
-    const categoriesSnapshot = await adminDb.collection("categories").get();
+    const categoriesSnapshot = await getDocs(collection(db, "categories"));
 
+    // Auto-seed if completely empty
     if (categoriesSnapshot.empty) {
-      return MOCK_CATEGORIES;
+      console.log("Categories empty, seeding database...");
+      for (const cat of INITIAL_CATEGORIES) {
+        await setDoc(doc(db, "categories", cat.id), {
+          name: cat.name,
+          description: cat.description
+        });
+        
+        for (const item of cat.menuItems) {
+          await setDoc(doc(db, "categories", cat.id, "menuItems", item.id), item);
+        }
+      }
+      return INITIAL_CATEGORIES;
     }
 
     const categories = await Promise.all(
       categoriesSnapshot.docs.map(async (catDoc) => {
         const catData = catDoc.data();
-        const menuItemsSnapshot = await adminDb
-          .collection("categories")
-          .doc(catDoc.id)
-          .collection("menuItems")
-          .get();
+        const menuItemsSnapshot = await getDocs(collection(db, "categories", catDoc.id, "menuItems"));
 
-        const menuItems = menuItemsSnapshot.docs.map((itemDoc) => ({
-          id: itemDoc.id,
-          ...itemDoc.data(),
-        }));
+        const menuItems = menuItemsSnapshot.docs.map((itemDoc) => {
+          const data = itemDoc.data();
+          return {
+            id: itemDoc.id,
+            ...data,
+            createdAt: data.createdAt?.toDate ? data.createdAt.toDate().toISOString() : new Date().toISOString()
+          };
+        });
 
         return {
           id: catDoc.id,
@@ -142,6 +108,6 @@ export async function getMenuData() {
     return categories;
   } catch (error) {
     console.error("Error fetching menu data from Firestore:", error);
-    return MOCK_CATEGORIES;
+    return INITIAL_CATEGORIES;
   }
 }

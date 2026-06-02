@@ -52,7 +52,7 @@ export function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 transition-transform hover:scale-105" onClick={() => setMobileOpen(false)}>
             <Coffee className="h-6 w-6 text-primary" />
-            <span className="font-heading text-2xl font-bold tracking-tight text-foreground translate-y-[2px]">ICafe</span>
+            <span className="font-heading text-2xl font-bold tracking-tight text-foreground">ICafe</span>
           </Link>
 
           {/* Desktop Nav */}

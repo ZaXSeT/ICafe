@@ -40,7 +40,7 @@ export function HeroSection() {
             className="mt-8 flex flex-col sm:flex-row gap-3"
           >
             <Link
-              href="/reservations/new"
+              href="/reservations"
               className="inline-flex items-center justify-center h-12 sm:h-14 px-6 sm:px-8 text-sm sm:text-base font-bold rounded-full bg-primary text-primary-foreground shadow-xl hover:bg-primary/90 hover:-translate-y-1 transition-all"
             >
               Book a Table <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />

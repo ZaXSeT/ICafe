@@ -2,15 +2,19 @@
 
 import { useState, useEffect } from "react";
 import { loginStaff } from "@/app/actions/staff.actions";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Lock, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-export default function AdminLoginPage() {
+import { Suspense } from "react";
+
+function LoginForm() {
   const [pin, setPin] = useState("");
   const [loading, setLoading] = useState(false);
   const [customerUrl, setCustomerUrl] = useState("/");
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callback = searchParams.get("callback");
 
   useEffect(() => {
     setCustomerUrl(`${window.location.protocol}//${window.location.host.replace("admin.", "").replace("pos.", "")}`);
@@ -58,8 +62,15 @@ export default function AdminLoginPage() {
     try {
       const res = await loginStaff(pin);
       if (res.success) {
+        sessionStorage.setItem("tab_session_active", "true");
         toast.success("Login successful");
-        window.location.href = "/";
+        if (callback === "pos") {
+          const isLocal = window.location.hostname.includes("localhost");
+          const baseHost = window.location.host.replace("admin.", "");
+          window.location.href = `${window.location.protocol}//pos.${baseHost}/`;
+        } else {
+          window.location.href = "/";
+        }
       } else {
         toast.error(res.error || "Login failed");
         setPin("");
@@ -127,13 +138,15 @@ export default function AdminLoginPage() {
           </button>
         </div>
 
-        <a 
-          href={customerUrl}
-          className="text-sm text-stone-500 hover:text-stone-800 transition-colors"
-        >
-          Return to Customer Site
-        </a>
       </div>
     </div>
+  );
+}
+
+export default function AdminLoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-stone-100 flex items-center justify-center p-4"><Loader2 className="w-8 h-8 animate-spin text-stone-500" /></div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { ArrowLeft } from "lucide-react";
 import { LogoutButton } from "@/components/features/LogoutButton";
+import { TabAuthGuard } from "@/components/features/TabAuthGuard";
 
 export default async function POSLayout({
   children,
@@ -14,8 +15,11 @@ export default async function POSLayout({
   const headersList = await headers();
   const host = headersList.get("host") || "";
   const isLocal = host.includes("localhost");
-  const adminLoginUrl = isLocal ? "http://admin.localhost:3000/login" : `https://admin.${host.replace("pos.", "")}/login`;
-  const adminUrl = isLocal ? "http://admin.localhost:3000" : `https://admin.${host.replace("pos.", "")}`;
+  const adminLoginUrl = isLocal ? "http://pos.localhost:3000/login" : `https://${host}/login`;
+  const sessionStr = session ? encodeURIComponent(JSON.stringify(session)) : "";
+  const adminUrl = isLocal 
+    ? `http://admin.localhost:3000/auth-handoff?session=${sessionStr}` 
+    : `https://admin.${host.replace("pos.", "")}/auth-handoff?session=${sessionStr}`;
 
   // If no session, they must login
   if (!session) {
@@ -24,6 +28,7 @@ export default async function POSLayout({
 
   return (
     <div className="h-screen flex flex-col bg-stone-50 overflow-hidden font-sans print:h-auto print:bg-white print:overflow-visible print:block">
+      <TabAuthGuard />
       {/* POS Header */}
       <header className="bg-white border-b border-stone-200 h-16 flex items-center justify-between px-6 flex-shrink-0 print:hidden">
         <div className="flex items-center gap-6">
