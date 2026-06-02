@@ -1,13 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { Coffee, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Coffee, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/components/providers/AuthContext";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, profile, loading, signOut } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -21,11 +25,21 @@ export function Navbar() {
     return () => { document.body.style.overflow = ""; };
   }, [mobileOpen]);
 
+  const handleSignOut = async () => {
+    await signOut();
+    toast.success("Signed out successfully");
+    setMobileOpen(false);
+    router.push("/");
+    router.refresh();
+  };
+
   const navLinks = [
     { href: "/menu", label: "Menu" },
     { href: "/reservations", label: "Reservations" },
     { href: "/about", label: "Our Story" },
   ];
+
+  const displayName = profile?.name || user?.email?.split("@")[0] || "User";
 
   return (
     <>
@@ -56,15 +70,38 @@ export function Navbar() {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-3">
-            <Link href="/login" className="text-sm font-semibold text-foreground/70 hover:text-foreground transition-colors">
-              Sign In
-            </Link>
-            <Link
-              href="/reservations/new"
-              className="bg-primary text-primary-foreground font-bold text-sm px-5 py-2.5 rounded-full shadow-lg hover:bg-primary/90 hover:-translate-y-0.5 transition-all"
-            >
-              Book a Table
-            </Link>
+            {!loading && user ? (
+              <>
+                <Link
+                  href="/reservations"
+                  className="bg-primary text-primary-foreground font-bold text-sm px-5 py-2.5 rounded-full shadow-lg hover:bg-primary/90 hover:-translate-y-0.5 transition-all mr-2"
+                >
+                  Book a Table
+                </Link>
+                <span className="text-sm font-semibold text-foreground/70 border-l border-border/40 pl-4">
+                  Hi, {displayName}
+                </span>
+                <button
+                  onClick={handleSignOut}
+                  className="flex items-center gap-1.5 text-sm font-semibold text-foreground/70 hover:text-destructive transition-colors ml-1"
+                  title="Sign Out"
+                >
+                  <LogOut className="h-4 w-4" />
+                </button>
+              </>
+            ) : !loading ? (
+              <>
+                <Link href="/login" className="text-sm font-semibold text-foreground/70 hover:text-foreground transition-colors">
+                  Sign In
+                </Link>
+                <Link
+                  href="/reservations"
+                  className="bg-primary text-primary-foreground font-bold text-sm px-5 py-2.5 rounded-full shadow-lg hover:bg-primary/90 hover:-translate-y-0.5 transition-all"
+                >
+                  Book a Table
+                </Link>
+              </>
+            ) : null}
           </div>
 
           {/* Mobile Hamburger */}
@@ -106,20 +143,43 @@ export function Navbar() {
 
           {/* Bottom CTA */}
           <div className="flex flex-col gap-3 mt-8">
-            <Link
-              href="/login"
-              onClick={() => setMobileOpen(false)}
-              className="w-full text-center border-2 border-foreground/20 text-foreground font-bold py-4 rounded-2xl hover:border-primary hover:text-primary transition-colors"
-            >
-              Sign In
-            </Link>
-            <Link
-              href="/reservations/new"
-              onClick={() => setMobileOpen(false)}
-              className="w-full text-center bg-primary text-primary-foreground font-bold py-4 rounded-2xl shadow-lg hover:bg-primary/90 transition-colors"
-            >
-              Book a Table
-            </Link>
+            {!loading && user ? (
+              <>
+                <div className="text-center text-foreground/70 font-semibold mb-2">
+                  Signed in as {displayName}
+                </div>
+                <Link
+                  href="/reservations"
+                  onClick={() => setMobileOpen(false)}
+                  className="w-full text-center bg-primary text-primary-foreground font-bold py-4 rounded-2xl shadow-lg hover:bg-primary/90 transition-colors"
+                >
+                  Book a Table
+                </Link>
+                <button
+                  onClick={handleSignOut}
+                  className="w-full text-center border-2 border-foreground/20 text-foreground font-bold py-4 rounded-2xl hover:border-destructive hover:text-destructive transition-colors"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : !loading ? (
+              <>
+                <Link
+                  href="/login"
+                  onClick={() => setMobileOpen(false)}
+                  className="w-full text-center border-2 border-foreground/20 text-foreground font-bold py-4 rounded-2xl hover:border-primary hover:text-primary transition-colors"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/reservations"
+                  onClick={() => setMobileOpen(false)}
+                  className="w-full text-center bg-primary text-primary-foreground font-bold py-4 rounded-2xl shadow-lg hover:bg-primary/90 transition-colors"
+                >
+                  Book a Table
+                </Link>
+              </>
+            ) : null}
           </div>
         </div>
       </div>

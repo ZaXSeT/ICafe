@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Plus, Check } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface MenuItem {
   id: string;
@@ -27,6 +28,9 @@ export function MenuSection({ categories, isLoggedIn }: { categories: Category[]
 
   const handleAddToCart = (id: string) => {
     if (!isLoggedIn) {
+      toast.error("Login Required", {
+        description: "Please login first to add items to your order."
+      });
       router.push("/login");
       return;
     }

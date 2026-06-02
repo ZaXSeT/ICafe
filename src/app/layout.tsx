@@ -3,6 +3,7 @@ import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { NavbarWrapper, FooterWrapper } from "@/components/layout/AuthAwareLayout";
+import { AuthProvider } from "@/components/providers/AuthContext";
 
 const montserrat = Montserrat({
   variable: "--font-sans",
@@ -24,10 +25,12 @@ export default function RootLayout({
       <body
         className={`${montserrat.variable} antialiased min-h-screen flex flex-col font-sans`}
       >
-        <NavbarWrapper />
-        <main className="flex-1 flex flex-col">{children}</main>
-        <FooterWrapper />
-        <Toaster />
+        <AuthProvider>
+          <NavbarWrapper />
+          <main className="flex-1 flex flex-col">{children}</main>
+          <FooterWrapper />
+          <Toaster />
+        </AuthProvider>
       </body>
     </html>
   );

@@ -1,10 +1,6 @@
 "use server";
 
-// Temporarily disabled PrismaClient to prevent module evaluation crash
-// import { PrismaClient } from "@prisma/client";
-// const prisma = new PrismaClient();
-
-// Mock data in case DB connection fails
+// Mock data as fallback (in case Firestore is empty or has no data seeded yet)
 const MOCK_CATEGORIES = [
   {
     id: "cat-1",
@@ -14,7 +10,7 @@ const MOCK_CATEGORIES = [
       { id: "item-1", name: "Cappuccino", description: "Double shot espresso with steamed milk foam.", price: 4.5, isAvailable: true, image: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?q=80&w=800&auto=format&fit=crop" },
       { id: "item-2", name: "Iced Americano", description: "Espresso stretched with cold water over ice.", price: 3.5, isAvailable: true, image: "https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?q=80&w=800&auto=format&fit=crop" },
       { id: "item-3", name: "Caramel Macchiato", description: "Vanilla syrup, steamed milk, espresso, caramel drizzle.", price: 5.5, isAvailable: true, image: "https://images.unsplash.com/photo-1485808191679-5f86510681a2?q=80&w=800&auto=format&fit=crop" },
-      { id: "item-6", name: "Flat White", description: "Smooth ristretto shots of espresso with steamed whole milk.", price: 4.0, isAvailable: true, image: "https://images.unsplash.com/photo-1577717903610-d018cc01859c?q=80&w=800&auto=format&fit=crop" },
+      { id: "item-6", name: "Flat White", description: "Smooth ristretto shots of espresso with steamed whole milk.", price: 4.0, isAvailable: true, image: "https://images.unsplash.com/photo-1579992357154-faf4bde95b3d?q=80&w=800&auto=format&fit=crop" },
       { id: "item-7", name: "Mocha Frappe", description: "Blended coffee, chocolate syrup, milk, and ice topped with whipped cream.", price: 6.0, isAvailable: true, image: "https://images.unsplash.com/photo-1530373239216-42518e6b4063?q=80&w=800&auto=format&fit=crop" },
       { id: "item-8", name: "Matcha Latte", description: "Premium matcha green tea with steamed milk.", price: 5.0, isAvailable: true, image: "https://images.unsplash.com/photo-1515823064-d6e0c04616a7?q=80&w=800&auto=format&fit=crop" },
       { id: "item-9", name: "Vanilla Latte", description: "Espresso, steamed milk, and classic vanilla syrup.", price: 4.75, isAvailable: true, image: "https://images.unsplash.com/photo-1541167760496-1628856ab772?q=80&w=800&auto=format&fit=crop" },
@@ -35,6 +31,50 @@ const MOCK_CATEGORIES = [
 ];
 
 export async function getMenuData() {
-  // Always return mock data until the database credentials are fixed
-  return MOCK_CATEGORIES;
+  // Check if Firebase Admin credentials are configured
+  const hasAdminCredentials = !!process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+
+  if (!hasAdminCredentials) {
+    // No admin credentials configured, use mock data directly
+    // This avoids the "Could not load default credentials" error
+    return MOCK_CATEGORIES;
+  }
+
+  try {
+    // Dynamically import to avoid module-level initialization errors
+    const { adminDb } = await import("@/lib/firebase-admin");
+    const categoriesSnapshot = await adminDb.collection("categories").get();
+
+    if (categoriesSnapshot.empty) {
+      return MOCK_CATEGORIES;
+    }
+
+    const categories = await Promise.all(
+      categoriesSnapshot.docs.map(async (catDoc) => {
+        const catData = catDoc.data();
+        const menuItemsSnapshot = await adminDb
+          .collection("categories")
+          .doc(catDoc.id)
+          .collection("menuItems")
+          .get();
+
+        const menuItems = menuItemsSnapshot.docs.map((itemDoc) => ({
+          id: itemDoc.id,
+          ...itemDoc.data(),
+        }));
+
+        return {
+          id: catDoc.id,
+          name: catData.name,
+          description: catData.description || null,
+          menuItems,
+        };
+      })
+    );
+
+    return categories;
+  } catch (error) {
+    console.error("Error fetching menu data from Firestore:", error);
+    return MOCK_CATEGORIES;
+  }
 }

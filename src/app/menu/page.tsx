@@ -1,18 +1,19 @@
 import { getMenuData } from "@/app/actions/menu.actions";
 import { MenuSection } from "@/components/features/MenuSection";
-import { Coffee } from "lucide-react";
+import { cookies } from "next/headers";
 
 export const metadata = {
   title: "Our Menu | ICafe",
   description: "Browse our premium selection of coffees, pastries, and more.",
 };
 
-import { auth } from "@/auth";
-
 export default async function MenuPage() {
   const categories = await getMenuData();
-  const session = await auth();
-  const isLoggedIn = !!session;
+
+  // Check if user is logged in via the firebase token cookie
+  const cookieStore = await cookies();
+  const token = cookieStore.get("firebase-token");
+  const isLoggedIn = !!token?.value;
 
   return (
     <div className="flex-1 pt-32 pb-12">

@@ -1,22 +1,14 @@
-import NextAuth, { type DefaultSession } from "next-auth"
+// Firebase user types for the application
 
-declare module "next-auth" {
-  interface Session {
-    user: {
-      id: string
-      role: string
-    } & DefaultSession["user"]
-  }
-
-  interface User {
-    id: string
-    role: string
-  }
+export interface UserProfile {
+  uid: string;
+  name: string | null;
+  email: string | null;
+  role: "CUSTOMER" | "CASHIER" | "ADMIN";
 }
 
-declare module "next-auth/jwt" {
-  interface JWT {
-    id: string
-    role: string
-  }
-}
+export type TableStatus = "AVAILABLE" | "OCCUPIED" | "RESERVED" | "OUT_OF_SERVICE";
+export type ReservationStatus = "PENDING" | "CONFIRMED" | "COMPLETED" | "CANCELLED";
+export type OrderStatus = "PENDING" | "PREPARING" | "READY" | "SERVED" | "CANCELLED";
+export type OrderType = "DINE_IN" | "TAKEAWAY";
+export type PaymentStatus = "PENDING" | "COMPLETED" | "FAILED" | "REFUNDED";
