@@ -5,6 +5,7 @@ import { Plus, Check } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useCart } from "../providers/CartContext";
 
 interface MenuItem {
   id: string;
@@ -13,6 +14,7 @@ interface MenuItem {
   price: number;
   image: string | null;
   isAvailable: boolean;
+  isNew?: boolean;
 }
 
 interface Category {
@@ -26,7 +28,9 @@ export function MenuSection({ categories, isLoggedIn }: { categories: Category[]
   const router = useRouter();
   const [addedItems, setAddedItems] = useState<Record<string, boolean>>({});
 
-  const handleAddToCart = (id: string) => {
+  const { addToCart } = useCart();
+
+  const handleAddToCart = (item: MenuItem) => {
     if (!isLoggedIn) {
       toast.error("Login Required", {
         description: "Please login first to add items to your order."
@@ -34,9 +38,10 @@ export function MenuSection({ categories, isLoggedIn }: { categories: Category[]
       router.push("/login");
       return;
     }
-    setAddedItems(prev => ({ ...prev, [id]: true }));
+    addToCart(item);
+    setAddedItems(prev => ({ ...prev, [item.id]: true }));
     setTimeout(() => {
-      setAddedItems(prev => ({ ...prev, [id]: false }));
+      setAddedItems(prev => ({ ...prev, [item.id]: false }));
     }, 2000);
   };
 
@@ -44,8 +49,8 @@ export function MenuSection({ categories, isLoggedIn }: { categories: Category[]
     <div className="space-y-10 md:space-y-12">
       {categories.map(category => (
         <section key={category.id} className="scroll-mt-24" id={category.name.toLowerCase().replace(/\s+/g, '-')}>
-          <div className="mb-4">
-            <h2 className="text-2xl md:text-3xl font-heading font-bold">{category.name}</h2>
+          <div className="mb-6">
+            <h2 className="text-2xl md:text-3xl font-heading font-bold pb-1 md:pb-2">{category.name}</h2>
             {category.description && (
               <p className="text-muted-foreground mt-1 text-sm md:text-base">{category.description}</p>
             )}
@@ -71,7 +76,12 @@ export function MenuSection({ categories, isLoggedIn }: { categories: Category[]
 
                 {/* Info */}
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-sm text-foreground truncate">{item.name}</h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-semibold text-sm text-foreground truncate">{item.name}</h3>
+                    {item.isNew && (
+                      <span className="bg-amber-100 text-amber-800 text-[10px] font-bold px-1.5 py-0.5 rounded-sm uppercase tracking-wider flex-shrink-0">New</span>
+                    )}
+                  </div>
                   {item.description && (
                     <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">{item.description}</p>
                   )}
@@ -80,7 +90,7 @@ export function MenuSection({ categories, isLoggedIn }: { categories: Category[]
 
                 {/* Add Button */}
                 <button
-                  onClick={() => handleAddToCart(item.id)}
+                  onClick={() => handleAddToCart(item as any)}
                   className={`flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center transition-all active:scale-90 ${
                     addedItems[item.id]
                       ? "bg-primary text-primary-foreground"
@@ -100,8 +110,8 @@ export function MenuSection({ categories, isLoggedIn }: { categories: Category[]
                 key={item.id}
                 className="group relative bg-background border border-border/30 rounded-2xl overflow-hidden hover:border-primary/30 hover:shadow-lg transition-all duration-300 flex flex-col"
               >
-                {item.image && (
-                  <div className="relative aspect-[3/2] w-full overflow-hidden">
+                {item.image ? (
+                  <div className="relative aspect-[3/2] w-full overflow-hidden flex-shrink-0">
                     <Image
                       src={item.image}
                       alt={item.name}
@@ -111,11 +121,20 @@ export function MenuSection({ categories, isLoggedIn }: { categories: Category[]
                       className="group-hover:scale-105 transition-transform duration-500"
                     />
                   </div>
+                ) : (
+                  <div className="relative aspect-[3/2] w-full overflow-hidden bg-muted flex items-center justify-center text-4xl flex-shrink-0">
+                    ☕
+                  </div>
                 )}
                 <div className="p-4 flex flex-col flex-1">
                   <div className="flex justify-between items-start gap-2 mb-2">
                     <div className="min-w-0">
-                      <h3 className="font-semibold text-base font-heading leading-tight pb-0.5">{item.name}</h3>
+                      <div className="flex items-center gap-2 pb-0.5">
+                        <h3 className="font-semibold text-base font-heading leading-tight truncate pt-1 pb-1">{item.name}</h3>
+                        {item.isNew && (
+                          <span className="bg-amber-100 text-amber-800 text-[10px] font-bold px-1.5 py-0.5 rounded-sm uppercase tracking-wider flex-shrink-0">New</span>
+                        )}
+                      </div>
                       <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{item.description}</p>
                     </div>
                     <span className="font-bold text-sm font-heading text-primary flex-shrink-0">${item.price.toFixed(2)}</span>
@@ -123,7 +142,7 @@ export function MenuSection({ categories, isLoggedIn }: { categories: Category[]
 
                   <div className="mt-auto pt-4 flex justify-end">
                     <button
-                      onClick={() => handleAddToCart(item.id)}
+                      onClick={() => handleAddToCart(item as any)}
                       className={`px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-1.5 transition-all ${
                         addedItems[item.id]
                           ? "bg-primary text-primary-foreground"

@@ -8,8 +8,8 @@
   font-weight: normal;
   font-style: normal;
   font-display: swap;
-  /* Limit to letters only. Numbers and symbols will fallback to the next font. */
-  unicode-range: U+0041-005A, U+0061-007A, U+00C0-024F;
+  /* Limit to space and letters only. Numbers and symbols fallback to sans. */
+  unicode-range: U+0020, U+0041-005A, U+0061-007A, U+00C0-024F;
 }
 
 @custom-variant dark (&:is(.dark *));

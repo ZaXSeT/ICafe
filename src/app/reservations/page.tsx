@@ -6,7 +6,8 @@ import { db } from "@/lib/firebase";
 import { useAuth } from "@/components/providers/AuthContext";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Calendar, Users, Clock, MapPin, Loader2 } from "lucide-react";
+import { Calendar, Users, Clock, MapPin, Loader2, ShoppingBag } from "lucide-react";
+import { useCart } from "@/components/providers/CartContext";
 
 interface Table {
   id: string;
@@ -17,17 +18,17 @@ interface Table {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  AVAILABLE: "bg-background border-border/40 text-foreground",
-  OCCUPIED: "bg-background border-border/40 text-foreground",
-  RESERVED: "bg-background border-border/40 text-foreground",
-  OUT_OF_SERVICE: "bg-background border-border/40 text-foreground",
+  AVAILABLE: "shadow-sm border-transparent",
+  OCCUPIED: "bg-stone-50/50 border-stone-200",
+  RESERVED: "bg-stone-50/50 border-stone-200",
+  OUT_OF_SERVICE: "bg-stone-100 border-stone-200",
 };
 
 const STATUS_DOT: Record<string, string> = {
-  AVAILABLE: "bg-emerald-500",
-  OCCUPIED: "bg-red-500",
-  RESERVED: "bg-amber-500",
-  OUT_OF_SERVICE: "bg-gray-400",
+  AVAILABLE: "bg-amber-500",
+  OCCUPIED: "bg-rose-500",
+  RESERVED: "bg-stone-500",
+  OUT_OF_SERVICE: "bg-stone-300",
 };
 
 const STATUS_LABELS: Record<string, string> = {
@@ -53,8 +54,10 @@ export default function ReservationsPage() {
   const [tables, setTables] = useState<Table[]>([]);
   const [loading, setLoading] = useState(true);
   const [bookingId, setBookingId] = useState<string | null>(null);
+  const [selectedTable, setSelectedTable] = useState<Table | null>(null);
   const [usingMock, setUsingMock] = useState(false);
   const { user, profile } = useAuth();
+  const { items, cartTotal, clearCart } = useCart();
   const router = useRouter();
 
   // Real-time listener for tables
@@ -86,8 +89,16 @@ export default function ReservationsPage() {
             id: doc.id,
             ...doc.data(),
           })) as Table[];
-          tableData.sort((a, b) => a.number - b.number);
-          setTables(tableData);
+          
+          // Merge with mock tables to ensure all tables are always displayed
+          // even if only some are seeded in Firestore
+          const mergedTables = MOCK_TABLES.map(mockTable => {
+            const firestoreTable = tableData.find(t => t.id === mockTable.id);
+            return firestoreTable || mockTable;
+          });
+
+          mergedTables.sort((a, b) => a.number - b.number);
+          setTables(mergedTables);
           setUsingMock(false);
         }
         setLoading(false);
@@ -126,178 +137,150 @@ export default function ReservationsPage() {
       return;
     }
 
-    setBookingId(table.id);
-
-    try {
-      if (usingMock) {
-        // Mock booking: just update local state
-        setTables((prev) =>
-          prev.map((t) =>
-            t.id === table.id ? { ...t, status: "RESERVED" as const } : t
-          )
-        );
-        toast.success(`Table ${table.number} reserved!`, {
-          description: "Your table has been booked successfully.",
-        });
-      } else {
-        // Real Firestore booking
-        // Update table status
-        await updateDoc(doc(db, "tables", table.id), {
-          status: "RESERVED",
-        });
-
-        // Create reservation record
-        await addDoc(collection(db, "reservations"), {
-          userId: user.uid,
-          tableId: table.id,
-          tableNumber: table.number,
-          date: new Date(),
-          time: new Date().toLocaleTimeString("en-US", {
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-          guests: table.capacity,
-          status: "CONFIRMED",
-          notes: "",
-          createdAt: serverTimestamp(),
-        });
-
-        toast.success(`Table ${table.number} reserved!`, {
-          description: "Your table has been booked successfully.",
-        });
-      }
-    } catch (error) {
-      console.error("Booking error:", error);
-      toast.error("Booking failed", {
-        description: "Please try again.",
-      });
-    } finally {
-      setBookingId(null);
+    // If it's already selected, go to checkout
+    if (selectedTable?.id === table.id) {
+      setBookingId(table.id); // Show loader just in case
+      sessionStorage.setItem("icafe_pending_reservation", JSON.stringify(table));
+      router.push("/checkout");
+    } else {
+      // Just select it
+      setSelectedTable(table);
     }
   };
 
   return (
-    <div className="flex-1 pt-32 pb-12">
+    <div className="flex-1 pt-32 pb-16">
       <div className="container mx-auto px-4 md:px-8 max-w-5xl">
         {/* Page Header */}
-        <div className="text-center max-w-2xl mx-auto mb-8">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-heading font-bold mb-3">
+        <div className="text-center max-w-2xl mx-auto mb-12">
+          <h1 className="text-4xl md:text-5xl font-heading font-bold mb-4 text-stone-800 leading-snug md:leading-tight">
             Reserve Your Table
           </h1>
-          <p className="text-base md:text-lg text-muted-foreground">
+          <p className="text-base md:text-lg text-stone-600 font-medium mt-2">
             See real-time table availability and book your spot instantly.
           </p>
         </div>
 
-        {/* Info Cards */}
-        <div className="grid md:grid-cols-3 gap-4 md:gap-6 mb-10">
-          <div className="bg-background border border-border/30 p-6 rounded-2xl flex flex-col items-center text-center hover:border-primary/30 transition-colors">
-            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-3">
-              <Calendar className="w-6 h-6" />
+        {/* Order Summary (If Cart is not empty) */}
+        {items.length > 0 && (
+          <div className="bg-white border-2 border-amber-700/20 rounded-3xl p-6 md:p-8 mb-12 shadow-sm max-w-3xl mx-auto">
+            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-stone-100">
+              <div className="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center text-amber-700">
+                <ShoppingBag className="w-6 h-6" />
+              </div>
+              <div>
+                <h2 className="text-xl font-heading font-bold text-stone-800">Your Order Summary</h2>
+                <p className="text-sm text-stone-500">Select a table below to checkout with your order.</p>
+              </div>
             </div>
-            <h3 className="font-bold text-lg mb-2">Live Updates</h3>
-            <p className="text-muted-foreground text-sm leading-relaxed">
-              Table status updates in real-time across all devices.
-            </p>
-          </div>
-          <div className="bg-background border border-border/30 p-6 rounded-2xl flex flex-col items-center text-center hover:border-primary/30 transition-colors">
-            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-3">
-              <Users className="w-6 h-6" />
+            
+            <div className="space-y-4 mb-6">
+              {items.map((item) => (
+                <div key={item.menuItem.id} className="flex justify-between items-center">
+                  <div className="flex items-center gap-3">
+                    <span className="font-semibold text-stone-800 text-sm bg-stone-100 px-2 py-1 rounded-md">{item.quantity}x</span>
+                    <span className="text-stone-700 font-medium text-sm">{item.menuItem.name}</span>
+                  </div>
+                  <span className="text-stone-600 text-sm font-semibold">${(item.menuItem.price * item.quantity).toFixed(2)}</span>
+                </div>
+              ))}
             </div>
-            <h3 className="font-bold text-lg mb-2">Any Group Size</h3>
-            <p className="text-muted-foreground text-sm leading-relaxed">
-              Tables from 2 to 8 seats available.
-            </p>
-          </div>
-          <div className="bg-background border border-border/30 p-6 rounded-2xl flex flex-col items-center text-center hover:border-primary/30 transition-colors">
-            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-3">
-              <Clock className="w-6 h-6" />
+
+            <div className="flex justify-between items-center pt-4 border-t border-stone-100">
+              <span className="font-bold text-stone-800">Total to pay at cafe</span>
+              <span className="text-2xl font-bold text-amber-700">${cartTotal.toFixed(2)}</span>
             </div>
-            <h3 className="font-bold text-lg mb-2">Instant Booking</h3>
-            <p className="text-muted-foreground text-sm leading-relaxed">
-              Click to book, no waiting required.
-            </p>
           </div>
-        </div>
+        )}
+
+
 
         {/* Status Legend */}
-        <div className="flex flex-wrap gap-4 justify-center mb-8">
+        <div className="flex flex-wrap gap-6 justify-center mb-10 bg-white/50 py-4 px-6 rounded-full border border-stone-200/50 backdrop-blur-sm mx-auto w-fit">
           {Object.entries(STATUS_LABELS).map(([key, label]) => (
-            <div key={key} className="flex items-center gap-2 text-sm">
-              <span className={`w-2.5 h-2.5 rounded-full ${STATUS_DOT[key]}`} />
-              <span className="text-muted-foreground">{label}</span>
+            <div key={key} className="flex items-center gap-2.5 text-sm font-medium">
+              <span className={`w-3 h-3 rounded-full shadow-sm ${STATUS_DOT[key]}`} />
+              <span className="text-stone-600">{label}</span>
             </div>
           ))}
         </div>
 
         {/* Live indicator */}
-        <div className="flex items-center justify-center gap-2 mb-6">
-          <span className="relative flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+        <div className="flex items-center justify-center gap-3 mb-8">
+          <span className="relative flex h-3 w-3">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500" />
           </span>
-          <span className="text-xs text-muted-foreground font-medium">Live — updates automatically</span>
+          <span className="text-sm text-stone-500 font-semibold tracking-wide uppercase">Live — updates automatically</span>
         </div>
 
         {/* Tables Grid */}
         {loading ? (
           <div className="flex justify-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <Loader2 className="h-10 w-10 animate-spin text-amber-700" />
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-6">
             {tables.map((table) => (
               <div
                 key={table.id}
-                className={`relative border-2 rounded-2xl p-5 transition-all duration-300 ${STATUS_COLORS[table.status]} ${
-                  table.status === "AVAILABLE"
-                    ? "hover:shadow-lg hover:-translate-y-1 cursor-pointer"
-                    : "opacity-75"
+                className={`group relative bg-white border-2 rounded-[1.5rem] md:rounded-[2rem] p-4 md:p-6 transition-all duration-300 flex flex-col ${STATUS_COLORS[table.status]} ${
+                  selectedTable?.id === table.id
+                    ? "border-primary shadow-lg ring-4 ring-primary/10 -translate-y-1.5"
+                    : table.status === "AVAILABLE"
+                    ? "hover:shadow-xl hover:shadow-stone-200/50 hover:-translate-y-1.5 cursor-pointer border-transparent"
+                    : "opacity-75 border-stone-100"
                 }`}
                 onClick={() =>
                   table.status === "AVAILABLE" && handleBookTable(table)
                 }
               >
                 {/* Status dot */}
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-2xl font-heading font-bold">
+                <div className="flex items-center justify-between mb-2 md:mb-4">
+                  <span className="text-xl md:text-3xl font-heading font-black text-stone-800">
                     #{table.number}
                   </span>
                   <span
-                    className={`w-3 h-3 rounded-full ${STATUS_DOT[table.status]} ${
+                    className={`w-3 h-3 md:w-4 md:h-4 rounded-full shadow-sm ${STATUS_DOT[table.status]} ${
                       table.status === "AVAILABLE" ? "animate-pulse" : ""
                     }`}
                   />
                 </div>
 
                 {/* Info */}
-                <div className="space-y-1.5">
-                  <div className="flex items-center gap-1.5 text-xs">
-                    <Users className="w-3.5 h-3.5" />
-                    <span>{table.capacity} seats</span>
+                <div className="space-y-1 md:space-y-2 mb-4 md:mb-6">
+                  <div className="flex items-center gap-2 text-xs md:text-sm font-medium text-stone-600">
+                    <Users className="w-3.5 h-3.5 md:w-4 md:h-4 text-stone-400" />
+                    <span>{table.capacity} <span className="hidden sm:inline">seats</span></span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs">
-                    <MapPin className="w-3.5 h-3.5" />
-                    <span>{table.location}</span>
+                  <div className="flex items-center gap-2 text-xs md:text-sm font-medium text-stone-600">
+                    <MapPin className="w-3.5 h-3.5 md:w-4 md:h-4 text-stone-400" />
+                    <span className="truncate">{table.location}</span>
                   </div>
                 </div>
 
                 {/* Action */}
-                <div className="mt-4">
+                <div className="mt-auto pt-2">
                   {table.status === "AVAILABLE" ? (
                     <button
                       disabled={bookingId === table.id}
-                      className="w-full py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition-colors disabled:opacity-60"
+                      className={`w-full py-2.5 md:py-3.5 rounded-xl md:rounded-2xl text-white text-xs md:text-sm font-bold hover:shadow-md transition-all active:scale-[0.98] disabled:opacity-60 flex justify-center items-center gap-1.5 md:gap-2 ${
+                        selectedTable?.id === table.id
+                          ? "bg-primary hover:bg-primary/90 shadow-primary/20"
+                          : "bg-amber-700 hover:bg-amber-800"
+                      }`}
                     >
                       {bookingId === table.id ? (
-                        <Loader2 className="h-3.5 w-3.5 animate-spin mx-auto" />
+                        <Loader2 className="h-3.5 w-3.5 md:h-4 md:w-4 animate-spin" />
+                      ) : selectedTable?.id === table.id ? (
+                        "Checkout →"
                       ) : (
-                        "Book Now"
+                        "Book"
                       )}
                     </button>
                   ) : (
-                    <div className="w-full py-2 rounded-xl bg-foreground/5 text-center text-xs font-semibold">
-                      {STATUS_LABELS[table.status]}
+                    <div className="w-full py-2.5 md:py-3.5 rounded-xl md:rounded-2xl bg-stone-100 text-center text-xs md:text-sm font-bold text-stone-500 border border-stone-200/50">
+                      {table.status === "OUT_OF_SERVICE" ? "N/A" : STATUS_LABELS[table.status]}
                     </div>
                   )}
                 </div>

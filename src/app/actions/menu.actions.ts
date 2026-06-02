@@ -1,7 +1,9 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
+
 // Mock data as fallback (in case Firestore is empty or has no data seeded yet)
-const MOCK_CATEGORIES = [
+const INITIAL_CATEGORIES = [
   {
     id: "cat-1",
     name: "Espresso Bar",
@@ -29,6 +31,71 @@ const MOCK_CATEGORIES = [
     ]
   }
 ];
+
+// Ensure mock data persists across Next.js thread boundaries in development
+const globalForMock = globalThis as unknown as {
+  __MOCK_CATEGORIES: any[];
+  __NEXT_ITEM_ID: number;
+};
+
+if (!globalForMock.__MOCK_CATEGORIES) {
+  globalForMock.__MOCK_CATEGORIES = INITIAL_CATEGORIES;
+  globalForMock.__NEXT_ITEM_ID = 100;
+}
+
+const MOCK_CATEGORIES = globalForMock.__MOCK_CATEGORIES;
+
+export async function addMenuItem(categoryId: string, item: any) {
+  const hasAdminCredentials = !!process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+
+  if (!hasAdminCredentials) {
+    const cat = MOCK_CATEGORIES.find(c => c.id === categoryId);
+    if (cat) {
+      const newItem = { ...item, id: `item-${globalForMock.__NEXT_ITEM_ID++}`, isAvailable: true, isNew: true };
+      cat.menuItems.push(newItem);
+      revalidatePath("/", "layout");
+      return { success: true, item: newItem };
+    }
+    return { success: false, error: "Category not found" };
+  }
+
+  try {
+    const { adminDb } = await import("@/lib/firebase-admin");
+    const docRef = await adminDb.collection("categories").doc(categoryId).collection("menuItems").add({
+      ...item,
+      isAvailable: true,
+      isNew: true,
+      createdAt: new Date()
+    });
+    revalidatePath("/", "layout");
+    return { success: true, item: { id: docRef.id, ...item, isAvailable: true, isNew: true } };
+  } catch (e) {
+    return { success: false, error: "Failed to add to database" };
+  }
+}
+
+export async function deleteMenuItem(categoryId: string, itemId: string) {
+  const hasAdminCredentials = !!process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+
+  if (!hasAdminCredentials) {
+    const cat = MOCK_CATEGORIES.find(c => c.id === categoryId);
+    if (cat) {
+      cat.menuItems = cat.menuItems.filter((i: any) => i.id !== itemId);
+      revalidatePath("/", "layout");
+      return { success: true };
+    }
+    return { success: false };
+  }
+
+  try {
+    const { adminDb } = await import("@/lib/firebase-admin");
+    await adminDb.collection("categories").doc(categoryId).collection("menuItems").doc(itemId).delete();
+    revalidatePath("/", "layout");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: "Failed to delete from database" };
+  }
+}
 
 export async function getMenuData() {
   // Check if Firebase Admin credentials are configured
