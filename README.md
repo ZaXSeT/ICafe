@@ -93,5 +93,4 @@ Open your browser and navigate to:
 - **Backend/Database**: Firebase (Firestore)
 - **Authentication**: Firebase Auth (for Customers) + Custom Edge Cookies (for Staff)
 
-## 📝 License
-This project is for educational and portfolio purposes.
+
