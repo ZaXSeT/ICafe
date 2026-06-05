@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/components/providers/AuthContext";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { InstallAppButton, MobileInstallBanner } from "@/components/features/InstallAppButton";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -70,6 +71,7 @@ export function Navbar() {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-3">
+            <InstallAppButton />
             {!loading && user ? (
               <>
                 <Link
@@ -143,6 +145,7 @@ export function Navbar() {
 
           {/* Bottom CTA */}
           <div className="flex flex-col gap-3 mt-8">
+            <MobileInstallBanner />
             {!loading && user ? (
               <>
                 <div className="text-center text-foreground/70 font-semibold mb-2">

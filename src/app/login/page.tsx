@@ -13,6 +13,7 @@ export default function LoginPage() {
           src="/images/cafe_hero.png"
           alt="ICafe interior"
           fill
+          sizes="45vw"
           className="object-cover"
           priority
         />

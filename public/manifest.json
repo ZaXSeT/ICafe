@@ -1,0 +1,28 @@
+{
+  "name": "ICafe - Coffee & Reservations",
+  "short_name": "ICafe",
+  "description": "Experience the best coffee and seamless table reservations at ICafe.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFFAF5",
+  "theme_color": "#FFFAF5",
+  "categories": ["food", "lifestyle"],
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [],
+  "related_applications": [
+    {
+      "platform": "play",
+      "id": "com.icafe.customer"
+    }
+  ],
+  "prefer_related_applications": false
+}

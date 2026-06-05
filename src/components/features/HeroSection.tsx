@@ -80,6 +80,7 @@ export function HeroSection() {
             src="/images/cafe_hero.png"
             alt="Beautiful Cafe Interior"
             fill
+            sizes="(max-width: 1024px) 100vw, 50vw"
             className="object-cover object-center scale-105 hover:scale-100 transition-transform duration-[2s] ease-out"
             priority
           />

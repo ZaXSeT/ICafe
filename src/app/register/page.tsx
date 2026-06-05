@@ -13,6 +13,7 @@ export default function RegisterPage() {
           src="/images/latte_art.png"
           alt="ICafe latte art"
           fill
+          sizes="50vw"
           className="object-cover"
           priority
         />

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
@@ -13,9 +13,19 @@ const montserrat = Montserrat({
   subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+  themeColor: "#FFFAF5",
+};
+
 export const metadata: Metadata = {
   title: "ICafe | Premium Coffee & Reservations",
   description: "Experience the best coffee and seamless table reservations at ICafe.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "ICafe",
+  },
 };
 
 export default async function RootLayout({
@@ -28,7 +38,7 @@ export default async function RootLayout({
   const isAdminOrPos = host.startsWith("admin.") || host.startsWith("pos.");
 
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" data-scroll-behavior="smooth">
       <body
         className={`${montserrat.variable} antialiased min-h-screen flex flex-col font-sans`}
       >

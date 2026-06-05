@@ -45,6 +45,7 @@ export function CartPopup() {
                       src={cartItem.menuItem.image}
                       alt={cartItem.menuItem.name}
                       fill
+                      sizes="56px"
                       className="object-cover"
                     />
                   ) : (

@@ -66,7 +66,7 @@ export function MenuSection({ categories, isLoggedIn }: { categories: Category[]
                 {/* Thumbnail */}
                 {item.image ? (
                   <div className="relative h-16 w-16 flex-shrink-0 rounded-xl overflow-hidden">
-                    <Image src={item.image} alt={item.name} fill className="object-cover" />
+                    <Image src={item.image} alt={item.name} fill sizes="64px" className="object-cover" />
                   </div>
                 ) : (
                   <div className="h-16 w-16 flex-shrink-0 rounded-xl bg-muted flex items-center justify-center text-2xl">

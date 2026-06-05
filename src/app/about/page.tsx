@@ -20,6 +20,7 @@ export default function AboutPage() {
               src="/images/cafe_hero.png" 
               alt="Cafe Interior" 
               fill 
+              sizes="(max-width: 768px) 100vw, 66vw"
               className="object-cover hover:scale-105 transition-transform duration-700"
             />
           </div>
@@ -29,6 +30,7 @@ export default function AboutPage() {
                 src="/images/latte_art.png" 
                 alt="Latte Art" 
                 fill 
+                sizes="(max-width: 768px) 100vw, 33vw"
                 className="object-cover hover:scale-105 transition-transform duration-700"
               />
             </div>
@@ -37,6 +39,7 @@ export default function AboutPage() {
                 src="/images/croissant.png" 
                 alt="Fresh Croissant" 
                 fill 
+                sizes="(max-width: 768px) 100vw, 33vw"
                 className="object-cover hover:scale-105 transition-transform duration-700"
               />
             </div>
