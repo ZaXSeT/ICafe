@@ -15,7 +15,7 @@ export default async function AdminLayout({
 
   // If no session, they must login on this subdomain
   if (!session) {
-    redirect("/login");
+    redirect("/admin/login");
   }
 
   const headersList = await headers();

@@ -23,7 +23,7 @@ export default async function POSLayout({
 
   // If no session, they must login
   if (!session) {
-    redirect(adminLoginUrl);
+    redirect("/pos/login");
   }
 
   return (
