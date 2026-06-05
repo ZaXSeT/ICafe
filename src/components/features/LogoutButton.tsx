@@ -3,12 +3,11 @@
 import { LogOut } from "lucide-react";
 import { logoutStaff } from "@/app/actions/staff.actions";
 
-export function LogoutButton({ mobile }: { mobile?: boolean }) {
+export function LogoutButton({ mobile, redirectTo = "/login" }: { mobile?: boolean; redirectTo?: string }) {
   const handleLogout = async () => {
     await logoutStaff();
     // Force a hard navigation to bypass Next.js client-side router caching
-    // This ensures the middleware correctly rewrites the path to the Admin PIN login
-    window.location.href = "/login";
+    window.location.href = redirectTo;
   };
 
   if (mobile) {

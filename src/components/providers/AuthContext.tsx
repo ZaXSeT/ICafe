@@ -35,6 +35,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, name: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
+  resendVerification: (email: string, password: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -86,8 +87,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signIn = async (email: string, password: string) => {
     const cred = await signInWithEmailAndPassword(auth, email, password);
     if (!cred.user.emailVerified) {
+      // Auto-send verification email
+      await sendEmailVerification(cred.user);
       await firebaseSignOut(auth);
-      throw { code: "auth/email-not-verified", message: "Please verify your email before signing in." };
+      throw { code: "auth/email-not-verified", message: "Please verify your email before signing in. A verification email has been sent." };
+    }
+  };
+
+  const resendVerification = async (email: string, password: string) => {
+    const cred = await signInWithEmailAndPassword(auth, email, password);
+    if (!cred.user.emailVerified) {
+      await sendEmailVerification(cred.user);
+      await firebaseSignOut(auth);
     }
   };
 
@@ -133,7 +144,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, profile, loading, signIn, signUp, signInWithGoogle, signOut }}
+      value={{ user, profile, loading, signIn, signUp, signInWithGoogle, signOut, resendVerification }}
     >
       {children}
     </AuthContext.Provider>

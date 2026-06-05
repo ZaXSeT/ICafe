@@ -64,8 +64,12 @@ function LoginForm() {
       if (res.success) {
         sessionStorage.setItem("tab_session_active", "true");
         toast.success("Login successful");
-        if (callback === "pos") {
-          const isLocal = window.location.hostname.includes("localhost");
+        
+        // Detect context: if we're at /pos/login, go to /pos
+        const isPosLogin = window.location.pathname.startsWith("/pos");
+        if (isPosLogin) {
+          window.location.href = "/pos";
+        } else if (callback === "pos") {
           const baseHost = window.location.host.replace("admin.", "");
           window.location.href = `${window.location.protocol}//pos.${baseHost}/`;
         } else {

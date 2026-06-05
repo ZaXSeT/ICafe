@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Check } from "lucide-react";
+import { Plus, Check, Heart } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { toast } from "sonner";
 import { useCart } from "../providers/CartContext";
+import { useFavorites } from "@/hooks/useFavorites";
 
 interface MenuItem {
   id: string;
@@ -26,16 +27,19 @@ interface Category {
 
 export function MenuSection({ categories, isLoggedIn }: { categories: Category[], isLoggedIn: boolean }) {
   const router = useRouter();
+  const pathname = usePathname();
+  const isInApp = pathname.startsWith("/app");
   const [addedItems, setAddedItems] = useState<Record<string, boolean>>({});
 
   const { addToCart } = useCart();
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   const handleAddToCart = (item: MenuItem) => {
     if (!isLoggedIn) {
       toast.error("Login Required", {
         description: "Please login first to add items to your order."
       });
-      router.push("/login");
+      router.push(isInApp ? "/app/login" : "/login");
       return;
     }
     addToCart(item);
@@ -43,6 +47,25 @@ export function MenuSection({ categories, isLoggedIn }: { categories: Category[]
     setTimeout(() => {
       setAddedItems(prev => ({ ...prev, [item.id]: false }));
     }, 2000);
+  };
+
+  const handleToggleFavorite = (item: MenuItem) => {
+    if (!isLoggedIn) {
+      toast.error("Login Required", {
+        description: "Please login first to save favorites."
+      });
+      return;
+    }
+    toggleFavorite({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      image: item.image,
+    });
+    toast.success(
+      isFavorite(item.id) ? `Removed ${item.name} from favorites` : `Added ${item.name} to favorites`,
+      { id: "fav-toast" }
+    );
   };
 
   return (
@@ -56,7 +79,7 @@ export function MenuSection({ categories, isLoggedIn }: { categories: Category[]
             )}
           </div>
 
-          {/* Mobile: Compact list | Desktop: Card grid */}
+          {/* Mobile: Compact list */}
           <div className="block md:hidden space-y-3">
             {category.menuItems.map(item => (
               <div
@@ -87,6 +110,14 @@ export function MenuSection({ categories, isLoggedIn }: { categories: Category[]
                   )}
                   <span className="text-sm font-bold text-primary mt-1 block">${item.price.toFixed(2)}</span>
                 </div>
+
+                {/* Favorite Button */}
+                <button
+                  onClick={() => handleToggleFavorite(item)}
+                  className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all active:scale-90"
+                >
+                  <Heart className={`w-4 h-4 transition-colors ${isFavorite(item.id) ? "fill-red-500 text-red-500" : "text-stone-300 hover:text-red-400"}`} />
+                </button>
 
                 {/* Add Button */}
                 <button

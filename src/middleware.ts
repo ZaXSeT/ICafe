@@ -15,23 +15,31 @@ export function middleware(req: NextRequest) {
       : hostname.replace(`.localhost:3000`, "");
 
   // Skip rewriting if the path already contains /admin or /pos to prevent infinite loops
-  if (url.pathname.startsWith("/admin") || url.pathname.startsWith("/pos")) {
-    return NextResponse.next();
+  if (url.pathname.startsWith("/admin") || url.pathname.startsWith("/pos") || url.pathname.startsWith("/app")) {
+    const response = NextResponse.next();
+    response.headers.set("x-next-pathname", url.pathname);
+    return response;
   }
 
   // Rewrite for Admin Subdomain
   if (hostname.startsWith("admin.")) {
     url.pathname = `/admin${url.pathname}`;
-    return NextResponse.rewrite(url);
+    const response = NextResponse.rewrite(url);
+    response.headers.set("x-next-pathname", url.pathname);
+    return response;
   }
 
   // Rewrite for POS Subdomain
   if (hostname.startsWith("pos.")) {
     url.pathname = `/pos${url.pathname}`;
-    return NextResponse.rewrite(url);
+    const response = NextResponse.rewrite(url);
+    response.headers.set("x-next-pathname", url.pathname);
+    return response;
   }
 
-  return NextResponse.next();
+  const response = NextResponse.next();
+  response.headers.set("x-next-pathname", url.pathname);
+  return response;
 }
 
 export const config = {

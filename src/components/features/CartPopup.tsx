@@ -89,11 +89,11 @@ export function CartPopup() {
             <button
               onClick={() => {
                 setIsOpen(false);
-                router.push("/reservations");
+                router.push("/checkout");
               }}
               className="w-full py-3 rounded-2xl bg-amber-700 text-white font-bold text-sm flex items-center justify-center gap-2 hover:bg-amber-800 transition-colors active:scale-[0.98] shadow-md"
             >
-              Checkout & Book Table
+              Proceed to Checkout
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>

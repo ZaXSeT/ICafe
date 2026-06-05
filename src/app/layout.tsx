@@ -2,10 +2,9 @@ import type { Metadata, Viewport } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
-import { NavbarWrapper, FooterWrapper } from "@/components/layout/AuthAwareLayout";
+import { NavbarWrapper, FooterWrapper, CartPopupWrapper } from "@/components/layout/AuthAwareLayout";
 import { AuthProvider } from "@/components/providers/AuthContext";
 import { CartProvider } from "@/components/providers/CartContext";
-import { CartPopup } from "@/components/features/CartPopup";
 import { headers } from "next/headers";
 
 const montserrat = Montserrat({
@@ -35,7 +34,10 @@ export default async function RootLayout({
 }>) {
   const headersList = await headers();
   const host = headersList.get("host") || "";
-  const isAdminOrPos = host.startsWith("admin.") || host.startsWith("pos.");
+  const pathname = headersList.get("x-next-pathname") || headersList.get("x-invoke-path") || "";
+  const isSubdomain = host.startsWith("admin.") || host.startsWith("pos.");
+  const isAppRoute = pathname.startsWith("/admin") || pathname.startsWith("/pos") || pathname.startsWith("/app");
+  const hideChrome = isSubdomain || isAppRoute;
 
   return (
     <html lang="en" data-scroll-behavior="smooth">
@@ -44,11 +46,11 @@ export default async function RootLayout({
       >
         <AuthProvider>
           <CartProvider>
-            {!isAdminOrPos && <NavbarWrapper />}
+            {!hideChrome && <NavbarWrapper />}
             <main className="flex-1 flex flex-col">{children}</main>
-            {!isAdminOrPos && <FooterWrapper />}
+            {!hideChrome && <FooterWrapper />}
             <Toaster position="top-center" className="print:hidden" />
-            {!isAdminOrPos && <CartPopup />}
+            {!hideChrome && <CartPopupWrapper />}
           </CartProvider>
         </AuthProvider>
       </body>

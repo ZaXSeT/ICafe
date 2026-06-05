@@ -11,7 +11,7 @@ const config: CapacitorConfig = {
   webDir: 'public',
   server: {
     // IMPORTANT: Ganti URL ini dengan domain live Anda
-    url: 'https://icafe-demo.vercel.app',
+    url: 'https://icafe-demo.vercel.app/app',
     cleartext: true,
   },
   plugins: {

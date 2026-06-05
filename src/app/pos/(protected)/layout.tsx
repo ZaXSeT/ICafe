@@ -1,7 +1,6 @@
 import { getStaffSession } from "@/app/actions/staff.actions";
 import { redirect } from "next/navigation";
-import { headers } from "next/headers";
-import { ArrowLeft } from "lucide-react";
+import { Coffee } from "lucide-react";
 import { LogoutButton } from "@/components/features/LogoutButton";
 import { TabAuthGuard } from "@/components/features/TabAuthGuard";
 
@@ -11,15 +10,6 @@ export default async function POSLayout({
   children: React.ReactNode;
 }) {
   const session = await getStaffSession();
-
-  const headersList = await headers();
-  const host = headersList.get("host") || "";
-  const isLocal = host.includes("localhost");
-  const adminLoginUrl = isLocal ? "http://pos.localhost:3000/login" : `https://${host}/login`;
-  const sessionStr = session ? encodeURIComponent(JSON.stringify(session)) : "";
-  const adminUrl = isLocal 
-    ? `http://admin.localhost:3000/auth-handoff?session=${sessionStr}` 
-    : `https://admin.${host.replace("pos.", "")}/auth-handoff?session=${sessionStr}`;
 
   // If no session, they must login
   if (!session) {
@@ -31,13 +21,11 @@ export default async function POSLayout({
       <TabAuthGuard />
       {/* POS Header */}
       <header className="bg-white border-b border-stone-200 h-16 flex items-center justify-between px-6 flex-shrink-0 print:hidden">
-        <div className="flex items-center gap-6">
-          <a href={adminUrl} className="text-stone-500 hover:text-stone-800 transition-colors flex items-center gap-2 font-medium text-sm">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Admin
-          </a>
-          <div className="w-px h-6 bg-stone-200" />
-          <h1 className="font-heading font-bold text-[1.1rem] text-stone-800 leading-none tracking-wide -mt-0.5">ICafe POS</h1>
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 bg-amber-700 rounded-xl flex items-center justify-center">
+            <Coffee className="w-5 h-5 text-white" />
+          </div>
+          <h1 className="font-heading font-bold text-[1.1rem] text-stone-800 leading-none tracking-wide">ICafe POS</h1>
         </div>
         
         <div className="flex items-center gap-4">
@@ -46,7 +34,7 @@ export default async function POSLayout({
             <p className="text-xs text-stone-500">{session.role}</p>
           </div>
           <div className="w-px h-8 bg-stone-200" />
-          <LogoutButton mobile />
+          <LogoutButton mobile redirectTo="/pos/login" />
         </div>
       </header>
 
