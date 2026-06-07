@@ -101,10 +101,10 @@ export default function MobileAppLogin() {
   // ─── Verification Needed Screen ───
   if (needsVerification) {
     return (
-      <div className="min-h-screen bg-stone-900 flex flex-col relative overflow-hidden">
-        <div className="absolute inset-0 z-0">
+    <div className="min-h-screen bg-stone-900 flex flex-col relative overflow-y-auto">
+        <div className="fixed inset-0 z-0 pointer-events-none">
           <Image src="/images/cafe_hero.png" alt="ICafe" fill sizes="100vw" className="object-cover opacity-10" />
-          <div className="absolute inset-0 bg-gradient-to-t from-stone-900 via-stone-900/90 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-stone-900 via-stone-900/90 to-stone-900/40" />
         </div>
 
         <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-8 text-center">
@@ -152,9 +152,9 @@ export default function MobileAppLogin() {
 
   // ─── Normal Login Screen ───
   return (
-    <div className="min-h-screen bg-stone-900 flex flex-col relative overflow-hidden">
+    <div className="min-h-screen bg-stone-900 flex flex-col relative overflow-y-auto">
       {/* Background Image Overlay */}
-      <div className="absolute inset-0 z-0">
+      <div className="fixed inset-0 z-0 pointer-events-none">
         <Image
           src="/images/cafe_hero.png"
           alt="ICafe interior"
@@ -163,10 +163,10 @@ export default function MobileAppLogin() {
           className="object-cover opacity-20"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-stone-900 via-stone-900/80 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-stone-900 via-stone-900/80 to-stone-900/40" />
       </div>
 
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-end px-6 pb-12 pt-20">
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pb-12 pt-20 min-h-full">
         <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mb-6 shadow-xl shadow-primary/20">
           <Coffee className="w-8 h-8 text-primary-foreground" />
         </div>
