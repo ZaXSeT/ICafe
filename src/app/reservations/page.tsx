@@ -200,7 +200,7 @@ export default function ReservationsPage() {
 
 
         {/* Status Legend */}
-        <div className="flex flex-wrap gap-6 justify-center mb-10 bg-white/50 py-4 px-6 rounded-full border border-stone-200/50 backdrop-blur-sm mx-auto w-fit">
+        <div className="flex flex-wrap gap-6 justify-center mb-10 bg-background py-4 px-6 rounded-full border border-border/30 backdrop-blur-sm mx-auto w-fit">
           {Object.entries(STATUS_LABELS).map(([key, label]) => (
             <div key={key} className="flex items-center gap-2.5 text-sm font-medium">
               <span className={`w-3 h-3 rounded-full shadow-sm ${STATUS_DOT[key]}`} />
@@ -228,12 +228,12 @@ export default function ReservationsPage() {
             {tables.map((table) => (
               <div
                 key={table.id}
-                className={`group relative bg-white border-2 rounded-[1.5rem] md:rounded-[2rem] p-4 md:p-6 transition-all duration-300 flex flex-col ${STATUS_COLORS[table.status]} ${
+                className={`group relative bg-background border-2 rounded-[1.5rem] md:rounded-[2rem] p-4 md:p-6 transition-all duration-300 flex flex-col ${STATUS_COLORS[table.status]} ${
                   selectedTable?.id === table.id
                     ? "border-primary shadow-lg ring-4 ring-primary/10 -translate-y-1.5"
                     : table.status === "AVAILABLE"
-                    ? "hover:shadow-xl hover:shadow-stone-200/50 hover:-translate-y-1.5 cursor-pointer border-transparent"
-                    : "opacity-75 border-stone-100"
+                    ? "hover:shadow-xl hover:shadow-stone-200/50 hover:-translate-y-1.5 cursor-pointer border-border/30"
+                    : "opacity-75 border-border/30"
                 }`}
                 onClick={() =>
                   table.status === "AVAILABLE" && handleBookTable(table)

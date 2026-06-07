@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Coffee, LogOut } from "lucide-react";
+import { Coffee, LogOut, UserCircle } from "lucide-react";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/components/providers/AuthContext";
 import { useRouter } from "next/navigation";
@@ -80,9 +81,22 @@ export function Navbar() {
                 >
                   Book a Table
                 </Link>
-                <span className="text-sm font-semibold text-foreground/70 border-l border-border/40 pl-4">
-                  Hi, {displayName}
-                </span>
+                <Link href="/profile" className="flex items-center gap-2 group border-l border-border/40 pl-4 ml-1">
+                  {profile?.photoURL || user?.photoURL ? (
+                    <Image 
+                      src={profile?.photoURL || user?.photoURL || ""} 
+                      alt="Profile" 
+                      width={28} 
+                      height={28} 
+                      className="rounded-full object-cover border border-border"
+                    />
+                  ) : (
+                    <UserCircle className="h-6 w-6 text-foreground/60 group-hover:text-primary transition-colors" />
+                  )}
+                  <span className="text-sm font-semibold text-foreground/70 group-hover:text-primary transition-colors">
+                    Hi, {displayName}
+                  </span>
+                </Link>
                 <button
                   onClick={handleSignOut}
                   className="flex items-center gap-1.5 text-sm font-semibold text-foreground/70 hover:text-destructive transition-colors ml-1"
@@ -106,16 +120,19 @@ export function Navbar() {
             ) : null}
           </div>
 
-          {/* Mobile Hamburger */}
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden flex flex-col gap-1.5 p-2 rounded-lg hover:bg-foreground/5 transition-colors z-50"
-            aria-label="Toggle menu"
-          >
-            <span className={`block w-6 h-0.5 bg-foreground transition-all duration-300 ${mobileOpen ? "rotate-45 translate-y-2" : ""}`} />
-            <span className={`block w-6 h-0.5 bg-foreground transition-all duration-300 ${mobileOpen ? "opacity-0" : ""}`} />
-            <span className={`block w-6 h-0.5 bg-foreground transition-all duration-300 ${mobileOpen ? "-rotate-45 -translate-y-2" : ""}`} />
-          </button>
+          {/* Mobile CTA & Hamburger */}
+          <div className="flex md:hidden items-center gap-3 z-50">
+            <InstallAppButton />
+            <button
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="flex flex-col gap-1.5 p-2 rounded-lg hover:bg-foreground/5 transition-colors"
+              aria-label="Toggle menu"
+            >
+              <span className={`block w-6 h-0.5 bg-foreground transition-all duration-300 ${mobileOpen ? "rotate-45 translate-y-2" : ""}`} />
+              <span className={`block w-6 h-0.5 bg-foreground transition-all duration-300 ${mobileOpen ? "opacity-0" : ""}`} />
+              <span className={`block w-6 h-0.5 bg-foreground transition-all duration-300 ${mobileOpen ? "-rotate-45 -translate-y-2" : ""}`} />
+            </button>
+          </div>
         </div>
       </header>
 

@@ -15,7 +15,7 @@ export default function MobileAppLogin() {
   const [needsVerification, setNeedsVerification] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
   const [isResending, setIsResending] = useState(false);
-  const { signIn, signInWithGoogle, resendVerification } = useAuth();
+  const { signIn, signInWithGoogle, resendVerification, checkVerification } = useAuth();
   const router = useRouter();
 
   // Countdown timer for resend cooldown
@@ -24,6 +24,36 @@ export default function MobileAppLogin() {
     const timer = setTimeout(() => setResendCooldown((c) => c - 1), 1000);
     return () => clearTimeout(timer);
   }, [resendCooldown]);
+
+  // Auto-login when verified
+  useEffect(() => {
+    if (!needsVerification || !email || !password) return;
+
+    let isChecking = false;
+    const checkAuth = async () => {
+      if (isChecking) return;
+      isChecking = true;
+      try {
+        const isVerified = await checkVerification(email, password);
+        if (isVerified) {
+          toast.success("Email verified successfully!");
+          router.push("/app");
+        }
+      } catch (err) {
+        // Ignore errors
+      } finally {
+        isChecking = false;
+      }
+    };
+
+    window.addEventListener("focus", checkAuth);
+    const interval = setInterval(checkAuth, 4000);
+
+    return () => {
+      window.removeEventListener("focus", checkAuth);
+      clearInterval(interval);
+    };
+  }, [needsVerification, email, password, checkVerification, router]);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,8 +108,8 @@ export default function MobileAppLogin() {
         </div>
 
         <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-8 text-center">
-          <div className="w-20 h-20 bg-amber-500/10 rounded-full flex items-center justify-center mb-6 ring-4 ring-amber-500/5">
-            <MailCheck className="w-10 h-10 text-amber-400" />
+          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6 ring-4 ring-primary/5">
+            <MailCheck className="w-10 h-10 text-primary" />
           </div>
 
           <h1 className="font-heading font-bold text-2xl text-white mb-3">Verify Your Email</h1>

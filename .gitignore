@@ -46,3 +46,8 @@ next-env.d.ts
 /public/sw.js
 /public/sw.js.map
 /public/workbox-*.js
+
+.firebase/
+firebase-debug.log
+win32-x64-template-*
+desktop-app/

@@ -5,6 +5,7 @@ export interface AppSession {
   uid: string;
   name: string | null;
   email: string | null;
+  photoURL: string | null;
   role: string;
 }
 
@@ -32,6 +33,7 @@ export async function getSession(): Promise<AppSession | null> {
       uid: decoded.uid,
       name: data?.name || decoded.name || null,
       email: data?.email || decoded.email || null,
+      photoURL: data?.photoURL || decoded.picture || null,
       role: data?.role || "CUSTOMER",
     };
   } catch {
