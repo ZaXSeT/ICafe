@@ -45,9 +45,8 @@ Thumbs.db
 *.swp
 *.swo
 
-# Capacitor / Android / iOS
-android/
-ios/
+# Capacitor
+# (Removed android/ and ios/ to allow flutter-app to commit)
 
 # Misc temp files
 __probe.txt
