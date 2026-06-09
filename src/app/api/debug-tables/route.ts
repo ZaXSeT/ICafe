@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const tablesRef = collection(db, "tables");

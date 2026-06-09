@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { collection, getDocs, updateDoc, doc, addDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const staffRef = collection(db, "staff");
