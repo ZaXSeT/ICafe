@@ -20,10 +20,31 @@ function initAdmin() {
     });
   }
 
+  // Use individual env vars if available (from .env.local or Vercel)
+  const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+  const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL;
+  const privateKey = process.env.FIREBASE_ADMIN_PRIVATE_KEY;
+
+  if (clientEmail && privateKey) {
+    // Handle literal \n or double quotes that might be injected by env parsers
+    let formattedKey = privateKey.replace(/\\n/g, '\n');
+    if (formattedKey.startsWith('"') && formattedKey.endsWith('"')) {
+      formattedKey = formattedKey.slice(1, -1);
+    }
+
+    return initializeApp({
+      credential: cert({
+        projectId: projectId,
+        clientEmail: clientEmail,
+        privateKey: formattedKey,
+      }),
+    });
+  }
+
   // Fallback: use project ID only (works with Firebase emulator or when
   // GOOGLE_APPLICATION_CREDENTIALS env var is set)
   return initializeApp({
-    projectId: "icafe-add1f",
+    projectId: projectId || "icafe-add1f",
   });
 }
 

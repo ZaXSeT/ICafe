@@ -1,137 +1,366 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import { db, auth } from '../lib/firebase';
-import { signOut } from 'firebase/auth';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { LogOut } from 'lucide-react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  ActivityIndicator,
+  RefreshControl,
+} from 'react-native';
+import { router } from 'expo-router';
+import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
+import { getFeaturedMenuItems } from '../services/menuService';
+import { MenuItem } from '../types';
 
 export default function HomeScreen() {
-  const [items, setItems] = useState<any[]>([]);
+  const { user, userProfile, logout } = useAuth();
+  const { addItem, itemCount } = useCart();
+  const [featured, setFeatured] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    fetchItems();
-  }, []);
-
-  const fetchItems = async () => {
+  const fetchFeatured = async () => {
     try {
-      const q = query(collection(db, 'menuItems'), orderBy('category'));
-      const snapshot = await getDocs(q);
-      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setItems(data);
-    } catch (error) {
-      console.error("Error fetching items:", error);
+      const items = await getFeaturedMenuItems();
+      setFeatured(items);
+    } catch (err) {
+      console.error('Error fetching featured items:', err);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
-  const handleLogout = async () => {
-    await signOut(auth);
+  useEffect(() => {
+    fetchFeatured();
+  }, []);
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchFeatured();
   };
 
-  const renderItem = ({ item }: { item: any }) => (
-    <View style={styles.card}>
-      {item.imageUrl ? (
-        <Image source={{ uri: item.imageUrl }} style={styles.image} />
-      ) : (
-        <View style={[styles.image, styles.placeholder]} />
-      )}
-      <View style={styles.cardInfo}>
-        <Text style={styles.cardTitle}>{item.name}</Text>
-        <Text style={styles.cardDesc} numberOfLines={2}>{item.description}</Text>
-        <Text style={styles.cardPrice}>Rp {item.price.toLocaleString('id-ID')}</Text>
-      </View>
-    </View>
-  );
+  const greeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>ICafe Menu</Text>
-        <TouchableOpacity onPress={handleLogout} style={styles.logoutBtn}>
-          <LogOut color="#fff" size={24} />
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.content}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#F59E0B" />
+      }
+    >
+      {/* Hero */}
+      <View style={styles.hero}>
+        <View style={styles.heroTextContainer}>
+          <Text style={styles.greeting}>
+            {greeting()}, {userProfile?.displayName ?? user?.displayName ?? 'Guest'} ☀️
+          </Text>
+          <Text style={styles.heroTitle}>What would you like{`\n`}today?</Text>
+          <Text style={styles.heroSubtitle}>
+            Fresh coffee & food, ready for you.
+          </Text>
+        </View>
+        <View style={styles.heroBadge}>
+          <Text style={styles.heroBadgeText}>☕</Text>
+        </View>
+      </View>
+
+      {/* Quick Actions */}
+      <View style={styles.quickActions}>
+        <TouchableOpacity
+          style={styles.quickActionBtn}
+          onPress={() => router.push('/(tabs)/menu')}
+          accessibilityRole="button"
+        >
+          <Text style={styles.quickActionIcon}>🍕</Text>
+          <Text style={styles.quickActionLabel}>Menu</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.quickActionBtn}
+          onPress={() => router.push('/(tabs)/cart')}
+          accessibilityRole="button"
+        >
+          <Text style={styles.quickActionIcon}>🛍️</Text>
+          <Text style={styles.quickActionLabel}>Cart{itemCount > 0 ? ` (${itemCount})` : ''}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.quickActionBtn}
+          onPress={() => router.push('/(tabs)/reservations')}
+          accessibilityRole="button"
+        >
+          <Text style={styles.quickActionIcon}>📊</Text>
+          <Text style={styles.quickActionLabel}>Reserve</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.quickActionBtn}
+          onPress={() => router.push('/(tabs)/profile')}
+          accessibilityRole="button"
+        >
+          <Text style={styles.quickActionIcon}>👤</Text>
+          <Text style={styles.quickActionLabel}>Profile</Text>
         </TouchableOpacity>
       </View>
 
-      {loading ? (
-        <ActivityIndicator size="large" color="#dc2626" style={styles.loader} />
-      ) : (
-        <FlatList
-          data={items}
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-          contentContainerStyle={styles.list}
-        />
-      )}
-    </SafeAreaView>
+      {/* Featured Menu */}
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>⭐ Featured</Text>
+          <TouchableOpacity onPress={() => router.push('/(tabs)/menu')}>
+            <Text style={styles.seeAll}>See all</Text>
+          </TouchableOpacity>
+        </View>
+
+        {loading ? (
+          <ActivityIndicator color="#F59E0B" style={{ marginVertical: 24 }} />
+        ) : featured.length === 0 ? (
+          <Text style={styles.emptyText}>No featured items right now.</Text>
+        ) : (
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.featuredList}>
+            {featured.map((item) => (
+              <TouchableOpacity
+                key={item.id}
+                style={styles.featuredCard}
+                onPress={() => router.push(`/menu/${item.id}`)}
+              >
+                {item.imageUrl ? (
+                  <Image source={{ uri: item.imageUrl }} style={styles.featuredImage} />
+                ) : (
+                  <View style={styles.featuredImagePlaceholder}>
+                    <Text style={styles.featuredImagePlaceholderText}>☕</Text>
+                  </View>
+                )}
+                <View style={styles.featuredCardBody}>
+                  <Text style={styles.featuredName} numberOfLines={1}>
+                    {item.name}
+                  </Text>
+                  <Text style={styles.featuredDesc} numberOfLines={2}>
+                    {item.description}
+                  </Text>
+                  <View style={styles.featuredFooter}>
+                    <Text style={styles.featuredPrice}>
+                      Rp {item.price.toLocaleString('id-ID')}
+                    </Text>
+                    <TouchableOpacity
+                      style={styles.addBtn}
+                      onPress={() => addItem(item)}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Add ${item.name} to cart`}
+                    >
+                      <Text style={styles.addBtnText}>+ Add</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        )}
+      </View>
+
+      {/* Cafe Info Banner */}
+      <View style={styles.infoBanner}>
+        <Text style={styles.infoIcon}>📍</Text>
+        <View style={styles.infoTextContainer}>
+          <Text style={styles.infoTitle}>ICafe</Text>
+          <Text style={styles.infoText}>Open daily 07:00 – 22:00 • Dine in & takeaway</Text>
+        </View>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1c1917',
+    backgroundColor: '#0F172A',
   },
-  header: {
+  content: {
+    paddingBottom: 32,
+  },
+  hero: {
+    backgroundColor: '#1E293B',
+    paddingHorizontal: 24,
+    paddingTop: 48,
+    paddingBottom: 28,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#292524',
   },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  logoutBtn: {
-    padding: 4,
-  },
-  loader: {
+  heroTextContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
-  list: {
-    padding: 16,
-  },
-  card: {
-    backgroundColor: '#292524',
-    borderRadius: 16,
-    overflow: 'hidden',
-    marginBottom: 16,
-    flexDirection: 'row',
-  },
-  image: {
-    width: 100,
-    height: 100,
-  },
-  placeholder: {
-    backgroundColor: '#44403c',
-  },
-  cardInfo: {
-    flex: 1,
-    padding: 12,
-    justifyContent: 'center',
-  },
-  cardTitle: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+  greeting: {
+    color: '#94A3B8',
+    fontSize: 14,
     marginBottom: 4,
   },
-  cardDesc: {
-    color: '#a8a29e',
-    fontSize: 12,
+  heroTitle: {
+    color: '#F1F5F9',
+    fontSize: 26,
+    fontWeight: '800',
+    lineHeight: 34,
     marginBottom: 8,
   },
-  cardPrice: {
-    color: '#dc2626',
-    fontWeight: 'bold',
+  heroSubtitle: {
+    color: '#64748B',
     fontSize: 14,
+  },
+  heroBadge: {
+    width: 64,
+    height: 64,
+    backgroundColor: '#F59E0B',
+    borderRadius: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 16,
+  },
+  heroBadgeText: {
+    fontSize: 32,
+  },
+  quickActions: {
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    paddingVertical: 20,
+    gap: 8,
+  },
+  quickActionBtn: {
+    flex: 1,
+    backgroundColor: '#1E293B',
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: 'center',
+    gap: 4,
+  },
+  quickActionIcon: {
+    fontSize: 22,
+  },
+  quickActionLabel: {
+    color: '#94A3B8',
+    fontSize: 11,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  section: {
+    paddingHorizontal: 24,
+    marginBottom: 24,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  sectionTitle: {
+    color: '#F1F5F9',
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  seeAll: {
+    color: '#F59E0B',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  featuredList: {
+    marginHorizontal: -24,
+    paddingHorizontal: 24,
+  },
+  featuredCard: {
+    backgroundColor: '#1E293B',
+    borderRadius: 16,
+    width: 200,
+    marginRight: 14,
+    overflow: 'hidden',
+  },
+  featuredImage: {
+    width: '100%',
+    height: 120,
+    resizeMode: 'cover',
+  },
+  featuredImagePlaceholder: {
+    width: '100%',
+    height: 120,
+    backgroundColor: '#334155',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  featuredImagePlaceholderText: {
+    fontSize: 40,
+  },
+  featuredCardBody: {
+    padding: 12,
+  },
+  featuredName: {
+    color: '#F1F5F9',
+    fontSize: 15,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  featuredDesc: {
+    color: '#64748B',
+    fontSize: 12,
+    lineHeight: 16,
+    marginBottom: 10,
+  },
+  featuredFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  featuredPrice: {
+    color: '#F59E0B',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  addBtn: {
+    backgroundColor: '#F59E0B',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  addBtnText: {
+    color: '#0F172A',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  emptyText: {
+    color: '#64748B',
+    fontSize: 14,
+    textAlign: 'center',
+    paddingVertical: 24,
+  },
+  infoBanner: {
+    marginHorizontal: 24,
+    backgroundColor: '#1E293B',
+    borderRadius: 14,
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    borderLeftWidth: 4,
+    borderLeftColor: '#F59E0B',
+  },
+  infoIcon: {
+    fontSize: 24,
+  },
+  infoTextContainer: {
+    flex: 1,
+  },
+  infoTitle: {
+    color: '#F1F5F9',
+    fontSize: 15,
+    fontWeight: '700',
+    marginBottom: 2,
+  },
+  infoText: {
+    color: '#94A3B8',
+    fontSize: 13,
   },
 });
