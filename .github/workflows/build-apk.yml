@@ -28,7 +28,10 @@ jobs:
 
       - name: Install dependencies
         working-directory: ./mobile-app
-        run: npm install
+        run: |
+          npm install
+          npx expo install --fix
+          npm install @expo/metro-config
 
       - name: Prebuild Android
         working-directory: ./mobile-app
