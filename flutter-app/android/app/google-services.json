@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "534641100622",
+    "project_id": "icafe-add1f",
+    "storage_bucket": "icafe-add1f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:534641100622:android:179449c0c8b89d1831401f",
+        "android_client_info": {
+          "package_name": "com.icafe.customer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "534641100622-nvislcgeisfhi72li7ec9r2oen08mmgv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWTRrHvqSDJeICnaYN5O8yHvSNXLTv7so"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "534641100622-9891ketkvosbv0bd147qaskdi1bo4sjs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
