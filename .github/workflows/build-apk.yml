@@ -45,6 +45,13 @@ jobs:
           APK_PATH=$(find build/app/outputs/flutter-apk/ -name "app-release.apk" | head -1)
           cp "$APK_PATH" build/app/outputs/flutter-apk/ICafe_Mobile.apk
 
+      - name: Update latest tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -f latest
+          git push -f origin latest
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
