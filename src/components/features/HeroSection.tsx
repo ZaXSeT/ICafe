@@ -18,7 +18,7 @@ export function HeroSection() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="min-w-0"
           >
-            <h1 className="font-heading font-bold tracking-tight text-foreground leading-[1.1] text-[clamp(2.8rem,5vw,4.5rem)]">
+            <h1 className="font-heading font-bold tracking-tight text-foreground leading-[1.1] text-[clamp(2.8rem,5vw,4.5rem)] pb-4 md:pb-6">
               Sip <br />
               <span className="text-primary italic">perfection.</span>
             </h1>
