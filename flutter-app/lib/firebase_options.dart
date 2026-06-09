@@ -33,11 +33,11 @@ class DefaultFirebaseOptions {
   // TODO: Ganti nilai-nilai di bawah dengan config Firebase project kamu.
   // Ambil dari: Firebase Console > Project Settings > General > Your apps
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAl50PUxncpZd3FCKrxoSznr3bmQSBPtrk',
-    appId: '1:534641100622:android:0000000000000000000000',
+    apiKey: 'AIzaSyDWTRrHvqSDJeICnaYN5O8yHvSNXLTv7so',
+    appId: '1:534641100622:android:179449c0c8b89d1831401f',
     messagingSenderId: '534641100622',
     projectId: 'icafe-add1f',
-    storageBucket: 'icafe-add1f.appspot.com',
+    storageBucket: 'icafe-add1f.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
