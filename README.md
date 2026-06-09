@@ -1,2 +1,94 @@
-‣䍉晡⁥‭潍敤湲䌠晡⁥慍慮敧敭瑮☠倠协匠獹整⁭飢ඕഊ㸊圠汥潣敭琠⁯桴⁥䍉晡⁥敲潰楳潴祲ഡഊ㸊圠汥潣敭琠⁯桴⁥䍉晡⁥敲潰楳潴祲ഡഊഊഊ䤊慃敦椠⁳⁡畦汬猭慴正‬潭敤湲眠扥愠灰楬慣楴湯戠極瑬眠瑩⁨⨪敎瑸樮⁳㔱⨪‬⨪敒捡⩴Ⱚ⨠吪楡睬湩⁤千⩓Ⱚ愠摮⨠䘪物扥獡⩥⸪䤠⁴牰癯摩獥愠挠浯汰瑥⁥楤楧慴⁬捥獯獹整⁭潦⁲⁡慣敦‬敦瑡牵湩⁧⁡敢畡楴畦汬⁹敤楳湧摥挠獵潴敭⵲慦楣杮眠扥楳整‬⁡潲畢瑳䄠浤湩䐠獡扨慯摲‬湡⁤⁡慦瑳倠楯瑮漭ⵦ慓敬⠠佐⥓猠獹整⹭਍਍⌣貟₟敋⁹敆瑡牵獥਍਍⸱⨠䌪獵潴敭⁲潐瑲污⠠池捯污潨瑳㌺〰怰⨩പ †‭⨪湉整慲瑣癩⁥敍畮⨪›牂睯敳挠晡⁥景敦楲杮⁳楷桴栠杩⵨畱污瑩⁹浩条獥愠摮挠瑡来牯敩⹳਍†ⴠ⨠吪扡敬删獥牥慶楴湯⩳㨪䌠獵潴敭獲挠湡戠潯⁫慴汢獥椠⁮摡慶据⹥਍†ⴠ⨠䄪瑵敨瑮捩瑡潩⩮㨪匠杩⁮灵椯⁮楶⁡浅楡⁬牯䜠潯汧⁥䘨物扥獡⁥畁桴⸩਍਍⸲⨠䄪浤湩䐠獡扨慯摲⠠慠浤湩氮捯污潨瑳㌺〰怰⨩പ †‭⨪牏敤⁲慍慮敧敭瑮⨪›潍楮潴⁲楬敶椠据浯湩⁧湯楬敮爠獥牥慶楴湯⁳湡⁤佐⁓牯敤獲മ †‭⨪敍畮䴠湡条浥湥⩴㨪䄠摤‬摥瑩‬牯搠汥瑥⁥瑩浥⁳牦浯琠敨洠湥⹵਍†ⴠ⨠匪慴晦匠捥牵⁥潌楧⩮㨪倠义戭獡摥愠瑵敨瑮捩瑡潩⁮敤楳湧摥映牯映獡⁴瑳晡⁦捡散獳മഊ㌊‮⨪潐湩⁴景匠污⁥倨协 怨潰⹳潬慣桬獯㩴〳〰⥠⨪਍†ⴠ⨠䘪獡⁴桃捥潫瑵䤠瑮牥慦散⨪›敄楳湧摥映牯栠杩⵨灳敥⁤牯敤⁲牰捯獥楳杮愠⁴桴⁥慣桳敩⁲敤歳മ †‭⨪楌敶吠扡敬匠慴畴⩳㨪䄠瑵浯瑡捩污祬甠摰瑡獥琠扡敬愠慶汩扡汩瑩⁹桷湥搠湩ⵥ湩漠摲牥⁳牡⁥汰捡摥മ †‭⨪敒散灩⁴牐湩楴杮⨪›灏楴業敺⁤潦⁲〸浭琠敨浲污爠捥楥瑰瀠楲瑮牥⁳楷桴愠瀠潲敦獳潩慮⁬湩潶捩⁥慬潹瑵മ †‭⨪敓獳潩⁮敓畣楲祴⨪›瑓楲瑣琠扡氭癥汥猠捥牵瑩⁹敲畱物湩⁧䥐⁎湥牴⁹数⁲敳獳潩⹮਍਍ⴭഭഊ⌊‣鿰肚䜠瑥楴杮匠慴瑲摥਍਍⌣‣⸱倠敲敲畱獩瑩獥਍਍‭⨪潎敤樮⩳‪瘨㠱漠⁲敮敷⁲敲潣浭湥敤⥤਍‭⨪楆敲慢敳倠潲敪瑣⨪›潙⁵畭瑳栠癡⁥⁡楆敲慢敳瀠潲敪瑣眠瑩⁨畁桴湥楴慣楴湯⠠浅楡⽬慐獳潷摲☠䜠潯汧⥥愠摮䘠物獥潴敲䐠瑡扡獡⁥湥扡敬⹤਍਍⌣‣⸲䔠癮物湯敭瑮匠瑥灵਍਍牃慥整愠怠攮癮氮捯污⁠楦敬椠⁮桴⁥潲瑯搠物捥潴祲愠摮愠摤礠畯⁲楆敲慢敳挠湯楦畧慲楴湯ഺഊ怊恠湥൶上塅彔啐䱂䍉䙟剉䉅十彅偁彉䕋㵙礢畯⵲灡⵩敫≹਍䕎员偟䉕䥌彃䥆䕒䅂䕓䅟呕彈佄䅍义∽潹牵愭瑵⵨潤慭湩ഢ上塅彔啐䱂䍉䙟剉䉅十彅剐䩏䍅彔䑉∽潹牵瀭潲敪瑣椭≤਍䕎员偟䉕䥌彃䥆䕒䅂䕓卟佔䅒䕇䉟䍕䕋㵔礢畯⵲瑳牯条ⵥ畢正瑥ഢ上塅彔啐䱂䍉䙟剉䉅十彅䕍卓䝁义彇䕓䑎剅䥟㵄礢畯⵲敭獳条湩ⵧ敳摮牥椭≤਍䕎员偟䉕䥌彃䥆䕒䅂䕓䅟偐䥟㵄礢畯⵲灡⵰摩ഢ怊恠਍਍⌣‣⸳䤠獮慴汬瑡潩൮ഊ刊湵琠敨映汯潬楷杮挠浯慭摮琠⁯湩瑳污⁬污⁬敤数摮湥楣獥ഺഊ怊恠慢桳਍灮⁭湩瑳污൬怊恠਍਍⌣‣⸴删湵楮杮琠敨䄠灰਍਍潔猠慴瑲琠敨搠癥汥灯敭瑮猠牥敶Ⱳ爠湵ഺഊ怊恠慢桳਍灮⁭畲⁮敤൶怊恠਍਍⌣‣⸵匠敥楤杮䤠楮楴污䐠瑡⁡䄨浤湩倠义ഩഊ吊⁯捡散獳琠敨䄠浤湩倯协瀠湡汥ⱳ礠畯渠敥⁤⁡瑳晡⁦䥐⹎夠畯挠湡爠湵琠敨猠敥⁤捳楲瑰琠⁯牣慥整愠搠晥畡瑬䄠浤湩甠敳㩲਍਍恠扠獡൨渊硰琠⵳潮敤猠牣灩獴猯敥ⵤ瑳晡⹦獴਍恠ൠഊ弊䐨晥畡瑬倠义挠敲瑡摥椠⁳獵慵汬⁹ㅠ㌲㔴怶‬档捥⁫桴⁥捳楲瑰映牯搠瑥楡獬⸩ൟഊⴊⴭ਍਍⌣銟₻潈⁷潴唠敳琠敨䄠灰਍਍敂慣獵⁥䍉晡⁥獵獥⨠猪扵潤慭湩爠畯楴杮⨪映牯猠捥牵瑩⁹湡⁤汣慥⁮敳慰慲楴湯漠⁦潣据牥獮‬潹⁵畭瑳愠捣獥⁳楤晦牥湥⁴慰瑲⁳景琠敨愠灰甠楳杮猠数楣楦⁣剕獌ഺഊ⌊⌣鮟辸䌠獵潴敭⁲楓整਍਍灏湥礠畯⁲牢睯敳⁲湡⁤慮楶慧整琠㩯਍⨪鿰覑栠瑴㩰⼯潬慣桬獯㩴〳〰⨪਍਍‭牂睯敳琠敨洠湥Ⱶ挠敲瑡⁥⁡畣瑳浯牥愠捣畯瑮‬湡⁤潢歯愠琠扡敬മഊ⌊⌣鮟辸䄠浤湩倠湡汥਍਍灏湥礠畯⁲牢睯敳⁲湡⁤慮楶慧整琠㩯਍⨪鿰覑栠瑴㩰⼯摡業⹮潬慣桬獯㩴〳〰⨪਍਍‭潌楧⁮獵湩⁧潹牵㘠搭杩瑩猠慴晦倠义മⴊ䴠湡条⁥敭畮椠整獭‬楶睥椠据浯湩⁧牯敤獲‬湡⁤潣灭敬整爠獥牥慶楴湯⹳਍਍⌣‣鿰ꪏ倠协匠獹整൭ഊ伊数⁮潹牵戠潲獷牥愠摮渠癡杩瑡⁥潴ഺ⨊醟₉瑨灴⼺瀯獯氮捯污潨瑳㌺〰⨰പഊⴊ䰠杯湩甠楳杮礠畯⁲ⴶ楤楧⁴瑳晡⁦䥐⁎漨⁲獵⁥桴⁥倢协•畢瑴湯映潲⁭桴⁥摁業⁮慄桳潢牡⥤മⴊ䄠摤椠整獭琠⁯桴⁥慣瑲‬敳敬瑣愠琠扡敬⠠牯吠歡慥慷⥹‬档潯敳愠瀠祡敭瑮洠瑥潨⁤䌨獡⽨慃摲儯䥒⥓‬湡⁤汣捩⁫⨪牐湩⁴…潃灭敬整⨪മⴊ䄠琠敨浲污爭捥楥瑰猠祴敬瀠楲瑮搠慩潬⁧楷汬愠瑵浯瑡捩污祬愠灰慥ⅲ਍਍ⴭഭഊ⌊‣鿰ꂛ룯₏敔档潮潬祧匠慴正਍਍‭⨪牆浡睥牯⩫㨪嬠敎瑸樮⁳㔱⡝瑨灴㩳⼯敮瑸獪漮杲⤯⠠灁⁰潒瑵牥ഩⴊ⨠䰪湡畧条⩥㨪吠灹卥牣灩൴ⴊ⨠匪祴楬杮⨪›慔汩楷摮䌠卓਍‭⨪捉湯⩳㨪䰠捵摩⁥敒捡൴ⴊ⨠䈪捡敫摮䐯瑡扡獡⩥㨪䘠物扥獡⁥䘨物獥潴敲ഩⴊ⨠䄪瑵敨瑮捩瑡潩⩮㨪䘠物扥獡⁥畁桴⠠潦⁲畃瑳浯牥⥳⬠䌠獵潴⁭摅敧䌠潯楫獥⠠潦⁲瑓晡⥦਍਍ഀ
-਍
+# ICafe - Modern Cafe Management & POS System ☕
+
+ICafe is a full-stack, modern web application built with **Next.js 15**, **React**, **Tailwind CSS**, and **Firebase**. It provides a complete digital ecosystem for a cafe, featuring a beautifully designed customer-facing website, a robust Admin Dashboard, and a fast Point-of-Sale (POS) system.
+
+## 🌟 Key Features
+
+1. **Customer Portal (`localhost:3000`)**
+   - **Interactive Menu**: Browse cafe offerings with high-quality images and categories.
+   - **Table Reservations**: Customers can book tables in advance.
+   - **Authentication**: Sign up/in via Email or Google (Firebase Auth).
+
+2. **Admin Dashboard (`admin.localhost:3000`)**
+   - **Order Management**: Monitor live incoming online reservations and POS orders.
+   - **Menu Management**: Add, edit, or delete items from the menu.
+   - **Staff Secure Login**: PIN-based authentication designed for fast staff access.
+
+3. **Point of Sale (POS) (`pos.localhost:3000`)**
+   - **Fast Checkout Interface**: Designed for high-speed order processing at the cashier desk.
+   - **Live Table Status**: Automatically updates table availability when dine-in orders are placed.
+   - **Receipt Printing**: Optimized for 80mm thermal receipt printers with a professional invoice layout.
+   - **Session Security**: Strict tab-level security requiring PIN entry per session.
+
+---
+
+## 🚀 Getting Started
+
+### 1. Prerequisites
+- **Node.js** (v18 or newer recommended)
+- **Firebase Project**: You must have a Firebase project with Authentication (Email/Password & Google) and Firestore Database enabled.
+
+### 2. Environment Setup
+Create a `.env.local` file in the root directory and add your Firebase configuration:
+
+```env
+NEXT_PUBLIC_FIREBASE_API_KEY="your-api-key"
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="your-auth-domain"
+NEXT_PUBLIC_FIREBASE_PROJECT_ID="your-project-id"
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET="your-storage-bucket"
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID="your-messaging-sender-id"
+NEXT_PUBLIC_FIREBASE_APP_ID="your-app-id"
+```
+
+### 3. Installation
+Run the following command to install all dependencies:
+```bash
+npm install
+```
+
+### 4. Running the App
+To start the development server, run:
+```bash
+npm run dev
+```
+
+### 5. Seeding Initial Data (Admin PIN)
+To access the Admin/POS panels, you need a staff PIN. You can run the seed script to create a default Admin user:
+```bash
+npx ts-node scripts/seed-staff.ts
+```
+*(Default PIN created is usually `123456`, check the script for details).*
+
+---
+
+## 💻 How to Use the App
+
+Because ICafe uses **subdomain routing** for security and clean separation of concerns, you must access different parts of the app using specific URLs:
+
+### 🛍️ Customer Site
+Open your browser and navigate to:
+**👉 http://localhost:3000**
+- Browse the menu, create a customer account, and book a table.
+
+### 🛡️ Admin Panel
+Open your browser and navigate to:
+**👉 http://admin.localhost:3000**
+- Login using your 6-digit staff PIN.
+- Manage menu items, view incoming orders, and complete reservations.
+
+### 🏪 POS System
+Open your browser and navigate to:
+**👉 http://pos.localhost:3000**
+- Login using your 6-digit staff PIN (or use the "POS" button from the Admin Dashboard).
+- Add items to the cart, select a table (or Takeaway), choose a payment method (Cash/Card/QRIS), and click **Print & Complete**.
+- A thermal-receipt style print dialog will automatically appear!
+
+---
+
+## 🛠️ Technology Stack
+- **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Icons**: Lucide React
+- **Backend/Database**: Firebase (Firestore)
+- **Authentication**: Firebase Auth (for Customers) + Custom Edge Cookies (for Staff)
