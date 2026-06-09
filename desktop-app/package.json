@@ -1,0 +1,22 @@
+{
+  "name": "icafe-mobile",
+  "productName": "ICafe Mobile",
+  "version": "1.0.0",
+  "description": "ICafe Mobile App",
+  "author": "ICafe",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-packager . \"ICafe Mobile\" --platform=win32 --arch=x64 --out=dist --overwrite"
+  },
+  "build": {
+    "appId": "com.icafe.mobile",
+    "win": {
+      "target": "squirrel"
+    }
+  },
+  "devDependencies": {
+    "@electron/packager": "^18.3.1",
+    "electron": "^30.0.0"
+  }
+}

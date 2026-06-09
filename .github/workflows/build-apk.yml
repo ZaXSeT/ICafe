@@ -13,16 +13,11 @@ jobs:
     
     defaults:
       run:
-        working-directory: ./mobile-app
+        working-directory: ./flutter-app
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -30,28 +25,22 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install Android NDK and CMake
-        run: |
-          sdkmanager --install "ndk;27.1.12297006" "cmake;3.22.1"
-          echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/27.1.12297006" >> $GITHUB_ENV
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
 
       - name: Install dependencies
-        run: npm ci || npm install
-
-      - name: Expo Prebuild
-        run: npx expo prebuild --platform android --clean
+        run: flutter pub get
 
       - name: Build APK
-        working-directory: ./mobile-app/android
-        run: ./gradlew assembleRelease -x lint --no-daemon
+        run: flutter build apk --release
 
       - name: Rename APK
         run: |
-          APK_PATH=$(find android/app/build/outputs/apk/release -name "*.apk" | head -1)
-          cp "$APK_PATH" android/app/build/outputs/apk/release/ICafe_Mobile.apk
+          APK_PATH=$(find build/app/outputs/flutter-apk/ -name "app-release.apk" | head -1)
+          cp "$APK_PATH" build/app/outputs/flutter-apk/ICafe_Mobile.apk
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
@@ -59,9 +48,9 @@ jobs:
           tag_name: latest
           name: Latest Release
           body: |
-            Automatically built APK from the latest commit.
+            Automatically built Flutter APK from the latest commit.
             Download and install on your Android device.
-          files: mobile-app/android/app/build/outputs/apk/release/ICafe_Mobile.apk
+          files: flutter-app/build/app/outputs/flutter-apk/ICafe_Mobile.apk
           make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
