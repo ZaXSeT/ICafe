@@ -32,7 +32,7 @@ jobs:
           cache: true
 
       - name: Repair Android Project
-        run: flutter create --platforms=android .
+        run: cd android && gradle wrapper --gradle-version 8.3
 
       - name: Install dependencies
         run: flutter pub get
