@@ -1,56 +1,67 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
+# Testing
+coverage/
 
-# testing
-/coverage
+# Next.js
+.next/
+out/
+build/
 
-# next.js
-/.next/
-/out/
+# Production
+dist/
 
-# production
-/build
+# Environment variables - JANGAN commit file ini!
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# misc
-.DS_Store
-*.pem
+# Vercel
+.vercel/
 
-# debug
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# OS
+.DS_Store
+*.pem
+Thumbs.db
 
-# vercel
-.vercel
+# IDE
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# Capacitor / Android / iOS
+android/
+ios/
 
-/src/generated/prisma
+# Misc temp files
+__probe.txt
+__read_files.js
+__content_*.txt
+out.txt
+firebase_content.txt
 
-# PWA
-/public/sw.js
-/public/sw.js.map
-/public/workbox-*.js
+# Expo / EAS
+mobile-app/.expo/
+mobile-app/node_modules/
+mobile-app/dist/
 
+# Firebase
 .firebase/
 firebase-debug.log
-win32-x64-template-*
-desktop-app/
-
-# APK binaries
-*.apk
+firestore-debug.log

@@ -73,7 +73,7 @@ export function MenuSection({ categories, isLoggedIn }: { categories: Category[]
       {categories.map(category => (
         <section key={category.id} className="scroll-mt-24" id={category.name.toLowerCase().replace(/\s+/g, '-')}>
           <div className="mb-6">
-            <h2 className="text-2xl md:text-3xl font-heading font-bold pb-1 md:pb-2">{category.name}</h2>
+            <h2 className="text-2xl md:text-3xl font-heading font-bold tracking-wide pb-1 md:pb-2">{category.name}</h2>
             {category.description && (
               <p className="text-muted-foreground mt-1 text-sm md:text-base">{category.description}</p>
             )}
@@ -161,14 +161,14 @@ export function MenuSection({ categories, isLoggedIn }: { categories: Category[]
                   <div className="flex justify-between items-start gap-2 mb-2">
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 pb-0.5">
-                        <h3 className="font-semibold text-base font-heading leading-tight truncate pt-1 pb-1">{item.name}</h3>
+                        <h3 className="font-semibold text-base font-heading tracking-wide leading-tight truncate pt-1 pb-1">{item.name}</h3>
                         {item.isNew && (
                           <span className="bg-amber-100 text-amber-800 text-[10px] font-bold px-1.5 py-0.5 rounded-sm uppercase tracking-wider flex-shrink-0">New</span>
                         )}
                       </div>
                       <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{item.description}</p>
                     </div>
-                    <span className="font-bold text-sm font-heading text-primary flex-shrink-0">${item.price.toFixed(2)}</span>
+                    <span className="font-bold text-sm font-heading tracking-wide text-primary flex-shrink-0">${item.price.toFixed(2)}</span>
                   </div>
 
                   <div className="mt-auto pt-4 flex justify-end">
