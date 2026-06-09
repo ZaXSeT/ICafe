@@ -22,10 +22,10 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Setup Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
@@ -33,24 +33,35 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Install Android NDK and CMake
+        run: |
+          sdkmanager --install "ndk;27.1.12297006" "cmake;3.22.1"
+          echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/27.1.12297006" >> $GITHUB_ENV
 
-      - name: Install Expo CLI
-        run: npm install -g expo-cli
+      - name: Install dependencies
+        run: npm ci || npm install
 
       - name: Expo Prebuild
         run: npx expo prebuild --platform android --clean
 
       - name: Build APK
         working-directory: ./mobile-app/android
-        run: ./gradlew assembleRelease
+        run: ./gradlew assembleRelease -x lint --no-daemon
+
+      - name: Rename APK
+        run: |
+          APK_PATH=$(find android/app/build/outputs/apk/release -name "*.apk" | head -1)
+          cp "$APK_PATH" android/app/build/outputs/apk/release/ICafe_Mobile.apk
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: latest
           name: Latest Release
-          files: mobile-app/android/app/build/outputs/apk/release/app-release.apk
+          body: |
+            Automatically built APK from the latest commit.
+            Download and install on your Android device.
+          files: mobile-app/android/app/build/outputs/apk/release/ICafe_Mobile.apk
+          make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

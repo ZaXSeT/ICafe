@@ -11,10 +11,10 @@ interface BeforeInstallPromptEvent extends Event {
 export function InstallAppButton() {
   return (
     <a
-      href="https://github.com/ZaXSeT/ICafe/releases/latest/download/app-release.apk"
+      href="https://github.com/ZaXSeT/ICafe/releases/latest/download/ICafe_Mobile.apk"
       download="ICafe_Mobile.apk"
       className="flex items-center gap-1.5 text-sm font-semibold text-primary border border-primary/30 bg-primary/5 hover:bg-primary hover:text-primary-foreground px-3.5 py-1.5 rounded-full transition-all duration-200 hover:-translate-y-0.5"
-      title="Download ICafe App Launcher"
+      title="Download ICafe Mobile App"
     >
       <Download className="w-3.5 h-3.5" />
       <span className="hidden sm:inline">Get App</span>

@@ -51,3 +51,6 @@ next-env.d.ts
 firebase-debug.log
 win32-x64-template-*
 desktop-app/
+
+# APK binaries
+*.apk
