@@ -36,10 +36,24 @@ jobs:
       - name: Prebuild Android
         working-directory: ./mobile-app
         run: npx expo prebuild --platform android --clean
+        env:
+          EXPO_PUBLIC_FIREBASE_API_KEY: AIzaSyAl50PUxncpZd3FCKrxoSznr3bmQSBPtrk
+          EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN: icafe-add1f.firebaseapp.com
+          EXPO_PUBLIC_FIREBASE_PROJECT_ID: icafe-add1f
+          EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET: icafe-add1f.firebasestorage.app
+          EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: 534641100622
+          EXPO_PUBLIC_FIREBASE_APP_ID: 1:534641100622:web:e01ac1b3e3fafdfc31401f
 
       - name: Build APK
         working-directory: ./mobile-app/android
         run: ./gradlew assembleRelease
+        env:
+          EXPO_PUBLIC_FIREBASE_API_KEY: AIzaSyAl50PUxncpZd3FCKrxoSznr3bmQSBPtrk
+          EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN: icafe-add1f.firebaseapp.com
+          EXPO_PUBLIC_FIREBASE_PROJECT_ID: icafe-add1f
+          EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET: icafe-add1f.firebasestorage.app
+          EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: 534641100622
+          EXPO_PUBLIC_FIREBASE_APP_ID: 1:534641100622:web:e01ac1b3e3fafdfc31401f
 
       - name: Update latest tag
         run: |
