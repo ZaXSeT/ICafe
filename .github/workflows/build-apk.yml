@@ -33,6 +33,16 @@ jobs:
           npx expo install --fix
           npm install @expo/metro-config
 
+      - name: Create .env file
+        working-directory: ./mobile-app
+        run: |
+          echo "EXPO_PUBLIC_FIREBASE_API_KEY=AIzaSyAl50PUxncpZd3FCKrxoSznr3bmQSBPtrk" >> .env
+          echo "EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=icafe-add1f.firebaseapp.com" >> .env
+          echo "EXPO_PUBLIC_FIREBASE_PROJECT_ID=icafe-add1f" >> .env
+          echo "EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=icafe-add1f.firebasestorage.app" >> .env
+          echo "EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=534641100622" >> .env
+          echo "EXPO_PUBLIC_FIREBASE_APP_ID=1:534641100622:web:e01ac1b3e3fafdfc31401f" >> .env
+
       - name: Prebuild Android
         working-directory: ./mobile-app
         run: npx expo prebuild --platform android --clean
