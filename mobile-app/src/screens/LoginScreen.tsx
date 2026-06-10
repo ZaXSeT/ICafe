@@ -10,9 +10,12 @@ import {
   Platform,
   ActivityIndicator,
   Alert,
+  ImageBackground,
+  Image
 } from 'react-native';
 import { router } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
+import { Feather, AntDesign } from '@expo/vector-icons';
 
 type AuthMode = 'login' | 'register';
 
@@ -74,134 +77,150 @@ export default function LoginScreen() {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
+      <View style={styles.backgroundOverlay} />
+
       <ScrollView
         contentContainerStyle={styles.scroll}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.logo}>☕ ICafe</Text>
-          <Text style={styles.subtitle}>
-            {mode === 'login' ? 'Welcome back!' : 'Create an account'}
-          </Text>
-        </View>
-
-        {/* Form */}
-        <View style={styles.form}>
-          {mode === 'register' && (
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Full Name</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Your name"
-                placeholderTextColor="#9CA3AF"
-                value={displayName}
-                onChangeText={setDisplayName}
-                autoCapitalize="words"
-                autoComplete="name"
-              />
+        <View style={styles.content}>
+          {/* Header */}
+          <View style={styles.header}>
+            <View style={styles.iconContainer}>
+              <Feather name="coffee" size={32} color="#1c1917" />
             </View>
-          )}
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="you@example.com"
-              placeholderTextColor="#9CA3AF"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Password</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="••••••••"
-              placeholderTextColor="#9CA3AF"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              autoComplete="password"
-            />
-          </View>
-
-          {mode === 'register' && (
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Confirm Password</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="••••••••"
-                placeholderTextColor="#9CA3AF"
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                secureTextEntry
-              />
-            </View>
-          )}
-
-          <TouchableOpacity
-            style={[styles.button, loading && styles.buttonDisabled]}
-            onPress={handleSubmit}
-            disabled={loading}
-            accessibilityRole="button"
-            accessibilityLabel={mode === 'login' ? 'Sign In' : 'Create Account'}
-          >
-            {loading ? (
-              <ActivityIndicator color="#FFFAF5" />
-            ) : (
-              <Text style={styles.buttonText}>
-                {mode === 'login' ? 'Sign In' : 'Create Account'}
-              </Text>
-            )}
-          </TouchableOpacity>
-
-          {mode === 'login' && (
-            <TouchableOpacity
-              style={styles.forgotButton}
-              onPress={() => router.push('/forgot-password')}
-            >
-              <Text style={styles.forgotText}>Forgot password?</Text>
-            </TouchableOpacity>
-          )}
-
-          <View style={styles.dividerContainer}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>or continue with</Text>
-            <View style={styles.dividerLine} />
-          </View>
-
-          <TouchableOpacity
-            style={styles.googleButton}
-            onPress={() => Alert.alert('Notice', 'Google Sign-In is coming soon!')}
-          >
-            <Text style={styles.googleIcon}>G</Text>
-            <Text style={styles.googleButtonText}>Continue with Google</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Mode toggle */}
-        <View style={styles.toggleContainer}>
-          <Text style={styles.toggleText}>
-            {mode === 'login' ? "Don't have an account?" : 'Already have an account?'}
-          </Text>
-          <TouchableOpacity
-            onPress={() => {
-              setMode(mode === 'login' ? 'register' : 'login');
-              setEmail('');
-              setPassword('');
-              setDisplayName('');
-              setConfirmPassword('');
-            }}
-          >
-            <Text style={styles.toggleLink}>
-              {mode === 'login' ? ' Sign Up' : ' Sign In'}
+            <Text style={styles.logoText}>
+              {mode === 'login' ? 'Welcome to ICafe' : 'Create Account'}
             </Text>
-          </TouchableOpacity>
+            <Text style={styles.subtitle}>
+              {mode === 'login' 
+                ? 'Please log in to continue your mobile experience.' 
+                : 'Join us to reserve tables and order ahead.'}
+            </Text>
+          </View>
+
+          {/* Form */}
+          <View style={styles.form}>
+            {mode === 'register' && (
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Full Name</Text>
+                <View style={styles.inputContainer}>
+                  <Feather name="user" size={20} color="#78716c" style={styles.inputIcon} />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Your name"
+                    placeholderTextColor="#78716c"
+                    value={displayName}
+                    onChangeText={setDisplayName}
+                    autoCapitalize="words"
+                    autoComplete="name"
+                  />
+                </View>
+              </View>
+            )}
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Email Address</Text>
+              <View style={styles.inputContainer}>
+                <Feather name="mail" size={20} color="#78716c" style={styles.inputIcon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter your email"
+                  placeholderTextColor="#78716c"
+                  value={email}
+                  onChangeText={setEmail}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoComplete="email"
+                />
+              </View>
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Password</Text>
+              <View style={styles.inputContainer}>
+                <Feather name="lock" size={20} color="#78716c" style={styles.inputIcon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter your password"
+                  placeholderTextColor="#78716c"
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry
+                  autoComplete="password"
+                />
+              </View>
+            </View>
+
+            {mode === 'register' && (
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Confirm Password</Text>
+                <View style={styles.inputContainer}>
+                  <Feather name="lock" size={20} color="#78716c" style={styles.inputIcon} />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Confirm your password"
+                    placeholderTextColor="#78716c"
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    secureTextEntry
+                  />
+                </View>
+              </View>
+            )}
+
+            <TouchableOpacity
+              style={[styles.button, loading && styles.buttonDisabled]}
+              onPress={handleSubmit}
+              disabled={loading}
+              accessibilityRole="button"
+            >
+              {loading ? (
+                <ActivityIndicator color="#1c1917" />
+              ) : (
+                <View style={styles.buttonContent}>
+                  <Text style={styles.buttonText}>
+                    {mode === 'login' ? 'Sign In' : 'Sign Up'}
+                  </Text>
+                  {!loading && <Feather name="arrow-right" size={20} color="#1c1917" style={{ marginLeft: 8 }} />}
+                </View>
+              )}
+            </TouchableOpacity>
+
+            <View style={styles.dividerContainer}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.dividerText}>OR CONTINUE WITH</Text>
+              <View style={styles.dividerLine} />
+            </View>
+
+            <TouchableOpacity
+              style={styles.googleButton}
+              onPress={() => Alert.alert('Notice', 'Google Sign-In will be available soon!')}
+            >
+              <AntDesign name="google" size={22} color="#1c1917" style={{ marginRight: 10 }} />
+              <Text style={styles.googleButtonText}>Google</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Mode toggle */}
+          <View style={styles.toggleContainer}>
+            <Text style={styles.toggleText}>
+              {mode === 'login' ? "Don't have an account? " : 'Already have an account? '}
+            </Text>
+            <TouchableOpacity
+              onPress={() => {
+                setMode(mode === 'login' ? 'register' : 'login');
+                setEmail('');
+                setPassword('');
+                setDisplayName('');
+                setConfirmPassword('');
+              }}
+            >
+              <Text style={styles.toggleLink}>
+                {mode === 'login' ? 'Register here' : 'Sign In here'}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -211,130 +230,170 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFAF5',
+    backgroundColor: '#1c1917', // stone-900
+  },
+  backgroundOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(28, 25, 23, 0.95)', // dark gradient simulation
   },
   scroll: {
     flexGrow: 1,
+  },
+  content: {
+    flex: 1,
     justifyContent: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 48,
+    paddingHorizontal: 20,
+    paddingVertical: 40,
+    maxWidth: 400,
+    width: '100%',
+    alignSelf: 'center',
   },
   header: {
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: 28,
   },
-  logo: {
-    fontSize: 48,
-    color: '#C6453E',
-    fontWeight: '800',
-    letterSpacing: 2,
+  iconContainer: {
+    width: 64,
+    height: 64,
+    backgroundColor: '#d97706', // amber-600 (primary)
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+    shadowColor: '#d97706',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  logoText: {
+    fontFamily: 'Gyahegi',
+    fontSize: 28,
+    color: '#ffffff',
     marginBottom: 8,
+    textAlign: 'center',
   },
   subtitle: {
-    fontSize: 18,
-    color: '#664C47',
-    fontWeight: '400',
+    fontSize: 14,
+    color: '#a8a29e', // stone-400
+    textAlign: 'center',
+    maxWidth: 280,
   },
   form: {
-    backgroundColor: '#F0E7DD',
-    borderRadius: 16,
-    padding: 24,
     gap: 16,
-    marginBottom: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
+    width: '100%',
   },
   inputGroup: {
     gap: 6,
   },
   label: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '600',
-    color: '#8F7772',
-    marginBottom: 4,
+    color: '#d6d3d1', // stone-300
+    marginLeft: 4,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(41, 37, 36, 0.8)', // stone-800/80
+    borderWidth: 1,
+    borderColor: '#44403c', // stone-700
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    height: 52,
+  },
+  inputIcon: {
+    marginRight: 12,
   },
   input: {
-    backgroundColor: '#FFFAF5',
-    borderWidth: 1,
-    borderColor: '#D8C3A5',
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+    flex: 1,
     fontSize: 16,
-    color: '#1F1C1A',
+    color: '#ffffff',
+    height: '100%',
   },
   button: {
-    backgroundColor: '#C6453E',
-    borderRadius: 10,
-    paddingVertical: 14,
+    backgroundColor: '#d97706', // amber-600
+    borderRadius: 12,
+    height: 56,
     alignItems: 'center',
-    marginTop: 8,
+    justifyContent: 'center',
+    marginTop: 12,
+    shadowColor: '#d97706',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   buttonDisabled: {
-    opacity: 0.6,
+    opacity: 0.7,
   },
   buttonText: {
-    color: '#FFFAF5',
+    color: '#1c1917', // stone-900
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: 'bold',
   },
-  forgotButton: {
+  dividerContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
+    marginTop: 24,
+    marginBottom: 8,
   },
-  forgotText: {
-    color: '#C6453E',
-    fontSize: 14,
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#292524', // stone-800
+  },
+  dividerText: {
+    color: '#78716c', // stone-500
+    paddingHorizontal: 16,
+    fontSize: 12,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+  },
+  googleButton: {
+    flexDirection: 'row',
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    height: 56,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  googleIconContainer: {
+    marginRight: 10,
+  },
+  googleIconTextG1: {
+    fontSize: 22,
+    fontWeight: '900',
+    color: '#4285F4',
+  },
+  googleButtonText: {
+    color: '#1c1917', // stone-900
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   toggleContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 32,
   },
   toggleText: {
-    color: '#8F7772',
+    color: '#a8a29e', // stone-400
     fontSize: 14,
   },
   toggleLink: {
-    color: '#C6453E',
+    color: '#d97706', // amber-600
     fontSize: 14,
-    fontWeight: '700',
-  },
-  dividerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 10,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#D8C3A5',
-  },
-  dividerText: {
-    color: '#8F7772',
-    paddingHorizontal: 10,
-    fontSize: 14,
-  },
-  googleButton: {
-    flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 10,
-    paddingVertical: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 8,
-  },
-  googleIcon: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#4285F4',
-    marginRight: 10,
-  },
-  googleButtonText: {
-    color: '#D8C3A5',
-    fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '600',
   },
 });

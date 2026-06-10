@@ -21,6 +21,8 @@ interface AuthContextType {
     logout: () => Promise<void>;
     resetPassword: (email: string) => Promise<void>;
     refreshProfile: () => Promise<void>;
+    updateUserProfile: (displayName: string, photoUrl?: string) => Promise<void>;
+    toggleFavorite: (itemId: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -91,6 +93,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
+    const updateUserProfile = async (displayName: string, photoUrl?: string) => {
+        if (!user) return;
+        await updateProfile(user, { displayName, photoURL: photoUrl || user.photoURL });
+        const ref = doc(db, 'users', user.uid);
+        await setDoc(ref, { displayName, photoURL: photoUrl || user.photoURL, updatedAt: serverTimestamp() }, { merge: true });
+        await fetchUserProfile(user.uid);
+    };
+
+    const toggleFavorite = async (itemId: string) => {
+        if (!user) return;
+        const currentFavorites = userProfile?.favoriteItems || [];
+        const isFavorite = currentFavorites.includes(itemId);
+        const newFavorites = isFavorite
+            ? currentFavorites.filter(id => id !== itemId)
+            : [...currentFavorites, itemId];
+        
+        const ref = doc(db, 'users', user.uid);
+        await setDoc(ref, { favoriteItems: newFavorites, updatedAt: serverTimestamp() }, { merge: true });
+        
+        if (userProfile) {
+            setUserProfile({ ...userProfile, favoriteItems: newFavorites });
+        } else {
+            await fetchUserProfile(user.uid);
+        }
+    };
+
     return (
         <AuthContext.Provider
             value={{
@@ -102,6 +130,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 logout,
                 resetPassword,
                 refreshProfile,
+                updateUserProfile,
+                toggleFavorite,
             }}
         >
             {children}

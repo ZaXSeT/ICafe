@@ -11,8 +11,12 @@ import {
     ActivityIndicator,
     Alert,
     Platform,
+    Dimensions,
+    useWindowDimensions
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
+import { Feather } from '@expo/vector-icons';
 import {
     createReservation,
     getUserReservations,
@@ -20,6 +24,15 @@ import {
     CreateReservationData,
 } from '../services/reservationService';
 import { Reservation } from '../types';
+
+const TABLES = [
+    { id: '1', number: '#1', seats: 2, location: 'Window' },
+    { id: '2', number: '#2', seats: 2, location: 'Window' },
+    { id: '3', number: '#3', seats: 4, location: 'Main Floor' },
+    { id: '4', number: '#4', seats: 4, location: 'Main Floor' },
+    { id: '5', number: '#5', seats: 6, location: 'Patio' },
+    { id: '6', number: '#6', seats: 2, location: 'Bar' },
+];
 
 const TIME_SLOTS = [
     '07:00', '07:30', '08:00', '08:30', '09:00', '09:30',
@@ -29,41 +42,15 @@ const TIME_SLOTS = [
     '19:00', '19:30', '20:00', '20:30', '21:00', '21:30',
 ];
 
-function formatDate(date: Date) {
-    return date.toLocaleDateString('id-ID', {
-        weekday: 'short',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-    });
-}
-
-function statusColor(status: string) {
-    switch (status) {
-        case 'confirmed': return '#22C55E';
-        case 'pending': return '#C6453E';
-        case 'cancelled': return '#EF4444';
-        case 'completed': return '#60A5FA';
-        default: return '#8F7772';
-    }
-}
-
-function statusLabel(status: string) {
-    switch (status) {
-        case 'confirmed': return 'Confirmed ✓';
-        case 'pending': return 'Pending ⏳';
-        case 'cancelled': return 'Cancelled ✕';
-        case 'completed': return 'Completed';
-        default: return status;
-    }
-}
-
 export default function ReservationsScreen() {
     const { user, userProfile } = useAuth();
     const [reservations, setReservations] = useState<Reservation[]>([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [submitting, setSubmitting] = useState(false);
+    
+    // Which table is selected for booking
+    const [selectedTable, setSelectedTable] = useState<typeof TABLES[0] | null>(null);
 
     // Form state
     const [guestCount, setGuestCount] = useState('2');
@@ -71,6 +58,10 @@ export default function ReservationsScreen() {
     const [selectedTime, setSelectedTime] = useState('');
     const [notes, setNotes] = useState('');
     const [showTimeModal, setShowTimeModal] = useState(false);
+    const [showMyRes, setShowMyRes] = useState(false);
+    
+    const { width } = useWindowDimensions();
+    const CARD_WIDTH = (width - 48) / 2; // 2 columns
 
     const fetchReservations = async () => {
         if (!user) return;
@@ -88,6 +79,12 @@ export default function ReservationsScreen() {
         fetchReservations();
     }, [user]);
 
+    const handleBookPress = (table: typeof TABLES[0]) => {
+        setSelectedTable(table);
+        setGuestCount(table.seats.toString());
+        setShowForm(true);
+    };
+
     const handleSubmit = async () => {
         if (!user) return;
         if (!selectedTime) {
@@ -99,7 +96,7 @@ export default function ReservationsScreen() {
             Alert.alert('Error', 'Guest count must be between 1 and 20.');
             return;
         }
-        // Check date is not in the past
+        
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         if (selectedDate < today) {
@@ -117,18 +114,20 @@ export default function ReservationsScreen() {
                 date: selectedDate,
                 time: selectedTime,
                 notes: notes || undefined,
+                tableNumber: selectedTable ? `Table ${selectedTable.id}` : undefined,
             };
             await createReservation(data);
             Alert.alert(
-                'Reservation Submitted!',
-                'We will confirm your reservation soon.',
+                'Table Reserved!',
+                'Your table has been successfully booked.',
                 [{ text: 'OK' }]
             );
             setShowForm(false);
             setNotes('');
             setSelectedTime('');
-            setGuestCount('2');
+            setSelectedTable(null);
             fetchReservations();
+            setShowMyRes(true); // show their reservations after booking
         } catch (err: any) {
             Alert.alert('Error', err?.message ?? 'Failed to create reservation.');
         } finally {
@@ -154,84 +153,115 @@ export default function ReservationsScreen() {
         ]);
     };
 
-    // Date navigation helpers
     const addDays = (d: Date, n: number) => {
         const next = new Date(d);
         next.setDate(next.getDate() + n);
         return next;
     };
+    const dateOptions = Array.from({ length: 30 }).map((_, i) => addDays(new Date(), i));
 
-    const generateDateOptions = () => {
-        const dates = [];
-        for (let i = 0; i <= 30; i++) {
-            dates.push(addDays(new Date(), i));
-        }
-        return dates;
-    };
-
-    const dateOptions = generateDateOptions();
+    if (showMyRes) {
+        return (
+            <SafeAreaView style={styles.container} edges={['top']}>
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={() => setShowMyRes(false)} style={styles.backBtn}>
+                        <Feather name="arrow-left" size={20} color="#8F7772" />
+                        <Text style={styles.backBtnText}>Back</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.headerTitle}>My Reservations</Text>
+                </View>
+                <ScrollView contentContainerStyle={{ padding: 16 }}>
+                    {loading ? (
+                        <ActivityIndicator color="#C6453E" />
+                    ) : reservations.length === 0 ? (
+                        <Text style={{ textAlign: 'center', color: '#8F7772', marginTop: 40 }}>No reservations yet.</Text>
+                    ) : (
+                        reservations.map((res) => (
+                            <View key={res.id} style={styles.myResCard}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                    <Text style={styles.myResDate}>{res.date.toLocaleDateString()}</Text>
+                                    <Text style={[styles.myResStatus, res.status === 'CANCELLED' && { color: '#EF4444' }]}>{res.status}</Text>
+                                </View>
+                                <Text style={styles.myResDetails}>{res.time} • {res.tableNumber || 'Any Table'} • {res.guestCount} guests</Text>
+                                {(res.status === 'PENDING' || res.status === 'pending') && (
+                                    <TouchableOpacity onPress={() => handleCancel(res.id)} style={{ marginTop: 12 }}>
+                                        <Text style={{ color: '#EF4444', fontWeight: '600' }}>Cancel</Text>
+                                    </TouchableOpacity>
+                                )}
+                            </View>
+                        ))
+                    )}
+                </ScrollView>
+            </SafeAreaView>
+        );
+    }
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container} edges={['top']}>
             <ScrollView contentContainerStyle={styles.content}>
-                {/* Header */}
-                <View style={styles.headerRow}>
-                    <Text style={styles.headerTitle}>My Reservations</Text>
-                    <TouchableOpacity
-                        style={styles.addBtn}
-                        onPress={() => setShowForm(true)}
-                        accessibilityRole="button"
-                    >
-                        <Text style={styles.addBtnText}>+ New</Text>
+                
+                <View style={styles.header}>
+                    <TouchableOpacity style={styles.backBtn} onPress={() => setShowMyRes(true)}>
+                        <Feather name="list" size={20} color="#8F7772" />
+                        <Text style={styles.backBtnText}>My Bookings</Text>
                     </TouchableOpacity>
+                    <View style={{ marginBottom: 4 }}>
+                        <Text style={styles.headerTitle}>Reserve a</Text>
+                        <Text style={[styles.headerTitle, { marginTop: -16 }]}>Table</Text>
+                    </View>
+                    <Text style={styles.headerSubtitle}>Real-time availability</Text>
                 </View>
 
-                {/* Reservations List */}
-                {loading ? (
-                    <ActivityIndicator color="#C6453E" style={{ marginTop: 40 }} />
-                ) : reservations.length === 0 ? (
-                    <View style={styles.empty}>
-                        <Text style={styles.emptyIcon}>📊</Text>
-                        <Text style={styles.emptyTitle}>No reservations yet</Text>
-                        <Text style={styles.emptySubtitle}>Book a table to get started</Text>
-                        <TouchableOpacity style={styles.emptyBtn} onPress={() => setShowForm(true)}>
-                            <Text style={styles.emptyBtnText}>Book a Table</Text>
-                        </TouchableOpacity>
+                <View style={styles.liveUpdatesPill}>
+                    <View style={styles.liveDot} />
+                    <Text style={styles.liveUpdatesText}>LIVE UPDATES</Text>
+                </View>
+
+                <View style={styles.legendRow}>
+                    <View style={styles.legendItem}>
+                        <View style={[styles.legendDot, { backgroundColor: '#F59E0B' }]} />
+                        <Text style={styles.legendText}>Available</Text>
                     </View>
-                ) : (
-                    reservations.map((res) => (
-                        <View key={res.id} style={styles.card}>
-                            <View style={styles.cardHeader}>
-                                <Text style={styles.cardDate}>{formatDate(res.date)}</Text>
-                                <View style={[styles.statusBadge, { backgroundColor: statusColor(res.status) + '22' }]}>
-                                    <Text style={[styles.statusText, { color: statusColor(res.status) }]}>
-                                        {statusLabel(res.status)}
-                                    </Text>
-                                </View>
+                    <View style={styles.legendItem}>
+                        <View style={[styles.legendDot, { backgroundColor: '#EF4444' }]} />
+                        <Text style={styles.legendText}>Reserved</Text>
+                    </View>
+                    <View style={styles.legendItem}>
+                        <View style={[styles.legendDot, { backgroundColor: '#D1D5DB' }]} />
+                        <Text style={styles.legendText}>N/A</Text>
+                    </View>
+                </View>
+
+                <View style={styles.tableGrid}>
+                    {TABLES.map(table => (
+                        <View key={table.id} style={[styles.tableCard, { width: CARD_WIDTH }]}>
+                            <View style={styles.tableHeaderRow}>
+                                <Text style={styles.tableNumber}>{table.number}</Text>
+                                <View style={[styles.legendDot, { backgroundColor: '#F59E0B' }]} />
                             </View>
-                            <View style={styles.cardRow}>
-                                <Text style={styles.cardLabel}>⏰</Text>
-                                <Text style={styles.cardValue}>{res.time}</Text>
-                                <Text style={styles.cardLabel}>👥</Text>
-                                <Text style={styles.cardValue}>{res.guestCount} guests</Text>
+                            
+                            <View style={styles.tableInfoRow}>
+                                <Feather name="users" size={14} color="#8F7772" />
+                                <Text style={styles.tableInfoText}>{table.seats} seats</Text>
                             </View>
-                            {res.notes ? (
-                                <Text style={styles.cardNotes}>📝 {res.notes}</Text>
-                            ) : null}
-                            {(res.status === 'pending' || res.status === 'confirmed') && (
-                                <TouchableOpacity
-                                    style={styles.cancelBtn}
-                                    onPress={() => handleCancel(res.id)}
-                                >
-                                    <Text style={styles.cancelBtnText}>Cancel Reservation</Text>
-                                </TouchableOpacity>
-                            )}
+                            
+                            <View style={styles.tableInfoRow}>
+                                <Feather name="map-pin" size={14} color="#8F7772" />
+                                <Text style={styles.tableInfoText}>{table.location}</Text>
+                            </View>
+
+                            <TouchableOpacity 
+                                style={styles.bookBtn}
+                                onPress={() => handleBookPress(table)}
+                            >
+                                <Text style={styles.bookBtnText}>Book</Text>
+                            </TouchableOpacity>
                         </View>
-                    ))
-                )}
+                    ))}
+                </View>
+
             </ScrollView>
 
-            {/* New Reservation Modal */}
             <Modal
                 visible={showForm}
                 animationType="slide"
@@ -240,14 +270,13 @@ export default function ReservationsScreen() {
             >
                 <View style={styles.modal}>
                     <View style={styles.modalHeader}>
-                        <Text style={styles.modalTitle}>New Reservation</Text>
+                        <Text style={styles.modalTitle}>Book {selectedTable?.number}</Text>
                         <TouchableOpacity onPress={() => setShowForm(false)}>
-                            <Text style={styles.modalClose}>✕</Text>
+                            <Feather name="x" size={24} color="#8F7772" />
                         </TouchableOpacity>
                     </View>
 
                     <ScrollView style={styles.modalContent}>
-                        {/* Date Selection */}
                         <Text style={styles.fieldLabel}>Select Date</Text>
                         <FlatList
                             horizontal
@@ -263,20 +292,16 @@ export default function ReservationsScreen() {
                                         onPress={() => setSelectedDate(date)}
                                     >
                                         <Text style={[styles.dateChipDay, isSelected && styles.dateChipTextActive]}>
-                                            {date.toLocaleDateString('id-ID', { weekday: 'short' })}
+                                            {date.toLocaleDateString('en-US', { weekday: 'short' })}
                                         </Text>
                                         <Text style={[styles.dateChipNum, isSelected && styles.dateChipTextActive]}>
                                             {date.getDate()}
-                                        </Text>
-                                        <Text style={[styles.dateChipMonth, isSelected && styles.dateChipTextActive]}>
-                                            {date.toLocaleDateString('id-ID', { month: 'short' })}
                                         </Text>
                                     </TouchableOpacity>
                                 );
                             }}
                         />
 
-                        {/* Time Selection */}
                         <Text style={styles.fieldLabel}>Select Time</Text>
                         <TouchableOpacity
                             style={styles.timeSelector}
@@ -285,17 +310,14 @@ export default function ReservationsScreen() {
                             <Text style={selectedTime ? styles.timeSelectorValue : styles.timeSelectorPlaceholder}>
                                 {selectedTime || 'Choose a time slot'}
                             </Text>
-                            <Text style={styles.timeSelectorArrow}>▾</Text>
+                            <Feather name="chevron-down" size={20} color="#8F7772" />
                         </TouchableOpacity>
 
-                        {/* Guest Count */}
                         <Text style={styles.fieldLabel}>Number of Guests</Text>
                         <View style={styles.guestControl}>
                             <TouchableOpacity
                                 style={styles.guestBtn}
-                                onPress={() =>
-                                    setGuestCount(String(Math.max(1, parseInt(guestCount || '1', 10) - 1)))
-                                }
+                                onPress={() => setGuestCount(String(Math.max(1, parseInt(guestCount || '1', 10) - 1)))}
                             >
                                 <Text style={styles.guestBtnText}>−</Text>
                             </TouchableOpacity>
@@ -308,15 +330,12 @@ export default function ReservationsScreen() {
                             />
                             <TouchableOpacity
                                 style={styles.guestBtn}
-                                onPress={() =>
-                                    setGuestCount(String(Math.min(20, parseInt(guestCount || '0', 10) + 1)))
-                                }
+                                onPress={() => setGuestCount(String(Math.min(20, parseInt(guestCount || '0', 10) + 1)))}
                             >
                                 <Text style={styles.guestBtnText}>+</Text>
                             </TouchableOpacity>
                         </View>
 
-                        {/* Notes */}
                         <Text style={styles.fieldLabel}>Special Requests (optional)</Text>
                         <TextInput
                             style={[styles.textInput, styles.textArea]}
@@ -328,22 +347,20 @@ export default function ReservationsScreen() {
                             numberOfLines={3}
                         />
 
-                        {/* Submit */}
                         <TouchableOpacity
                             style={[styles.submitBtn, submitting && styles.submitBtnDisabled]}
                             onPress={handleSubmit}
                             disabled={submitting}
                         >
                             {submitting ? (
-                                <ActivityIndicator color="#FFFAF5" />
+                                <ActivityIndicator color="#FFFFFF" />
                             ) : (
-                                <Text style={styles.submitBtnText}>Book Table</Text>
+                                <Text style={styles.submitBtnText}>Confirm Booking</Text>
                             )}
                         </TouchableOpacity>
                     </ScrollView>
                 </View>
 
-                {/* Time Picker Modal */}
                 <Modal
                     visible={showTimeModal}
                     transparent
@@ -386,80 +403,129 @@ export default function ReservationsScreen() {
                     </TouchableOpacity>
                 </Modal>
             </Modal>
-        </View>
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#FFFAF5' },
-    content: { padding: 20, paddingBottom: 40 },
-    headerRow: {
+    container: { flex: 1, backgroundColor: '#FAFAF9' },
+    content: { padding: 16, paddingBottom: 40 },
+    header: { marginBottom: 20 },
+    backBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 12 },
+    backBtnText: { color: '#8F7772', fontSize: 14, fontWeight: '600' },
+    headerTitle: { fontFamily: 'Gyahegi', fontSize: 36, color: '#1F1C1A' },
+    headerSubtitle: { fontSize: 14, color: '#8F7772' },
+    
+    liveUpdatesPill: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#FFF2CC',
+        alignSelf: 'flex-start',
+        paddingHorizontal: 10,
+        paddingVertical: 6,
+        borderRadius: 16,
+        marginBottom: 16,
+        gap: 6,
+    },
+    liveDot: {
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+        backgroundColor: '#F59E0B',
+    },
+    liveUpdatesText: {
+        color: '#D97706',
+        fontSize: 10,
+        fontWeight: '800',
+        letterSpacing: 0.5,
+    },
+    
+    legendRow: {
+        flexDirection: 'row',
+        gap: 16,
+        marginBottom: 24,
+    },
+    legendItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+    },
+    legendDot: {
+        width: 10,
+        height: 10,
+        borderRadius: 5,
+    },
+    legendText: {
+        color: '#8F7772',
+        fontSize: 12,
+        fontWeight: '500',
+    },
+
+    tableGrid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        gap: 16,
+    },
+    tableCard: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 24,
+        padding: 16,
+    },
+    tableHeaderRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 20,
+        marginBottom: 16,
     },
-    headerTitle: { color: '#1F1C1A', fontSize: 20, fontWeight: '700' },
-    addBtn: {
-        backgroundColor: '#C6453E',
-        borderRadius: 10,
-        paddingHorizontal: 16,
-        paddingVertical: 8,
+    tableNumber: {
+        fontSize: 22,
+        fontWeight: '900',
+        color: '#1F1C1A',
     },
-    addBtnText: { color: '#FFFAF5', fontSize: 14, fontWeight: '700' },
-    empty: { alignItems: 'center', paddingTop: 60, gap: 12 },
-    emptyIcon: { fontSize: 56 },
-    emptyTitle: { color: '#1F1C1A', fontSize: 18, fontWeight: '700' },
-    emptySubtitle: { color: '#8F7772', fontSize: 14 },
-    emptyBtn: {
+    tableInfoRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        marginBottom: 10,
+    },
+    tableInfoText: {
+        color: '#8F7772',
+        fontSize: 13,
+    },
+    bookBtn: {
         backgroundColor: '#C6453E',
-        borderRadius: 12,
-        paddingHorizontal: 28,
-        paddingVertical: 12,
+        borderRadius: 20,
+        paddingVertical: 10,
+        alignItems: 'center',
         marginTop: 8,
     },
-    emptyBtnText: { color: '#FFFAF5', fontWeight: '700', fontSize: 15 },
-    card: {
-        backgroundColor: '#F0E7DD',
-        borderRadius: 14,
+    bookBtnText: {
+        color: '#FFFFFF',
+        fontSize: 14,
+        fontWeight: '700',
+    },
+
+    myResCard: {
+        backgroundColor: '#FFFFFF',
         padding: 16,
+        borderRadius: 16,
         marginBottom: 12,
-        gap: 8,
     },
-    cardHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    cardDate: { color: '#1F1C1A', fontSize: 14, fontWeight: '700', flex: 1 },
-    statusBadge: { borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4 },
-    statusText: { fontSize: 12, fontWeight: '700' },
-    cardRow: { flexDirection: 'row', gap: 8, alignItems: 'center' },
-    cardLabel: { fontSize: 14 },
-    cardValue: { color: '#8F7772', fontSize: 13, marginRight: 12 },
-    cardNotes: { color: '#8F7772', fontSize: 12, fontStyle: 'italic' },
-    cancelBtn: {
-        borderWidth: 1,
-        borderColor: '#EF4444',
-        borderRadius: 8,
-        paddingVertical: 8,
-        alignItems: 'center',
-        marginTop: 4,
-    },
-    cancelBtnText: { color: '#EF4444', fontSize: 13, fontWeight: '600' },
-    // Modal
-    modal: { flex: 1, backgroundColor: '#FFFAF5' },
+    myResDate: { fontWeight: '700', fontSize: 16, color: '#1F1C1A' },
+    myResStatus: { fontWeight: '700', color: '#F59E0B' },
+    myResDetails: { color: '#8F7772', marginTop: 4 },
+
+    modal: { flex: 1, backgroundColor: '#EBEBEB' },
     modalHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: 20,
-        borderBottomWidth: 1,
-        borderBottomColor: '#F0E7DD',
         paddingTop: Platform.OS === 'ios' ? 52 : 20,
+        backgroundColor: '#FFFFFF',
     },
     modalTitle: { color: '#1F1C1A', fontSize: 18, fontWeight: '700' },
-    modalClose: { color: '#8F7772', fontSize: 20, padding: 4 },
     modalContent: { padding: 20 },
     fieldLabel: {
         color: '#8F7772',
@@ -468,108 +534,92 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         marginTop: 16,
         textTransform: 'uppercase',
-        letterSpacing: 0.5,
     },
     dateList: { gap: 8, paddingBottom: 4 },
     dateChip: {
-        backgroundColor: '#F0E7DD',
-        borderRadius: 12,
-        padding: 10,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 16,
+        paddingVertical: 12,
+        paddingHorizontal: 16,
         alignItems: 'center',
-        minWidth: 64,
         marginRight: 8,
     },
     dateChipActive: { backgroundColor: '#C6453E' },
-    dateChipDay: { color: '#8F7772', fontSize: 11, fontWeight: '600' },
+    dateChipDay: { color: '#8F7772', fontSize: 11, fontWeight: '600', marginBottom: 4 },
     dateChipNum: { color: '#1F1C1A', fontSize: 20, fontWeight: '800' },
-    dateChipMonth: { color: '#8F7772', fontSize: 11 },
-    dateChipTextActive: { color: '#FFFAF5' },
+    dateChipTextActive: { color: '#FFFFFF' },
+    
     timeSelector: {
-        backgroundColor: '#F0E7DD',
-        borderRadius: 10,
-        padding: 14,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 12,
+        padding: 16,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        borderWidth: 1,
-        borderColor: '#D8C3A5',
     },
-    timeSelectorValue: { color: '#1F1C1A', fontSize: 15 },
+    timeSelectorValue: { color: '#1F1C1A', fontSize: 15, fontWeight: '600' },
     timeSelectorPlaceholder: { color: '#8F7772', fontSize: 15 },
-    timeSelectorArrow: { color: '#8F7772', fontSize: 16 },
+    
     guestControl: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#F0E7DD',
-        borderRadius: 10,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 12,
         overflow: 'hidden',
-        borderWidth: 1,
-        borderColor: '#D8C3A5',
     },
-    guestBtn: {
-        paddingHorizontal: 20,
-        paddingVertical: 12,
-        backgroundColor: '#D8C3A5',
-    },
+    guestBtn: { paddingHorizontal: 24, paddingVertical: 14, backgroundColor: '#DFDFDF' },
     guestBtnText: { color: '#1F1C1A', fontSize: 20, fontWeight: '700' },
-    guestInput: {
-        flex: 1,
-        color: '#C6453E',
-        fontSize: 18,
-        fontWeight: '700',
-        textAlign: 'center',
-        paddingVertical: 12,
-    },
+    guestInput: { flex: 1, color: '#C6453E', fontSize: 18, fontWeight: '700', textAlign: 'center' },
+    
     textInput: {
-        backgroundColor: '#F0E7DD',
-        borderWidth: 1,
-        borderColor: '#D8C3A5',
-        borderRadius: 10,
-        paddingHorizontal: 14,
-        paddingVertical: 12,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 12,
+        padding: 16,
         color: '#1F1C1A',
         fontSize: 15,
     },
-    textArea: { minHeight: 80, textAlignVertical: 'top' },
+    textArea: { minHeight: 100, textAlignVertical: 'top' },
+    
     submitBtn: {
         backgroundColor: '#C6453E',
-        borderRadius: 12,
+        borderRadius: 16,
         paddingVertical: 16,
         alignItems: 'center',
         marginTop: 24,
         marginBottom: 40,
     },
     submitBtnDisabled: { opacity: 0.6 },
-    submitBtnText: { color: '#FFFAF5', fontSize: 16, fontWeight: '700' },
-    // Time picker modal
+    submitBtnText: { color: '#FFFFFF', fontSize: 16, fontWeight: '700' },
+    
     timeModalOverlay: {
         flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.7)',
+        backgroundColor: 'rgba(0,0,0,0.5)',
         justifyContent: 'flex-end',
     },
     timeModalContent: {
-        backgroundColor: '#F0E7DD',
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-        padding: 20,
+        backgroundColor: '#FFFFFF',
+        borderTopLeftRadius: 24,
+        borderTopRightRadius: 24,
+        padding: 24,
         maxHeight: '70%',
     },
     timeModalTitle: {
         color: '#1F1C1A',
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: '700',
         textAlign: 'center',
-        marginBottom: 16,
+        marginBottom: 20,
     },
     timeSlot: {
         flex: 1,
-        margin: 4,
-        backgroundColor: '#FFFAF5',
-        borderRadius: 8,
-        paddingVertical: 10,
+        margin: 6,
+        backgroundColor: '#F0E7DD',
+        borderRadius: 12,
+        paddingVertical: 12,
         alignItems: 'center',
     },
     timeSlotActive: { backgroundColor: '#C6453E' },
-    timeSlotText: { color: '#8F7772', fontSize: 13, fontWeight: '600' },
-    timeSlotTextActive: { color: '#FFFAF5' },
+    timeSlotText: { color: '#1F1C1A', fontSize: 14, fontWeight: '600' },
+    timeSlotTextActive: { color: '#FFFFFF' },
 });
+

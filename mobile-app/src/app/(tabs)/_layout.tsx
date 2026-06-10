@@ -1,11 +1,13 @@
 import { Tabs } from 'expo-router';
 import { View, Text, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useCart } from '../../context/CartContext';
+import { Feather } from '@expo/vector-icons';
 
-function TabIcon({ icon, label, focused }: { icon: string; label: string; focused: boolean }) {
+function TabIcon({ icon, label, focused }: { icon: any; label: string; focused: boolean }) {
     return (
         <View style={styles.tabIcon}>
-            <Text style={[styles.tabIconEmoji, focused && styles.tabIconEmojiActive]}>{icon}</Text>
+            <Feather name={icon} size={22} color={focused ? '#C6453E' : '#8F7772'} />
             <Text style={[styles.tabLabel, focused && styles.tabLabelActive]}>{label}</Text>
         </View>
     );
@@ -16,7 +18,7 @@ function CartTabIcon({ focused }: { focused: boolean }) {
     return (
         <View style={styles.tabIcon}>
             <View>
-                <Text style={[styles.tabIconEmoji, focused && styles.tabIconEmojiActive]}>🛍️</Text>
+                <Feather name="shopping-bag" size={22} color={focused ? '#C6453E' : '#8F7772'} />
                 {itemCount > 0 && (
                     <View style={styles.cartBadge}>
                         <Text style={styles.cartBadgeText}>
@@ -31,17 +33,19 @@ function CartTabIcon({ focused }: { focused: boolean }) {
 }
 
 export default function TabsLayout() {
+    const insets = useSafeAreaInsets();
+    
     return (
         <Tabs
             screenOptions={{
-                headerStyle: { backgroundColor: '#F0E7DD' },
-                headerTintColor: '#1F1C1A',
-                headerTitleStyle: { fontWeight: '700' },
+                headerShown: false, // Hide default headers to match PWA custom headers
                 tabBarStyle: {
-                    backgroundColor: '#F0E7DD',
-                    borderTopColor: '#D8C3A5',
-                    height: 64,
-                    paddingBottom: 8,
+                    backgroundColor: '#FFFFFF',
+                    borderTopColor: '#F0E7DD',
+                    borderTopWidth: 1,
+                    height: 64 + insets.bottom,
+                    paddingBottom: 8 + insets.bottom,
+                    paddingTop: 8,
                 },
                 tabBarShowLabel: false,
             }}
@@ -51,7 +55,7 @@ export default function TabsLayout() {
                 options={{
                     title: 'Home',
                     tabBarIcon: ({ focused }) => (
-                        <TabIcon icon="🏠" label="Home" focused={focused} />
+                        <TabIcon icon="home" label="Home" focused={focused} />
                     ),
                 }}
             />
@@ -60,7 +64,7 @@ export default function TabsLayout() {
                 options={{
                     title: 'Menu',
                     tabBarIcon: ({ focused }) => (
-                        <TabIcon icon="🍽️" label="Menu" focused={focused} />
+                        <TabIcon icon="coffee" label="Menu" focused={focused} />
                     ),
                 }}
             />
@@ -76,7 +80,7 @@ export default function TabsLayout() {
                 options={{
                     title: 'Reservations',
                     tabBarIcon: ({ focused }) => (
-                        <TabIcon icon="📊" label="Reserve" focused={focused} />
+                        <TabIcon icon="calendar" label="Book" focused={focused} />
                     ),
                 }}
             />
@@ -85,7 +89,7 @@ export default function TabsLayout() {
                 options={{
                     title: 'Profile',
                     tabBarIcon: ({ focused }) => (
-                        <TabIcon icon="👤" label="Profile" focused={focused} />
+                        <TabIcon icon="user" label="Profile" focused={focused} />
                     ),
                 }}
             />
@@ -98,14 +102,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 2,
-        paddingTop: 4,
-    },
-    tabIconEmoji: {
-        fontSize: 22,
-        opacity: 0.5,
-    },
-    tabIconEmojiActive: {
-        opacity: 1,
     },
     tabLabel: {
         fontSize: 10,
@@ -118,19 +114,21 @@ const styles = StyleSheet.create({
     },
     cartBadge: {
         position: 'absolute',
-        top: -4,
+        top: -6,
         right: -8,
-        backgroundColor: '#EF4444',
+        backgroundColor: '#C6453E',
         borderRadius: 8,
         minWidth: 16,
         height: 16,
         alignItems: 'center',
         justifyContent: 'center',
         paddingHorizontal: 3,
+        borderWidth: 1.5,
+        borderColor: '#FFFFFF',
     },
     cartBadgeText: {
         color: '#FFFFFF',
         fontSize: 9,
-        fontWeight: '700',
+        fontWeight: '800',
     },
 });

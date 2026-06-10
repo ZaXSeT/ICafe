@@ -8,19 +8,18 @@ import {
     orderBy,
 } from 'firebase/firestore';
 import { db } from '../lib/firebase';
-import { MenuItem, MenuCategory } from '../types';
+import { MenuItem } from '../types';
 
-const COLLECTION = 'menuItems';
-
-function toMenuItem(id: string, data: any): MenuItem {
+function toMenuItem(id: string, categoryId: string, categoryName: string, data: any): MenuItem {
     return {
         id,
         name: data.name ?? '',
         description: data.description ?? '',
         price: data.price ?? 0,
-        category: data.category ?? 'other',
+        // Map the category to the category's name so UI can filter by it
+        category: categoryName, 
         imageUrl: data.imageUrl ?? data.image ?? undefined,
-        available: data.available !== false,
+        available: data.isAvailable ?? data.available !== false,
         featured: data.featured ?? false,
         tags: data.tags ?? [],
         createdAt: data.createdAt?.toDate?.() ?? undefined,
@@ -28,52 +27,44 @@ function toMenuItem(id: string, data: any): MenuItem {
     };
 }
 
-export async function getMenuItems(category?: MenuCategory): Promise<MenuItem[]> {
+export async function getMenuItems(categoryIdOrName?: string): Promise<MenuItem[]> {
     try {
-        let q;
-        if (category && category !== 'all') {
-            q = query(
-                collection(db, COLLECTION),
-                where('available', '==', true),
-                where('category', '==', category),
-                orderBy('name')
+        const categoriesSnapshot = await getDocs(collection(db, 'categories'));
+        let allItems: MenuItem[] = [];
+
+        for (const catDoc of categoriesSnapshot.docs) {
+            const catData = catDoc.data();
+            const catId = catDoc.id;
+            const catName = catData.name;
+
+            // If a specific category was requested and this isn't it, skip
+            if (categoryIdOrName && categoryIdOrName !== 'all' && catName !== categoryIdOrName && catId !== categoryIdOrName) {
+                continue;
+            }
+
+            const itemsRef = collection(db, 'categories', catId, 'menuItems');
+            const itemsQuery = query(itemsRef, where('isAvailable', '==', true));
+            const itemsSnapshot = await getDocs(itemsQuery);
+            
+            const categoryItems = itemsSnapshot.docs.map(doc => 
+                toMenuItem(doc.id, catId, catName, doc.data())
             );
-        } else {
-            q = query(
-                collection(db, COLLECTION),
-                where('available', '==', true),
-                orderBy('name')
-            );
+            
+            allItems = [...allItems, ...categoryItems];
         }
-        const snap = await getDocs(q);
-        return snap.docs.map((d) => toMenuItem(d.id, d.data()));
+
+        return allItems.sort((a, b) => a.name.localeCompare(b.name));
     } catch (error) {
         console.error('Error fetching menu items:', error);
-        // Fallback: try without orderBy if index doesn't exist
-        try {
-            const snap = await getDocs(collection(db, COLLECTION));
-            const items = snap.docs.map((d) => toMenuItem(d.id, d.data()));
-            const available = items.filter((i) => i.available);
-            if (category && category !== 'all') {
-                return available.filter((i) => i.category === category);
-            }
-            return available;
-        } catch (e) {
-            console.error('Fallback fetch failed:', e);
-            return [];
-        }
+        return [];
     }
 }
 
 export async function getFeaturedMenuItems(): Promise<MenuItem[]> {
+    // Just fetch all and take the first few, since cross-collection queries for 'featured' requires a collectionGroup index
     try {
-        const q = query(
-            collection(db, COLLECTION),
-            where('available', '==', true),
-            where('featured', '==', true)
-        );
-        const snap = await getDocs(q);
-        return snap.docs.map((d) => toMenuItem(d.id, d.data()));
+        const items = await getMenuItems();
+        return items.filter(i => i.featured).slice(0, 5); // Return up to 5 featured items
     } catch (error) {
         console.error('Error fetching featured items:', error);
         return [];
@@ -81,10 +72,16 @@ export async function getFeaturedMenuItems(): Promise<MenuItem[]> {
 }
 
 export async function getMenuItemById(id: string): Promise<MenuItem | null> {
+    // This is expensive without knowing the category. We have to search all categories.
     try {
-        const snap = await getDoc(doc(db, COLLECTION, id));
-        if (!snap.exists()) return null;
-        return toMenuItem(snap.id, snap.data());
+        const categoriesSnapshot = await getDocs(collection(db, 'categories'));
+        for (const catDoc of categoriesSnapshot.docs) {
+            const snap = await getDoc(doc(db, 'categories', catDoc.id, 'menuItems', id));
+            if (snap.exists()) {
+                return toMenuItem(snap.id, catDoc.id, catDoc.data().name, snap.data());
+            }
+        }
+        return null;
     } catch (error) {
         console.error('Error fetching menu item:', error);
         return null;

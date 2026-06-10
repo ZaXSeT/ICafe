@@ -3,14 +3,7 @@ import { Stack, router, useSegments, useRootNavigationState } from 'expo-router'
 import { StatusBar } from 'expo-status-bar';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 import { CartProvider } from '../context/CartContext';
-import {
-  useFonts,
-  Montserrat_400Regular,
-  Montserrat_500Medium,
-  Montserrat_600SemiBold,
-  Montserrat_700Bold,
-  Montserrat_800ExtraBold,
-} from '@expo-google-fonts/montserrat';
+import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -43,11 +36,6 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
 function RootLayout() {
   const [loaded, error] = useFonts({
     Gyahegi: require('../../assets/fonts/Gyahegi.otf'),
-    Montserrat_400Regular,
-    Montserrat_500Medium,
-    Montserrat_600SemiBold,
-    Montserrat_700Bold,
-    Montserrat_800ExtraBold,
   });
 
   useEffect(() => {
@@ -66,10 +54,10 @@ function RootLayout() {
         <AuthGuard>
           <Stack
             screenOptions={{
-              headerStyle: { backgroundColor: '#FFFFFF' },
+              headerStyle: { backgroundColor: '#F0E7DD' },
               headerTintColor: '#1F1C1A',
               headerTitleStyle: { fontWeight: '700', fontFamily: 'Gyahegi' },
-              contentStyle: { backgroundColor: '#FAFAF9' },
+              contentStyle: { backgroundColor: '#FFFAF5' },
             }}
           >
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

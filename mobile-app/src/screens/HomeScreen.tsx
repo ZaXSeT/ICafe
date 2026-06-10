@@ -1,176 +1,155 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import {
   View,
   Text,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
+  TextInput,
   Image,
-  ActivityIndicator,
-  RefreshControl,
 } from 'react-native';
 import { router } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
-import { useCart } from '../context/CartContext';
-import { getFeaturedMenuItems } from '../services/menuService';
+import { Feather } from '@expo/vector-icons';
+import { getMenuItems } from '../services/menuService';
 import { MenuItem } from '../types';
 
 export default function HomeScreen() {
-  const { user, userProfile, logout } = useAuth();
-  const { addItem, itemCount } = useCart();
-  const [featured, setFeatured] = useState<MenuItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-
-  const fetchFeatured = async () => {
-    try {
-      const items = await getFeaturedMenuItems();
-      setFeatured(items);
-    } catch (err) {
-      console.error('Error fetching featured items:', err);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchFeatured();
+  const insets = useSafeAreaInsets();
+  const { user, userProfile } = useAuth();
+  
+  // State to hold menu items so we can display favorites if they exist
+  const [menuItems, setMenuItems] = React.useState<MenuItem[]>([]);
+  
+  React.useEffect(() => {
+    getMenuItems().then(setMenuItems).catch(console.error);
   }, []);
 
-  const onRefresh = () => {
-    setRefreshing(true);
-    fetchFeatured();
-  };
+  const favoriteIds = useMemo(() => userProfile?.favoriteItems || [], [userProfile?.favoriteItems]);
+  const favoriteItems = useMemo(() => menuItems.filter(i => favoriteIds.includes(i.id)), [menuItems, favoriteIds]);
 
   const greeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
+    if (hour < 12) return 'Good morning,';
+    if (hour < 17) return 'Good afternoon,';
+    return 'Good evening,';
   };
+
+  const displayName = userProfile?.displayName ?? user?.displayName ?? 'Guest';
 
   return (
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.content}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#C6453E" />
-      }
+      showsVerticalScrollIndicator={false}
+      bounces={false}
+      overScrollMode="never"
     >
-      {/* Hero */}
-      <View style={styles.hero}>
-        <View style={styles.heroTextContainer}>
-          <Text style={styles.greeting}>
-            {greeting()}, {userProfile?.displayName ?? user?.displayName ?? 'Guest'} ☀️
-          </Text>
-          <Text style={styles.heroTitle}>What would you like{`\n`}today?</Text>
-          <Text style={styles.heroSubtitle}>
-            Fresh coffee & food, ready for you.
-          </Text>
-        </View>
-        <View style={styles.heroBadge}>
-          <Text style={styles.heroBadgeText}>☕</Text>
-        </View>
-      </View>
-
-      {/* Quick Actions */}
-      <View style={styles.quickActions}>
-        <TouchableOpacity
-          style={styles.quickActionBtn}
-          onPress={() => router.push('/(tabs)/menu')}
-          accessibilityRole="button"
-        >
-          <Text style={styles.quickActionIcon}>🍕</Text>
-          <Text style={styles.quickActionLabel}>Menu</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.quickActionBtn}
-          onPress={() => router.push('/(tabs)/cart')}
-          accessibilityRole="button"
-        >
-          <Text style={styles.quickActionIcon}>🛍️</Text>
-          <Text style={styles.quickActionLabel}>Cart{itemCount > 0 ? ` (${itemCount})` : ''}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.quickActionBtn}
-          onPress={() => router.push('/(tabs)/reservations')}
-          accessibilityRole="button"
-        >
-          <Text style={styles.quickActionIcon}>📊</Text>
-          <Text style={styles.quickActionLabel}>Reserve</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.quickActionBtn}
-          onPress={() => router.push('/(tabs)/profile')}
-          accessibilityRole="button"
-        >
-          <Text style={styles.quickActionIcon}>👤</Text>
-          <Text style={styles.quickActionLabel}>Profile</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Featured Menu */}
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>⭐ Featured</Text>
-          <TouchableOpacity onPress={() => router.push('/(tabs)/menu')}>
-            <Text style={styles.seeAll}>See all</Text>
+      {/* TOP HEADER BLOCK */}
+      <View style={[styles.headerBlock, { paddingTop: Math.max(insets.top, 20) + 20 }]}>
+        <View style={styles.headerContent}>
+          <View>
+            <Text style={styles.greetingText}>{greeting()}</Text>
+            <Text style={styles.nameText}>{displayName}!</Text>
+          </View>
+          <TouchableOpacity style={styles.bellBtn}>
+            <Feather name="bell" size={20} color="#FFFFFF" />
           </TouchableOpacity>
         </View>
 
-        {loading ? (
-          <ActivityIndicator color="#C6453E" style={{ marginVertical: 24 }} />
-        ) : featured.length === 0 ? (
-          <Text style={styles.emptyText}>No featured items right now.</Text>
-        ) : (
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.featuredList}>
-            {featured.map((item) => (
-              <TouchableOpacity
-                key={item.id}
-                style={styles.featuredCard}
-                onPress={() => router.push(`/menu/${item.id}`)}
-              >
-                {item.imageUrl ? (
-                  <Image source={{ uri: item.imageUrl }} style={styles.featuredImage} />
-                ) : (
-                  <View style={styles.featuredImagePlaceholder}>
-                    <Text style={styles.featuredImagePlaceholderText}>☕</Text>
-                  </View>
-                )}
-                <View style={styles.featuredCardBody}>
-                  <Text style={styles.featuredName} numberOfLines={1}>
-                    {item.name}
-                  </Text>
-                  <Text style={styles.featuredDesc} numberOfLines={2}>
-                    {item.description}
-                  </Text>
-                  <View style={styles.featuredFooter}>
-                    <Text style={styles.featuredPrice}>
-                      Rp {item.price.toLocaleString('id-ID')}
-                    </Text>
-                    <TouchableOpacity
-                      style={styles.addBtn}
-                      onPress={() => addItem(item)}
-                      accessibilityRole="button"
-                      accessibilityLabel={`Add ${item.name} to cart`}
-                    >
-                      <Text style={styles.addBtnText}>+ Add</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        )}
+        {/* Overlapping Search Bar */}
+        <View style={styles.searchContainer}>
+          <Feather name="search" size={20} color="#9CA3AF" style={styles.searchIcon} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="What are you craving today?"
+            placeholderTextColor="#9CA3AF"
+            onFocus={() => router.push('/(tabs)/menu')}
+          />
+        </View>
       </View>
 
-      {/* Cafe Info Banner */}
-      <View style={styles.infoBanner}>
-        <Text style={styles.infoIcon}>📍</Text>
-        <View style={styles.infoTextContainer}>
-          <Text style={styles.infoTitle}>ICafe</Text>
-          <Text style={styles.infoText}>Open daily 07:00 – 22:00 • Dine in & takeaway</Text>
+      <View style={styles.bodyPadding}>
+        {/* REWARDS CARD */}
+        <View style={styles.rewardsCard}>
+          <Feather name="coffee" size={140} color="#2A2A2A" style={styles.rewardsWatermark} />
+          <View style={styles.rewardsTopRow}>
+            <Text style={styles.rewardsTitle}>ICAFE REWARDS</Text>
+            <TouchableOpacity style={styles.redeemBtn}>
+              <Text style={styles.redeemBtnText}>Redeem</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.pointsRow}>
+            <Text style={styles.pointsNumber}>240</Text>
+            <Text style={styles.pointsLabel}>Pts</Text>
+          </View>
+          <View style={styles.progressContainer}>
+            <View style={styles.progressBarTrack}>
+              <View style={[styles.progressBarFill, { width: '80%' }]} />
+            </View>
+            <Text style={styles.progressText}>60 pts more to Gold Tier</Text>
+          </View>
+        </View>
+
+        {/* ACTION BUTTONS */}
+        <TouchableOpacity 
+          style={[styles.actionBtn, { backgroundColor: '#F59E0B' }]}
+          onPress={() => router.push('/(tabs)/menu')}
+        >
+          <View style={styles.actionBtnLeft}>
+            <View style={[styles.actionBtnIconCircle, { backgroundColor: '#D97706' }]}>
+              <Feather name="coffee" size={20} color="#FFFFFF" />
+            </View>
+            <View>
+              <Text style={styles.actionBtnTitle}>Order Coffee</Text>
+              <Text style={styles.actionBtnSubtitle}>Browse menu & add to cart</Text>
+            </View>
+          </View>
+          <Feather name="chevron-right" size={20} color="#FFFFFF" />
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={[styles.actionBtn, { backgroundColor: '#373636' }]}
+          onPress={() => router.push('/(tabs)/reservations')}
+        >
+          <View style={styles.actionBtnLeft}>
+            <View style={[styles.actionBtnIconCircle, { backgroundColor: '#4B4B4B' }]}>
+              <Feather name="clock" size={20} color="#FBBF24" />
+            </View>
+            <View>
+              <Text style={styles.actionBtnTitle}>Book a Table</Text>
+              <Text style={styles.actionBtnSubtitle}>See live availability & reserve</Text>
+            </View>
+          </View>
+          <Feather name="chevron-right" size={20} color="#9CA3AF" />
+        </TouchableOpacity>
+
+        {/* YOUR FAVORITES */}
+        <View style={styles.favoritesSection}>
+          <Text style={styles.favoritesTitle}>Your Favorites</Text>
+          
+          {favoriteItems.length === 0 ? (
+            <View style={styles.emptyFavorites}>
+              <Feather name="heart" size={32} color="#D1D5DB" />
+              <Text style={styles.emptyFavoritesTitle}>No favorites yet</Text>
+              <Text style={styles.emptyFavoritesSub}>Tap the ❤️ on menu items to save them here</Text>
+            </View>
+          ) : (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: -24 }}>
+              {favoriteItems.map((item, idx) => (
+                <TouchableOpacity 
+                  key={item.id} 
+                  style={[styles.favoriteCard, { marginLeft: idx === 0 ? 24 : 0 }]}
+                  onPress={() => router.push('/(tabs)/menu')}
+                >
+                  <Image source={{ uri: item.imageUrl }} style={styles.favoriteImage} />
+                  <Text style={styles.favoriteName} numberOfLines={1}>{item.name}</Text>
+                  <Text style={styles.favoritePrice}>${item.price.toFixed(2)}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          )}
         </View>
       </View>
     </ScrollView>
@@ -180,187 +159,232 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFAF5',
+    backgroundColor: '#FAFAF9', // Same as web bg-stone-50
   },
   content: {
-    paddingBottom: 32,
+    paddingBottom: 40,
   },
-  hero: {
-    backgroundColor: '#F0E7DD',
+  headerBlock: {
+    backgroundColor: '#C6453E',
+    borderBottomLeftRadius: 36,
+    borderBottomRightRadius: 36,
     paddingHorizontal: 24,
-    paddingTop: 48,
-    paddingBottom: 28,
+    paddingBottom: 40,
+    marginBottom: 20, // To give space for overlapping search bar
+  },
+  headerContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  heroTextContainer: {
-    flex: 1,
-  },
-  greeting: {
-    color: '#8F7772',
-    fontSize: 14,
-    marginBottom: 4,
-  },
-  heroTitle: {
-    color: '#1F1C1A',
-    fontSize: 26,
-    fontWeight: '800',
-    lineHeight: 34,
-    marginBottom: 8,
-  },
-  heroSubtitle: {
-    color: '#8F7772',
-    fontSize: 14,
-  },
-  heroBadge: {
-    width: 64,
-    height: 64,
-    backgroundColor: '#C6453E',
-    borderRadius: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginLeft: 16,
-  },
-  heroBadgeText: {
-    fontSize: 32,
-  },
-  quickActions: {
-    flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingVertical: 20,
-    gap: 8,
-  },
-  quickActionBtn: {
-    flex: 1,
-    backgroundColor: '#F0E7DD',
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: 'center',
-    gap: 4,
-  },
-  quickActionIcon: {
-    fontSize: 22,
-  },
-  quickActionLabel: {
-    color: '#8F7772',
-    fontSize: 11,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  section: {
-    paddingHorizontal: 24,
     marginBottom: 24,
   },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
+  greetingText: {
+    fontFamily: 'Montserrat_500Medium',
+    color: '#FFFFFF',
+    fontSize: 16,
+    opacity: 0.9,
+    marginBottom: -4,
   },
-  sectionTitle: {
-    color: '#1F1C1A',
-    fontSize: 18,
-    fontWeight: '700',
+  nameText: {
+    fontFamily: 'Gyahegi',
+    color: '#FFFFFF',
+    fontSize: 48,
+    marginTop: -8, // Tweak this because Gyahegi has tall line heights
   },
-  seeAll: {
-    color: '#C6453E',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  featuredList: {
-    marginHorizontal: -24,
-    paddingHorizontal: 24,
-  },
-  featuredCard: {
-    backgroundColor: '#F0E7DD',
-    borderRadius: 16,
-    width: 200,
-    marginRight: 14,
-    overflow: 'hidden',
-  },
-  featuredImage: {
-    width: '100%',
-    height: 120,
-    resizeMode: 'cover',
-  },
-  featuredImagePlaceholder: {
-    width: '100%',
-    height: 120,
-    backgroundColor: '#D8C3A5',
+  bellBtn: {
+    backgroundColor: '#D6655E',
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  featuredImagePlaceholderText: {
-    fontSize: 40,
+  searchContainer: {
+    position: 'absolute',
+    bottom: -24,
+    left: 24,
+    right: 24,
+    backgroundColor: '#FFFFFF',
+    height: 56,
+    borderRadius: 28,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 4,
   },
-  featuredCardBody: {
-    padding: 12,
+  searchIcon: {
+    marginRight: 12,
   },
-  featuredName: {
-    color: '#1F1C1A',
+  searchInput: {
+    flex: 1,
+    fontFamily: 'Montserrat_400Regular',
     fontSize: 15,
-    fontWeight: '700',
-    marginBottom: 4,
+    color: '#111827',
   },
-  featuredDesc: {
-    color: '#8F7772',
-    fontSize: 12,
-    lineHeight: 16,
-    marginBottom: 10,
+  bodyPadding: {
+    paddingHorizontal: 24,
+    paddingTop: 16,
   },
-  featuredFooter: {
+  rewardsCard: {
+    backgroundColor: '#1E1E1E',
+    borderRadius: 24,
+    padding: 24,
+    marginBottom: 16,
+    overflow: 'hidden',
+  },
+  rewardsWatermark: {
+    position: 'absolute',
+    right: -20,
+    bottom: -30,
+    opacity: 0.8,
+  },
+  rewardsTopRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 8,
   },
-  featuredPrice: {
-    color: '#C6453E',
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  addBtn: {
-    backgroundColor: '#C6453E',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-  },
-  addBtnText: {
-    color: '#FFFAF5',
+  rewardsTitle: {
+    fontFamily: 'Montserrat_700Bold',
+    color: '#D4D4D8',
     fontSize: 12,
-    fontWeight: '700',
+    letterSpacing: 1,
   },
-  emptyText: {
-    color: '#8F7772',
-    fontSize: 14,
-    textAlign: 'center',
-    paddingVertical: 24,
+  redeemBtn: {
+    backgroundColor: '#C6453E',
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    borderRadius: 20,
   },
-  infoBanner: {
-    marginHorizontal: 24,
-    backgroundColor: '#F0E7DD',
-    borderRadius: 14,
-    padding: 16,
+  redeemBtnText: {
+    fontFamily: 'Montserrat_700Bold',
+    color: '#FFFFFF',
+    fontSize: 13,
+  },
+  pointsRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    marginBottom: 16,
+  },
+  pointsNumber: {
+    fontFamily: 'Montserrat_800ExtraBold',
+    color: '#FFFFFF',
+    fontSize: 36,
+    marginRight: 8,
+  },
+  pointsLabel: {
+    fontFamily: 'Montserrat_500Medium',
+    color: '#D4D4D8',
+    fontSize: 16,
+  },
+  progressContainer: {
+    marginTop: 8,
+  },
+  progressBarTrack: {
+    height: 6,
+    backgroundColor: '#3F3F46',
+    borderRadius: 3,
+    marginBottom: 8,
+  },
+  progressBarFill: {
+    height: 6,
+    backgroundColor: '#EF4444',
+    borderRadius: 3,
+  },
+  progressText: {
+    fontFamily: 'Montserrat_400Regular',
+    color: '#A1A1AA',
+    fontSize: 11,
+  },
+  actionBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    borderLeftWidth: 4,
-    borderLeftColor: '#C6453E',
+    justifyContent: 'space-between',
+    borderRadius: 24,
+    padding: 16,
+    marginBottom: 12,
   },
-  infoIcon: {
-    fontSize: 24,
+  actionBtnLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  infoTextContainer: {
-    flex: 1,
+  actionBtnIconCircle: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 16,
   },
-  infoTitle: {
-    color: '#1F1C1A',
-    fontSize: 15,
-    fontWeight: '700',
+  actionBtnTitle: {
+    fontFamily: 'Montserrat_700Bold',
+    color: '#FFFFFF',
+    fontSize: 16,
     marginBottom: 2,
   },
-  infoText: {
-    color: '#8F7772',
+  actionBtnSubtitle: {
+    fontFamily: 'Montserrat_400Regular',
+    color: '#FFFFFF',
     fontSize: 13,
+    opacity: 0.8,
+  },
+  favoritesSection: {
+    marginTop: 20,
+  },
+  favoritesTitle: {
+    fontFamily: 'Gyahegi',
+    fontSize: 28,
+    color: '#1F1C1A',
+    marginBottom: 16,
+  },
+  emptyFavorites: {
+    backgroundColor: '#F3F4F6',
+    borderRadius: 24,
+    padding: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyFavoritesTitle: {
+    fontFamily: 'Montserrat_700Bold',
+    color: '#4B5563',
+    fontSize: 15,
+    marginTop: 12,
+    marginBottom: 4,
+  },
+  emptyFavoritesSub: {
+    fontFamily: 'Montserrat_400Regular',
+    color: '#9CA3AF',
+    fontSize: 13,
+    textAlign: 'center',
+  },
+  favoriteCard: {
+    width: 120,
+    marginRight: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  favoriteImage: {
+    width: '100%',
+    aspectRatio: 1,
+    borderRadius: 12,
+    marginBottom: 8,
+  },
+  favoriteName: {
+    fontFamily: 'Montserrat_600SemiBold',
+    fontSize: 13,
+    color: '#111827',
+    marginBottom: 4,
+  },
+  favoritePrice: {
+    fontFamily: 'Montserrat_700Bold',
+    fontSize: 13,
+    color: '#C6453E',
   },
 });

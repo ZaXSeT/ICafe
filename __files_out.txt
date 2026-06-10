@@ -1,20 +1,10 @@
+=== mobile-app/src/app/_layout.tsx ===
 import { useEffect } from 'react';
-import { Stack, router, useSegments, useRootNavigationState } from 'expo-router';
+import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 import { CartProvider } from '../context/CartContext';
-import {
-  useFonts,
-  Montserrat_400Regular,
-  Montserrat_500Medium,
-  Montserrat_600SemiBold,
-  Montserrat_700Bold,
-  Montserrat_800ExtraBold,
-} from '@expo-google-fonts/montserrat';
-import * as SplashScreen from 'expo-splash-screen';
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+import { router, useSegments, useRootNavigationState } from 'expo-router';
 
 function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -41,35 +31,16 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
 }
 
 function RootLayout() {
-  const [loaded, error] = useFonts({
-    Gyahegi: require('../../assets/fonts/Gyahegi.otf'),
-    Montserrat_400Regular,
-    Montserrat_500Medium,
-    Montserrat_600SemiBold,
-    Montserrat_700Bold,
-    Montserrat_800ExtraBold,
-  });
-
-  useEffect(() => {
-    if (loaded || error) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded, error]);
-
-  if (!loaded && !error) {
-    return null;
-  }
-
   return (
     <AuthProvider>
       <CartProvider>
         <AuthGuard>
           <Stack
             screenOptions={{
-              headerStyle: { backgroundColor: '#FFFFFF' },
+              headerStyle: { backgroundColor: '#F0E7DD' },
               headerTintColor: '#1F1C1A',
-              headerTitleStyle: { fontWeight: '700', fontFamily: 'Gyahegi' },
-              contentStyle: { backgroundColor: '#FAFAF9' },
+              headerTitleStyle: { fontWeight: '700' },
+              contentStyle: { backgroundColor: '#FFFAF5' },
             }}
           >
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -103,3 +74,55 @@ function RootLayout() {
 }
 
 export default RootLayout;
+
+=== mobile-app/src/app/index.tsx ===
+import { Redirect } from 'expo-router';
+
+// Root redirects to tabs — AuthGuard in _layout.tsx handles unauthenticated users
+export default function Index() {
+  return <Redirect href="/(tabs)" />;
+}
+
+=== mobile-app/src/app/login.tsx ===
+import LoginScreen from '../screens/LoginScreen';
+export default LoginScreen;
+
+=== mobile-app/package.json ===
+{
+  "name": "icafe-mobile",
+  "version": "1.0.0",
+  "main": "expo-router/entry",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "build:preview": "eas build --profile preview",
+    "build:prod": "eas build --profile production"
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "1.23.1",
+    "expo": "~54.0.0",
+    "expo-asset": "~12.0.13",
+    "expo-font": "~14.0.12",
+    "expo-linking": "^8.0.12",
+    "expo-router": "~6.0.24",
+    "expo-splash-screen": "~31.0.13",
+    "expo-status-bar": "~3.0.9",
+    "firebase": "^11.1.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-native": "0.81.5",
+    "react-native-safe-area-context": "~5.6.0",
+    "react-native-screens": "~4.16.0",
+    "react-native-web": "^0.21.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@types/react": "~19.1.10",
+    "@types/react-native": "^0.72.8",
+    "typescript": "~5.9.2"
+  },
+  "private": true
+}
+

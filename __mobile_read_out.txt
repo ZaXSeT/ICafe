@@ -1,0 +1,935 @@
+[FILE] mobile-app\src\app\_layout.tsx
+import { useEffect } from 'react';
+import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { AuthProvider, useAuth } from '../context/AuthContext';
+import { CartProvider } from '../context/CartContext';
+import { router, useSegments, useRootNavigationState } from 'expo-router';
+
+function AuthGuard({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();
+  const segments = useSegments();
+  const rootNavigationState = useRootNavigationState();
+
+  useEffect(() => {
+    if (!rootNavigationState?.key) return; // Wait until navigation is ready
+    if (loading) return;
+
+    const inAuthGroup = segments[0] === 'login';
+    const inTabsGroup = segments[0] === '(tabs)';
+
+    if (!user && !inAuthGroup) {
+      // Redirect to login if not authenticated
+      router.replace('/login');
+    } else if (user && inAuthGroup) {
+      // Redirect to home if already authenticated
+      router.replace('/(tabs)');
+    }
+  }, [user, loading, segments, rootNavigationState?.key]);
+
+  return <>{children}</>;
+}
+
+function RootLayout() {
+  return (
+    <AuthProvider>
+      <CartProvider>
+        <AuthGuard>
+          <Stack
+            screenOptions={{
+              headerStyle: { backgroundColor: '#F0E7DD' },
+              headerTintColor: '#1F1C1A',
+              headerTitleStyle: { fontWeight: '700' },
+              contentStyle: { backgroundColor: '#FFFAF5' },
+            }}
+          >
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="login"
+              options={{
+                headerShown: false,
+                animation: 'fade',
+              }}
+            />
+            <Stack.Screen
+              name="checkout"
+              options={{
+                title: 'Checkout',
+                headerBackTitle: 'Cart',
+              }}
+            />
+            <Stack.Screen
+              name="forgot-password"
+              options={{
+                title: 'Reset Password',
+                presentation: 'modal',
+              }}
+            />
+          </Stack>
+          <StatusBar style="dark" />
+        </AuthGuard>
+      </CartProvider>
+    </AuthProvider>
+  );
+}
+
+export default RootLayout;
+
+
+==========
+
+[FILE] mobile-app\src\app\index.tsx
+import { Redirect } from 'expo-router';
+
+// Root redirects to tabs — AuthGuard in _layout.tsx handles unauthenticated users
+export default function Index() {
+  return <Redirect href="/(tabs)" />;
+}
+
+
+==========
+
+[FILE] mobile-app\src\app\login.tsx
+import LoginScreen from '../screens/LoginScreen';
+export default LoginScreen;
+
+
+==========
+
+[FILE] mobile-app\src\app\checkout.tsx
+import CheckoutScreen from '../screens/CheckoutScreen';
+export default CheckoutScreen;
+
+
+==========
+
+[FILE] mobile-app\src\app\explore.tsx
+import { Redirect } from 'expo-router';
+
+// Old explore route — redirect to menu
+export default function Explore() {
+  return <Redirect href="/(tabs)/menu" />;
+}
+
+
+==========
+
+[DIR] mobile-app\src\app\(tabs)
+  cart.tsx
+  index.tsx
+  menu.tsx
+  profile.tsx
+  reservations.tsx
+  _layout.tsx
+
+==========
+
+[FILE] mobile-app\package.json
+{
+  "name": "icafe-mobile",
+  "version": "1.0.0",
+  "main": "expo-router/entry",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "build:preview": "eas build --profile preview",
+    "build:prod": "eas build --profile production"
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "1.23.1",
+    "expo": "~54.0.0",
+    "expo-asset": "~12.0.13",
+    "expo-font": "~14.0.12",
+    "expo-linking": "^8.0.12",
+    "expo-router": "~6.0.24",
+    "expo-splash-screen": "~31.0.13",
+    "expo-status-bar": "~3.0.9",
+    "firebase": "^11.1.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-native": "0.81.5",
+    "react-native-safe-area-context": "~5.6.0",
+    "react-native-screens": "~4.16.0",
+    "react-native-web": "^0.21.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@types/react": "~19.1.10",
+    "@types/react-native": "^0.72.8",
+    "typescript": "~5.9.2"
+  },
+  "private": true
+}
+
+
+==========
+
+[FILE] mobile-app\app.json
+{
+  "expo": {
+    "name": "ICafe",
+    "slug": "icafe-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icafe-icon.png",
+    "scheme": "icafe",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/icafe-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFFAF5"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.icafe.mobile"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/icafe-icon.png",
+        "backgroundColor": "#FFFAF5"
+      },
+      "package": "com.icafe.mobile"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/icafe-icon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/icafe-icon.png",
+          "backgroundColor": "#FFFAF5",
+          "resizeMode": "contain"
+        }
+      ],
+      "expo-asset"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
+
+
+==========
+
+[FILE] mobile-app\src\screens\LoginScreen.tsx
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
+import { router } from 'expo-router';
+import { useAuth } from '../context/AuthContext';
+
+type AuthMode = 'login' | 'register';
+
+export default function LoginScreen() {
+  const { signIn, signUp } = useAuth();
+  const [mode, setMode] = useState<AuthMode>('login');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [displayName, setDisplayName] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async () => {
+    if (!email.trim() || !password.trim()) {
+      Alert.alert('Error', 'Email and password are required.');
+      return;
+    }
+
+    if (mode === 'register') {
+      if (!displayName.trim()) {
+        Alert.alert('Error', 'Please enter your name.');
+        return;
+      }
+      if (password !== confirmPassword) {
+        Alert.alert('Error', 'Passwords do not match.');
+        return;
+      }
+      if (password.length < 6) {
+        Alert.alert('Error', 'Password must be at least 6 characters.');
+        return;
+      }
+    }
+
+    setLoading(true);
+    try {
+      if (mode === 'login') {
+        await signIn(email.trim(), password);
+      } else {
+        await signUp(email.trim(), password, displayName.trim());
+      }
+      router.replace('/(tabs)');
+    } catch (err: any) {
+      const msg =
+        err?.code === 'auth/user-not-found' || err?.code === 'auth/wrong-password'
+          ? 'Invalid email or password.'
+          : err?.code === 'auth/email-already-in-use'
+            ? 'Email already registered. Please sign in.'
+            : err?.code === 'auth/invalid-email'
+              ? 'Invalid email address.'
+              : err?.message ?? 'Something went wrong. Please try again.';
+      Alert.alert('Error', msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scroll}
+        keyboardShouldPersistTaps="handled"
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.logo}>☕ ICafe</Text>
+          <Text style={styles.subtitle}>
+            {mode === 'login' ? 'Welcome back!' : 'Create an account'}
+          </Text>
+        </View>
+
+        {/* Form */}
+        <View style={styles.form}>
+          {mode === 'register' && (
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Full Name</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Your name"
+                placeholderTextColor="#9CA3AF"
+                value={displayName}
+                onChangeText={setDisplayName}
+                autoCapitalize="words"
+                autoComplete="name"
+              />
+            </View>
+          )}
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Email</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="you@example.com"
+              placeholderTextColor="#9CA3AF"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoComplete="email"
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Password</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="••••••••"
+              placeholderTextColor="#9CA3AF"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              autoComplete="password"
+            />
+          </View>
+
+          {mode === 'register' && (
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Confirm Password</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="••••••••"
+                placeholderTextColor="#9CA3AF"
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                secureTextEntry
+              />
+            </View>
+          )}
+
+          <TouchableOpacity
+            style={[styles.button, loading && styles.buttonDisabled]}
+            onPress={handleSubmit}
+            disabled={loading}
+            accessibilityRole="button"
+            accessibilityLabel={mode === 'login' ? 'Sign In' : 'Create Account'}
+          >
+            {loading ? (
+              <ActivityIndicator color="#FFFAF5" />
+            ) : (
+              <Text style={styles.buttonText}>
+                {mode === 'login' ? 'Sign In' : 'Create Account'}
+              </Text>
+            )}
+          </TouchableOpacity>
+
+          {mode === 'login' && (
+            <TouchableOpacity
+              style={styles.forgotButton}
+              onPress={() => router.push('/forgot-password')}
+            >
+              <Text style={styles.forgotText}>Forgot password?</Text>
+            </TouchableOpacity>
+          )}
+
+          <View style={styles.dividerContainer}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>or continue with</Text>
+            <View style={styles.dividerLine} />
+          </View>
+
+          <TouchableOpacity
+            style={styles.googleButton}
+            onPress={() => Alert.alert('Notice', 'Google Sign-In is coming soon!')}
+          >
+            <Text style={styles.googleIcon}>G</Text>
+            <Text style={styles.googleButtonText}>Continue with Google</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Mode toggle */}
+        <View style={styles.toggleContainer}>
+          <Text style={styles.toggleText}>
+            {mode === 'login' ? "Don't have an account?" : 'Already have an account?'}
+          </Text>
+          <TouchableOpacity
+            onPress={() => {
+              setMode(mode === 'login' ? 'register' : 'login');
+              setEmail('');
+              setPassword('');
+              setDisplayName('');
+              setConfirmPassword('');
+            }}
+          >
+            <Text style={styles.toggleLink}>
+              {mode === 'login' ? ' Sign Up' : ' Sign In'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFAF5',
+  },
+  scroll: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+    paddingVertical: 48,
+  },
+  header: {
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  logo: {
+    fontSize: 48,
+    color: '#C6453E',
+    fontWeight: '800',
+    letterSpacing: 2,
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 18,
+    color: '#664C47',
+    fontWeight: '400',
+  },
+  form: {
+    backgroundColor: '#F0E7DD',
+    borderRadius: 16,
+    padding: 24,
+    gap: 16,
+    marginBottom: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  inputGroup: {
+    gap: 6,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#8F7772',
+    marginBottom: 4,
+  },
+  input: {
+    backgroundColor: '#FFFAF5',
+    borderWidth: 1,
+    borderColor: '#D8C3A5',
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    fontSize: 16,
+    color: '#1F1C1A',
+  },
+  button: {
+    backgroundColor: '#C6453E',
+    borderRadius: 10,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+  buttonText: {
+    color: '#FFFAF5',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  forgotButton: {
+    alignItems: 'center',
+  },
+  forgotText: {
+    color: '#C6453E',
+    fontSize: 14,
+  },
+  toggleContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  toggleText: {
+    color: '#8F7772',
+    fontSize: 14,
+  },
+  toggleLink: {
+    color: '#C6453E',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  dividerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#D8C3A5',
+  },
+  dividerText: {
+    color: '#8F7772',
+    paddingHorizontal: 10,
+    fontSize: 14,
+  },
+  googleButton: {
+    flexDirection: 'row',
+    backgroundColor: '#FFFAF5',
+    borderRadius: 10,
+    paddingVertical: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 8,
+    borderWidth: 1,
+    borderColor: '#D8C3A5',
+  },
+  googleIcon: {
+    fontSize: 18,
+    fontWeight: '900',
+    color: '#C6453E',
+    marginRight: 10,
+  },
+  googleButtonText: {
+    color: '#664C47',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+});
+
+
+==========
+
+[FILE] mobile-app\src\screens\HomeScreen.tsx
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  ActivityIndicator,
+  RefreshControl,
+} from 'react-native';
+import { router } from 'expo-router';
+import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
+import { getFeaturedMenuItems } from '../services/menuService';
+import { MenuItem } from '../types';
+
+export default function HomeScreen() {
+  const { user, userProfile, logout } = useAuth();
+  const { addItem, itemCount } = useCart();
+  const [featured, setFeatured] = useState<MenuItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchFeatured = async () => {
+    try {
+      const items = await getFeaturedMenuItems();
+      setFeatured(items);
+    } catch (err) {
+      console.error('Error fetching featured items:', err);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFeatured();
+  }, []);
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchFeatured();
+  };
+
+  const greeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  };
+
+  return (
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.content}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#C6453E" />
+      }
+    >
+      {/* Hero */}
+      <View style={styles.hero}>
+        <View style={styles.heroTextContainer}>
+          <Text style={styles.greeting}>
+            {greeting()}, {userProfile?.displayName ?? user?.displayName ?? 'Guest'} ☀️
+          </Text>
+          <Text style={styles.heroTitle}>What would you like{`\n`}today?</Text>
+          <Text style={styles.heroSubtitle}>
+            Fresh coffee & food, ready for you.
+          </Text>
+        </View>
+        <View style={styles.heroBadge}>
+          <Text style={styles.heroBadgeText}>☕</Text>
+        </View>
+      </View>
+
+      {/* Quick Actions */}
+      <View style={styles.quickActions}>
+        <TouchableOpacity
+          style={styles.quickActionBtn}
+          onPress={() => router.push('/(tabs)/menu')}
+          accessibilityRole="button"
+        >
+          <Text style={styles.quickActionIcon}>🍕</Text>
+          <Text style={styles.quickActionLabel}>Menu</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.quickActionBtn}
+          onPress={() => router.push('/(tabs)/cart')}
+          accessibilityRole="button"
+        >
+          <Text style={styles.quickActionIcon}>🛍️</Text>
+          <Text style={styles.quickActionLabel}>Cart{itemCount > 0 ? ` (${itemCount})` : ''}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.quickActionBtn}
+          onPress={() => router.push('/(tabs)/reservations')}
+          accessibilityRole="button"
+        >
+          <Text style={styles.quickActionIcon}>📊</Text>
+          <Text style={styles.quickActionLabel}>Reserve</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.quickActionBtn}
+          onPress={() => router.push('/(tabs)/profile')}
+          accessibilityRole="button"
+        >
+          <Text style={styles.quickActionIcon}>👤</Text>
+          <Text style={styles.quickActionLabel}>Profile</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Featured Menu */}
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>⭐ Featured</Text>
+          <TouchableOpacity onPress={() => router.push('/(tabs)/menu')}>
+            <Text style={styles.seeAll}>See all</Text>
+          </TouchableOpacity>
+        </View>
+
+        {loading ? (
+          <ActivityIndicator color="#C6453E" style={{ marginVertical: 24 }} />
+        ) : featured.length === 0 ? (
+          <Text style={styles.emptyText}>No featured items right now.</Text>
+        ) : (
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.featuredList}>
+            {featured.map((item) => (
+              <TouchableOpacity
+                key={item.id}
+                style={styles.featuredCard}
+                onPress={() => router.push(`/menu/${item.id}`)}
+              >
+                {item.imageUrl ? (
+                  <Image source={{ uri: item.imageUrl }} style={styles.featuredImage} />
+                ) : (
+                  <View style={styles.featuredImagePlaceholder}>
+                    <Text style={styles.featuredImagePlaceholderText}>☕</Text>
+                  </View>
+                )}
+                <View style={styles.featuredCardBody}>
+                  <Text style={styles.featuredName} numberOfLines={1}>
+                    {item.name}
+                  </Text>
+                  <Text style={styles.featuredDesc} numberOfLines={2}>
+                    {item.description}
+                  </Text>
+                  <View style={styles.featuredFooter}>
+                    <Text style={styles.featuredPrice}>
+                      Rp {item.price.toLocaleString('id-ID')}
+                    </Text>
+                    <TouchableOpacity
+                      style={styles.addBtn}
+                      onPress={() => addItem(item)}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Add ${item.name} to cart`}
+                    >
+                      <Text style={styles.addBtnText}>+ Add</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        )}
+      </View>
+
+      {/* Cafe Info Banner */}
+      <View style={styles.infoBanner}>
+        <Text style={styles.infoIcon}>📍</Text>
+        <View style={styles.infoTextContainer}>
+          <Text style={styles.infoTitle}>ICafe</Text>
+          <Text style={styles.infoText}>Open daily 07:00 – 22:00 • Dine in & takeaway</Text>
+        </View>
+      </View>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFAF5',
+  },
+  content: {
+    paddingBottom: 32,
+  },
+  hero: {
+    backgroundColor: '#F0E7DD',
+    paddingHorizontal: 24,
+    paddingTop: 48,
+    paddingBottom: 28,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  heroTextContainer: {
+    flex: 1,
+  },
+  greeting: {
+    color: '#8F7772',
+    fontSize: 14,
+    marginBottom: 4,
+  },
+  heroTitle: {
+    color: '#1F1C1A',
+    fontSize: 26,
+    fontWeight: '800',
+    lineHeight: 34,
+    marginBottom: 8,
+  },
+  heroSubtitle: {
+    color: '#8F7772',
+    fontSize: 14,
+  },
+  heroBadge: {
+    width: 64,
+    height: 64,
+    backgroundColor: '#C6453E',
+    borderRadius: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 16,
+  },
+  heroBadgeText: {
+    fontSize: 32,
+  },
+  quickActions: {
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    paddingVertical: 20,
+    gap: 8,
+  },
+  quickActionBtn: {
+    flex: 1,
+    backgroundColor: '#F0E7DD',
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: 'center',
+    gap: 4,
+  },
+  quickActionIcon: {
+    fontSize: 22,
+  },
+  quickActionLabel: {
+    color: '#8F7772',
+    fontSize: 11,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  section: {
+    paddingHorizontal: 24,
+    marginBottom: 24,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  sectionTitle: {
+    color: '#1F1C1A',
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  seeAll: {
+    color: '#C6453E',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  featuredList: {
+    marginHorizontal: -24,
+    paddingHorizontal: 24,
+  },
+  featuredCard: {
+    backgroundColor: '#F0E7DD',
+    borderRadius: 16,
+    width: 200,
+    marginRight: 14,
+    overflow: 'hidden',
+  },
+  featuredImage: {
+    width: '100%',
+    height: 120,
+    resizeMode: 'cover',
+  },
+  featuredImagePlaceholder: {
+    width: '100%',
+    height: 120,
+    backgroundColor: '#D8C3A5',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  featuredImagePlaceholderText: {
+    fontSize: 40,
+  },
+  featuredCardBody: {
+    padding: 12,
+  },
+  featuredName: {
+    color: '#1F1C1A',
+    fontSize: 15,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  featuredDesc: {
+    color: '#8F7772',
+    fontSize: 12,
+    lineHeight: 16,
+    marginBottom: 10,
+  },
+  featuredFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  featuredPrice: {
+    color: '#C6453E',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  addBtn: {
+    backgroundColor: '#C6453E',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  addBtnText: {
+    color: '#FFFAF5',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  emptyText: {
+    color: '#8F7772',
+    fontSize: 14,
+    textAlign: 'center',
+    paddingVertical: 24,
+  },
+  infoBanner: {
+    marginHorizontal: 24,
+    backgroundColor: '#F0E7DD',
+    borderRadius: 14,
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    borderLeftWidth: 4,
+    borderLeftColor: '#C6453E',
+  },
+  infoIcon: {
+    fontSize: 24,
+  },
+  infoTextContainer: {
+    flex: 1,
+  },
+  infoTitle: {
+    color: '#1F1C1A',
+    fontSize: 15,
+    fontWeight: '700',
+    marginBottom: 2,
+  },
+  infoText: {
+    color: '#8F7772',
+    fontSize: 13,
+  },
+});

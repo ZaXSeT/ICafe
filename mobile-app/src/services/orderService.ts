@@ -13,16 +13,17 @@ import {
 import { db } from '../lib/firebase';
 import { Order, OrderItem, CartItem, OrderStatus } from '../types';
 
-const COLLECTION = 'orders';
+// The website's Admin Dashboard reads from pos_orders
+const COLLECTION = 'pos_orders';
 
 function toOrder(id: string, data: any): Order {
     return {
         id,
         userId: data.userId ?? '',
-        items: data.items ?? [],
+        items: data.items ?? data.order ?? [], // Admin dashboard saves items as `order`
         subtotal: data.subtotal ?? 0,
         total: data.total ?? 0,
-        status: data.status ?? 'pending',
+        status: (data.status?.toLowerCase() || 'pending') as OrderStatus,
         paymentMethod: data.paymentMethod,
         notes: data.notes,
         tableNumber: data.tableNumber,
@@ -35,7 +36,7 @@ export async function createOrder(
     userId: string,
     cartItems: CartItem[],
     notes?: string,
-    tableNumber?: number
+    tableNumber?: string | number
 ): Promise<string> {
     const items: OrderItem[] = cartItems.map((ci) => ({
         menuItemId: ci.menuItem.id,
@@ -46,19 +47,21 @@ export async function createOrder(
     }));
 
     const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
-    const total = subtotal; // Add tax/service charge here if needed
+    const total = subtotal;
 
     const orderData = {
         userId,
-        items,
+        order: items, // Save as `order` so the website admin dashboard can read it
         subtotal,
         total,
-        status: 'pending' as OrderStatus,
-        notes,
-        tableNumber,
-        paymentMethod: 'cash',
+        // The admin dashboard expects uppercase statuses like IN_PROGRESS or PENDING
+        status: tableNumber === 'Takeaway' ? 'COMPLETED' : 'IN_PROGRESS',
+        notes: notes || '',
+        tableNumber: tableNumber || 'Takeaway',
+        paymentMethod: 'Cash',
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
+        type: 'ONLINE_APP', // To distinguish it from POS in the admin dashboard if needed
     };
 
     const ref = await addDoc(collection(db, COLLECTION), orderData);
@@ -67,26 +70,15 @@ export async function createOrder(
 
 export async function getUserOrders(userId: string): Promise<Order[]> {
     try {
-        const q = query(
-            collection(db, COLLECTION),
-            where('userId', '==', userId),
-            orderBy('createdAt', 'desc')
-        );
+        const q = query(collection(db, COLLECTION), where('userId', '==', userId));
         const snap = await getDocs(q);
-        return snap.docs.map((d) => toOrder(d.id, d.data()));
+        const orders = snap.docs.map((d) => toOrder(d.id, d.data()));
+        return orders.sort(
+            (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+        );
     } catch (error) {
         console.error('Error fetching orders:', error);
-        // Fallback without orderBy
-        try {
-            const q = query(collection(db, COLLECTION), where('userId', '==', userId));
-            const snap = await getDocs(q);
-            const orders = snap.docs.map((d) => toOrder(d.id, d.data()));
-            return orders.sort(
-                (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
-            );
-        } catch (e) {
-            return [];
-        }
+        return [];
     }
 }
 
@@ -103,7 +95,7 @@ export async function getOrderById(orderId: string): Promise<Order | null> {
 
 export async function cancelOrder(orderId: string): Promise<void> {
     await updateDoc(doc(db, COLLECTION, orderId), {
-        status: 'cancelled',
+        status: 'CANCELLED',
         updatedAt: serverTimestamp(),
     });
 }
