@@ -136,7 +136,7 @@ export default function CartScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0F172A',
+        backgroundColor: '#FFFAF5',
     },
     headerActions: {
         flexDirection: 'row',
@@ -145,10 +145,10 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: 12,
         borderBottomWidth: 1,
-        borderBottomColor: '#1E293B',
+        borderBottomColor: '#F0E7DD',
     },
     itemCountText: {
-        color: '#94A3B8',
+        color: '#8F7772',
         fontSize: 14,
         fontWeight: '600',
     },
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
         gap: 12,
     },
     card: {
-        backgroundColor: '#1E293B',
+        backgroundColor: '#F0E7DD',
         borderRadius: 14,
         flexDirection: 'row',
         overflow: 'hidden',
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
     itemImagePlaceholder: {
         width: 80,
         height: 80,
-        backgroundColor: '#334155',
+        backgroundColor: '#D8C3A5',
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -190,17 +190,17 @@ const styles = StyleSheet.create({
         gap: 4,
     },
     itemName: {
-        color: '#F1F5F9',
+        color: '#1F1C1A',
         fontSize: 14,
         fontWeight: '700',
     },
     itemPrice: {
-        color: '#F59E0B',
+        color: '#C6453E',
         fontSize: 13,
         fontWeight: '600',
     },
     itemNotes: {
-        color: '#64748B',
+        color: '#8F7772',
         fontSize: 11,
     },
     itemActions: {
@@ -211,22 +211,22 @@ const styles = StyleSheet.create({
     qtyControl: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#0F172A',
+        backgroundColor: '#FFFAF5',
         borderRadius: 8,
         overflow: 'hidden',
     },
     qtyBtn: {
         paddingHorizontal: 10,
         paddingVertical: 5,
-        backgroundColor: '#334155',
+        backgroundColor: '#D8C3A5',
     },
     qtyBtnText: {
-        color: '#F1F5F9',
+        color: '#1F1C1A',
         fontSize: 15,
         fontWeight: '700',
     },
     qtyText: {
-        color: '#F59E0B',
+        color: '#C6453E',
         fontSize: 13,
         fontWeight: '700',
         paddingHorizontal: 10,
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
     },
     summary: {
-        backgroundColor: '#1E293B',
+        backgroundColor: '#F0E7DD',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
         padding: 20,
@@ -257,44 +257,44 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     summaryLabel: {
-        color: '#94A3B8',
+        color: '#8F7772',
         fontSize: 14,
     },
     summaryValue: {
-        color: '#F1F5F9',
+        color: '#1F1C1A',
         fontSize: 14,
     },
     summaryTotal: {
         paddingTop: 10,
         borderTopWidth: 1,
-        borderTopColor: '#334155',
+        borderTopColor: '#D8C3A5',
         marginTop: 4,
     },
     totalLabel: {
-        color: '#F1F5F9',
+        color: '#1F1C1A',
         fontSize: 16,
         fontWeight: '700',
     },
     totalValue: {
-        color: '#F59E0B',
+        color: '#C6453E',
         fontSize: 18,
         fontWeight: '800',
     },
     checkoutBtn: {
-        backgroundColor: '#F59E0B',
+        backgroundColor: '#C6453E',
         borderRadius: 12,
         paddingVertical: 14,
         alignItems: 'center',
         marginTop: 8,
     },
     checkoutBtnText: {
-        color: '#0F172A',
+        color: '#FFFAF5',
         fontSize: 16,
         fontWeight: '700',
     },
     emptyContainer: {
         flex: 1,
-        backgroundColor: '#0F172A',
+        backgroundColor: '#FFFAF5',
         alignItems: 'center',
         justifyContent: 'center',
         gap: 12,
@@ -305,24 +305,24 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     emptyTitle: {
-        color: '#F1F5F9',
+        color: '#1F1C1A',
         fontSize: 20,
         fontWeight: '700',
     },
     emptySubtitle: {
-        color: '#64748B',
+        color: '#8F7772',
         fontSize: 14,
         textAlign: 'center',
     },
     browseBtn: {
-        backgroundColor: '#F59E0B',
+        backgroundColor: '#C6453E',
         borderRadius: 12,
         paddingHorizontal: 32,
         paddingVertical: 12,
         marginTop: 8,
     },
     browseBtnText: {
-        color: '#0F172A',
+        color: '#FFFAF5',
         fontSize: 15,
         fontWeight: '700',
     },

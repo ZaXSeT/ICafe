@@ -41,10 +41,10 @@ function formatDate(date: Date) {
 function statusColor(status: string) {
     switch (status) {
         case 'confirmed': return '#22C55E';
-        case 'pending': return '#F59E0B';
+        case 'pending': return '#C6453E';
         case 'cancelled': return '#EF4444';
         case 'completed': return '#60A5FA';
-        default: return '#94A3B8';
+        default: return '#8F7772';
     }
 }
 
@@ -188,7 +188,7 @@ export default function ReservationsScreen() {
 
                 {/* Reservations List */}
                 {loading ? (
-                    <ActivityIndicator color="#F59E0B" style={{ marginTop: 40 }} />
+                    <ActivityIndicator color="#C6453E" style={{ marginTop: 40 }} />
                 ) : reservations.length === 0 ? (
                     <View style={styles.empty}>
                         <Text style={styles.emptyIcon}>📊</Text>
@@ -321,7 +321,7 @@ export default function ReservationsScreen() {
                         <TextInput
                             style={[styles.textInput, styles.textArea]}
                             placeholder="Allergies, high chair, birthday surprise..."
-                            placeholderTextColor="#64748B"
+                            placeholderTextColor="#8F7772"
                             value={notes}
                             onChangeText={setNotes}
                             multiline
@@ -335,7 +335,7 @@ export default function ReservationsScreen() {
                             disabled={submitting}
                         >
                             {submitting ? (
-                                <ActivityIndicator color="#0F172A" />
+                                <ActivityIndicator color="#FFFAF5" />
                             ) : (
                                 <Text style={styles.submitBtnText}>Book Table</Text>
                             )}
@@ -391,7 +391,7 @@ export default function ReservationsScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#0F172A' },
+    container: { flex: 1, backgroundColor: '#FFFAF5' },
     content: { padding: 20, paddingBottom: 40 },
     headerRow: {
         flexDirection: 'row',
@@ -399,28 +399,28 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 20,
     },
-    headerTitle: { color: '#F1F5F9', fontSize: 20, fontWeight: '700' },
+    headerTitle: { color: '#1F1C1A', fontSize: 20, fontWeight: '700' },
     addBtn: {
-        backgroundColor: '#F59E0B',
+        backgroundColor: '#C6453E',
         borderRadius: 10,
         paddingHorizontal: 16,
         paddingVertical: 8,
     },
-    addBtnText: { color: '#0F172A', fontSize: 14, fontWeight: '700' },
+    addBtnText: { color: '#FFFAF5', fontSize: 14, fontWeight: '700' },
     empty: { alignItems: 'center', paddingTop: 60, gap: 12 },
     emptyIcon: { fontSize: 56 },
-    emptyTitle: { color: '#F1F5F9', fontSize: 18, fontWeight: '700' },
-    emptySubtitle: { color: '#64748B', fontSize: 14 },
+    emptyTitle: { color: '#1F1C1A', fontSize: 18, fontWeight: '700' },
+    emptySubtitle: { color: '#8F7772', fontSize: 14 },
     emptyBtn: {
-        backgroundColor: '#F59E0B',
+        backgroundColor: '#C6453E',
         borderRadius: 12,
         paddingHorizontal: 28,
         paddingVertical: 12,
         marginTop: 8,
     },
-    emptyBtnText: { color: '#0F172A', fontWeight: '700', fontSize: 15 },
+    emptyBtnText: { color: '#FFFAF5', fontWeight: '700', fontSize: 15 },
     card: {
-        backgroundColor: '#1E293B',
+        backgroundColor: '#F0E7DD',
         borderRadius: 14,
         padding: 16,
         marginBottom: 12,
@@ -431,13 +431,13 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
     },
-    cardDate: { color: '#F1F5F9', fontSize: 14, fontWeight: '700', flex: 1 },
+    cardDate: { color: '#1F1C1A', fontSize: 14, fontWeight: '700', flex: 1 },
     statusBadge: { borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4 },
     statusText: { fontSize: 12, fontWeight: '700' },
     cardRow: { flexDirection: 'row', gap: 8, alignItems: 'center' },
     cardLabel: { fontSize: 14 },
-    cardValue: { color: '#94A3B8', fontSize: 13, marginRight: 12 },
-    cardNotes: { color: '#64748B', fontSize: 12, fontStyle: 'italic' },
+    cardValue: { color: '#8F7772', fontSize: 13, marginRight: 12 },
+    cardNotes: { color: '#8F7772', fontSize: 12, fontStyle: 'italic' },
     cancelBtn: {
         borderWidth: 1,
         borderColor: '#EF4444',
@@ -448,21 +448,21 @@ const styles = StyleSheet.create({
     },
     cancelBtnText: { color: '#EF4444', fontSize: 13, fontWeight: '600' },
     // Modal
-    modal: { flex: 1, backgroundColor: '#0F172A' },
+    modal: { flex: 1, backgroundColor: '#FFFAF5' },
     modalHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: 20,
         borderBottomWidth: 1,
-        borderBottomColor: '#1E293B',
+        borderBottomColor: '#F0E7DD',
         paddingTop: Platform.OS === 'ios' ? 52 : 20,
     },
-    modalTitle: { color: '#F1F5F9', fontSize: 18, fontWeight: '700' },
-    modalClose: { color: '#94A3B8', fontSize: 20, padding: 4 },
+    modalTitle: { color: '#1F1C1A', fontSize: 18, fontWeight: '700' },
+    modalClose: { color: '#8F7772', fontSize: 20, padding: 4 },
     modalContent: { padding: 20 },
     fieldLabel: {
-        color: '#94A3B8',
+        color: '#8F7772',
         fontSize: 13,
         fontWeight: '600',
         marginBottom: 10,
@@ -472,67 +472,67 @@ const styles = StyleSheet.create({
     },
     dateList: { gap: 8, paddingBottom: 4 },
     dateChip: {
-        backgroundColor: '#1E293B',
+        backgroundColor: '#F0E7DD',
         borderRadius: 12,
         padding: 10,
         alignItems: 'center',
         minWidth: 64,
         marginRight: 8,
     },
-    dateChipActive: { backgroundColor: '#F59E0B' },
-    dateChipDay: { color: '#94A3B8', fontSize: 11, fontWeight: '600' },
-    dateChipNum: { color: '#F1F5F9', fontSize: 20, fontWeight: '800' },
-    dateChipMonth: { color: '#94A3B8', fontSize: 11 },
-    dateChipTextActive: { color: '#0F172A' },
+    dateChipActive: { backgroundColor: '#C6453E' },
+    dateChipDay: { color: '#8F7772', fontSize: 11, fontWeight: '600' },
+    dateChipNum: { color: '#1F1C1A', fontSize: 20, fontWeight: '800' },
+    dateChipMonth: { color: '#8F7772', fontSize: 11 },
+    dateChipTextActive: { color: '#FFFAF5' },
     timeSelector: {
-        backgroundColor: '#1E293B',
+        backgroundColor: '#F0E7DD',
         borderRadius: 10,
         padding: 14,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: '#334155',
+        borderColor: '#D8C3A5',
     },
-    timeSelectorValue: { color: '#F1F5F9', fontSize: 15 },
-    timeSelectorPlaceholder: { color: '#64748B', fontSize: 15 },
-    timeSelectorArrow: { color: '#94A3B8', fontSize: 16 },
+    timeSelectorValue: { color: '#1F1C1A', fontSize: 15 },
+    timeSelectorPlaceholder: { color: '#8F7772', fontSize: 15 },
+    timeSelectorArrow: { color: '#8F7772', fontSize: 16 },
     guestControl: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#1E293B',
+        backgroundColor: '#F0E7DD',
         borderRadius: 10,
         overflow: 'hidden',
         borderWidth: 1,
-        borderColor: '#334155',
+        borderColor: '#D8C3A5',
     },
     guestBtn: {
         paddingHorizontal: 20,
         paddingVertical: 12,
-        backgroundColor: '#334155',
+        backgroundColor: '#D8C3A5',
     },
-    guestBtnText: { color: '#F1F5F9', fontSize: 20, fontWeight: '700' },
+    guestBtnText: { color: '#1F1C1A', fontSize: 20, fontWeight: '700' },
     guestInput: {
         flex: 1,
-        color: '#F59E0B',
+        color: '#C6453E',
         fontSize: 18,
         fontWeight: '700',
         textAlign: 'center',
         paddingVertical: 12,
     },
     textInput: {
-        backgroundColor: '#1E293B',
+        backgroundColor: '#F0E7DD',
         borderWidth: 1,
-        borderColor: '#334155',
+        borderColor: '#D8C3A5',
         borderRadius: 10,
         paddingHorizontal: 14,
         paddingVertical: 12,
-        color: '#F1F5F9',
+        color: '#1F1C1A',
         fontSize: 15,
     },
     textArea: { minHeight: 80, textAlignVertical: 'top' },
     submitBtn: {
-        backgroundColor: '#F59E0B',
+        backgroundColor: '#C6453E',
         borderRadius: 12,
         paddingVertical: 16,
         alignItems: 'center',
@@ -540,7 +540,7 @@ const styles = StyleSheet.create({
         marginBottom: 40,
     },
     submitBtnDisabled: { opacity: 0.6 },
-    submitBtnText: { color: '#0F172A', fontSize: 16, fontWeight: '700' },
+    submitBtnText: { color: '#FFFAF5', fontSize: 16, fontWeight: '700' },
     // Time picker modal
     timeModalOverlay: {
         flex: 1,
@@ -548,14 +548,14 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
     },
     timeModalContent: {
-        backgroundColor: '#1E293B',
+        backgroundColor: '#F0E7DD',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
         padding: 20,
         maxHeight: '70%',
     },
     timeModalTitle: {
-        color: '#F1F5F9',
+        color: '#1F1C1A',
         fontSize: 16,
         fontWeight: '700',
         textAlign: 'center',
@@ -564,12 +564,12 @@ const styles = StyleSheet.create({
     timeSlot: {
         flex: 1,
         margin: 4,
-        backgroundColor: '#0F172A',
+        backgroundColor: '#FFFAF5',
         borderRadius: 8,
         paddingVertical: 10,
         alignItems: 'center',
     },
-    timeSlotActive: { backgroundColor: '#F59E0B' },
-    timeSlotText: { color: '#94A3B8', fontSize: 13, fontWeight: '600' },
-    timeSlotTextActive: { color: '#0F172A' },
+    timeSlotActive: { backgroundColor: '#C6453E' },
+    timeSlotText: { color: '#8F7772', fontSize: 13, fontWeight: '600' },
+    timeSlotTextActive: { color: '#FFFAF5' },
 });

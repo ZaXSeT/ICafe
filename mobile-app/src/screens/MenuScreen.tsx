@@ -136,7 +136,7 @@ export default function MenuScreen() {
                 <TextInput
                     style={styles.searchInput}
                     placeholder="Search menu..."
-                    placeholderTextColor="#64748B"
+                    placeholderTextColor="#8F7772"
                     value={search}
                     onChangeText={setSearch}
                 />
@@ -179,7 +179,7 @@ export default function MenuScreen() {
 
             {/* Items List */}
             {loading ? (
-                <ActivityIndicator color="#F59E0B" style={styles.loader} />
+                <ActivityIndicator color="#C6453E" style={styles.loader} />
             ) : (
                 <FlatList
                     data={filtered}
@@ -187,7 +187,7 @@ export default function MenuScreen() {
                     renderItem={renderItem}
                     contentContainerStyle={styles.list}
                     refreshControl={
-                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#F59E0B" />
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#C6453E" />
                     }
                     ListEmptyComponent={
                         <View style={styles.empty}>
@@ -206,12 +206,12 @@ export default function MenuScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0F172A',
+        backgroundColor: '#FFFAF5',
     },
     searchContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#1E293B',
+        backgroundColor: '#F0E7DD',
         marginHorizontal: 16,
         marginVertical: 12,
         borderRadius: 12,
@@ -224,11 +224,11 @@ const styles = StyleSheet.create({
     },
     searchInput: {
         flex: 1,
-        color: '#F1F5F9',
+        color: '#1F1C1A',
         fontSize: 15,
     },
     clearSearch: {
-        color: '#64748B',
+        color: '#8F7772',
         fontSize: 16,
         padding: 4,
     },
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     categoryChip: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#1E293B',
+        backgroundColor: '#F0E7DD',
         borderRadius: 20,
         paddingHorizontal: 14,
         paddingVertical: 8,
@@ -248,18 +248,18 @@ const styles = StyleSheet.create({
         marginRight: 8,
     },
     categoryChipActive: {
-        backgroundColor: '#F59E0B',
+        backgroundColor: '#C6453E',
     },
     categoryIcon: {
         fontSize: 14,
     },
     categoryLabel: {
-        color: '#94A3B8',
+        color: '#8F7772',
         fontSize: 13,
         fontWeight: '600',
     },
     categoryLabelActive: {
-        color: '#0F172A',
+        color: '#FFFAF5',
     },
     loader: {
         marginTop: 60,
@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
         gap: 12,
     },
     card: {
-        backgroundColor: '#1E293B',
+        backgroundColor: '#F0E7DD',
         borderRadius: 14,
         flexDirection: 'row',
         overflow: 'hidden',
@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
     cardImagePlaceholder: {
         width: 100,
         height: 100,
-        backgroundColor: '#334155',
+        backgroundColor: '#D8C3A5',
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
         gap: 8,
     },
     cardName: {
-        color: '#F1F5F9',
+        color: '#1F1C1A',
         fontSize: 15,
         fontWeight: '700',
         flex: 1,
@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     cardDesc: {
-        color: '#64748B',
+        color: '#8F7772',
         fontSize: 12,
         lineHeight: 16,
         marginTop: 4,
@@ -332,40 +332,40 @@ const styles = StyleSheet.create({
         marginTop: 8,
     },
     cardPrice: {
-        color: '#F59E0B',
+        color: '#C6453E',
         fontSize: 14,
         fontWeight: '700',
     },
     addBtn: {
-        backgroundColor: '#F59E0B',
+        backgroundColor: '#C6453E',
         borderRadius: 8,
         paddingHorizontal: 12,
         paddingVertical: 6,
     },
     addBtnText: {
-        color: '#0F172A',
+        color: '#FFFAF5',
         fontSize: 13,
         fontWeight: '700',
     },
     qtyControl: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#0F172A',
+        backgroundColor: '#FFFAF5',
         borderRadius: 8,
         overflow: 'hidden',
     },
     qtyBtn: {
         paddingHorizontal: 10,
         paddingVertical: 6,
-        backgroundColor: '#334155',
+        backgroundColor: '#D8C3A5',
     },
     qtyBtnText: {
-        color: '#F1F5F9',
+        color: '#1F1C1A',
         fontSize: 16,
         fontWeight: '700',
     },
     qtyText: {
-        color: '#F59E0B',
+        color: '#C6453E',
         fontSize: 14,
         fontWeight: '700',
         paddingHorizontal: 10,
@@ -381,7 +381,7 @@ const styles = StyleSheet.create({
         fontSize: 48,
     },
     emptyText: {
-        color: '#64748B',
+        color: '#8F7772',
         fontSize: 15,
         textAlign: 'center',
     },

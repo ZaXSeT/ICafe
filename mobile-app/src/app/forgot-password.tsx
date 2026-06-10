@@ -67,7 +67,7 @@ export default function ForgotPasswordScreen() {
                 <TextInput
                     style={styles.input}
                     placeholder="you@example.com"
-                    placeholderTextColor="#64748B"
+                    placeholderTextColor="#8F7772"
                     value={email}
                     onChangeText={setEmail}
                     keyboardType="email-address"
@@ -82,7 +82,7 @@ export default function ForgotPasswordScreen() {
                 disabled={loading}
             >
                 {loading ? (
-                    <ActivityIndicator color="#0F172A" />
+                    <ActivityIndicator color="#FFFAF5" />
                 ) : (
                     <Text style={styles.btnText}>Send Reset Email</Text>
                 )}
@@ -98,55 +98,55 @@ export default function ForgotPasswordScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0F172A',
+        backgroundColor: '#FFFAF5',
         padding: 24,
         justifyContent: 'center',
     },
     title: {
-        color: '#F1F5F9',
+        color: '#1F1C1A',
         fontSize: 24,
         fontWeight: '800',
         marginBottom: 8,
     },
     subtitle: {
-        color: '#94A3B8',
+        color: '#8F7772',
         fontSize: 14,
         marginBottom: 32,
         lineHeight: 20,
     },
     inputGroup: { marginBottom: 20 },
-    label: { color: '#94A3B8', fontSize: 13, fontWeight: '600', marginBottom: 6 },
+    label: { color: '#8F7772', fontSize: 13, fontWeight: '600', marginBottom: 6 },
     input: {
-        backgroundColor: '#1E293B',
+        backgroundColor: '#F0E7DD',
         borderWidth: 1,
-        borderColor: '#334155',
+        borderColor: '#D8C3A5',
         borderRadius: 10,
         paddingHorizontal: 14,
         paddingVertical: 12,
-        color: '#F1F5F9',
+        color: '#1F1C1A',
         fontSize: 16,
     },
     btn: {
-        backgroundColor: '#F59E0B',
+        backgroundColor: '#C6453E',
         borderRadius: 12,
         paddingVertical: 14,
         alignItems: 'center',
         marginBottom: 12,
     },
     btnDisabled: { opacity: 0.6 },
-    btnText: { color: '#0F172A', fontSize: 16, fontWeight: '700' },
+    btnText: { color: '#FFFAF5', fontSize: 16, fontWeight: '700' },
     cancelBtn: { alignItems: 'center', paddingVertical: 8 },
-    cancelBtnText: { color: '#64748B', fontSize: 14 },
+    cancelBtnText: { color: '#8F7772', fontSize: 14 },
     successIcon: { fontSize: 64, textAlign: 'center', marginBottom: 16 },
     successTitle: {
-        color: '#F1F5F9',
+        color: '#1F1C1A',
         fontSize: 24,
         fontWeight: '800',
         textAlign: 'center',
         marginBottom: 12,
     },
     successText: {
-        color: '#94A3B8',
+        color: '#8F7772',
         fontSize: 14,
         textAlign: 'center',
         lineHeight: 20,

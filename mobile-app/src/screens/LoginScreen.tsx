@@ -152,7 +152,7 @@ export default function LoginScreen() {
             accessibilityLabel={mode === 'login' ? 'Sign In' : 'Create Account'}
           >
             {loading ? (
-              <ActivityIndicator color="#FFFFFF" />
+              <ActivityIndicator color=\"#FFFAF5\" />
             ) : (
               <Text style={styles.buttonText}>
                 {mode === 'login' ? 'Sign In' : 'Create Account'}
@@ -211,7 +211,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0F172A',
+    backgroundColor: '#FFFAF5',
   },
   scroll: {
     flexGrow: 1,
@@ -225,18 +225,18 @@ const styles = StyleSheet.create({
   },
   logo: {
     fontSize: 48,
-    color: '#F59E0B',
+    color: '#C6453E',
     fontWeight: '800',
     letterSpacing: 2,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 18,
-    color: '#CBD5E1',
+    color: '#664C47',
     fontWeight: '400',
   },
   form: {
-    backgroundColor: '#1E293B',
+    backgroundColor: '#F0E7DD',
     borderRadius: 16,
     padding: 24,
     gap: 16,
@@ -253,21 +253,21 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#94A3B8',
+    color: '#8F7772',
     marginBottom: 4,
   },
   input: {
-    backgroundColor: '#0F172A',
+    backgroundColor: '#FFFAF5',
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: '#D8C3A5',
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 16,
-    color: '#F1F5F9',
+    color: '#1F1C1A',
   },
   button: {
-    backgroundColor: '#F59E0B',
+    backgroundColor: '#C6453E',
     borderRadius: 10,
     paddingVertical: 14,
     alignItems: 'center',
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   buttonText: {
-    color: '#0F172A',
+    color: '#FFFAF5',
     fontSize: 16,
     fontWeight: '700',
   },
@@ -285,7 +285,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   forgotText: {
-    color: '#F59E0B',
+    color: '#C6453E',
     fontSize: 14,
   },
   toggleContainer: {
@@ -294,11 +294,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   toggleText: {
-    color: '#94A3B8',
+    color: '#8F7772',
     fontSize: 14,
   },
   toggleLink: {
-    color: '#F59E0B',
+    color: '#C6453E',
     fontSize: 14,
     fontWeight: '700',
   },
@@ -310,10 +310,10 @@ const styles = StyleSheet.create({
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: '#334155',
+    backgroundColor: '#D8C3A5',
   },
   dividerText: {
-    color: '#94A3B8',
+    color: '#8F7772',
     paddingHorizontal: 10,
     fontSize: 14,
   },
@@ -333,7 +333,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   googleButtonText: {
-    color: '#334155',
+    color: '#D8C3A5',
     fontSize: 16,
     fontWeight: '700',
   },

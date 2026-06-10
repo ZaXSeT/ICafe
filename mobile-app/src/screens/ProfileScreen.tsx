@@ -19,9 +19,9 @@ function statusColor(status: string) {
         case 'confirmed': return '#60A5FA';
         case 'preparing': return '#A78BFA';
         case 'ready': return '#34D399';
-        case 'pending': return '#F59E0B';
+        case 'pending': return '#C6453E';
         case 'cancelled': return '#EF4444';
-        default: return '#94A3B8';
+        default: return '#8F7772';
     }
 }
 
@@ -130,7 +130,7 @@ export default function ProfileScreen() {
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Order History</Text>
                 {loadingOrders ? (
-                    <ActivityIndicator color="#F59E0B" style={{ marginVertical: 20 }} />
+                    <ActivityIndicator color="#C6453E" style={{ marginVertical: 20 }} />
                 ) : orders.length === 0 ? (
                     <View style={styles.emptyOrders}>
                         <Text style={styles.emptyOrdersText}>No orders yet</Text>
@@ -201,29 +201,29 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#0F172A' },
+    container: { flex: 1, backgroundColor: '#FFFAF5' },
     content: { padding: 20, paddingBottom: 40 },
     notLoggedIn: {
         flex: 1,
-        backgroundColor: '#0F172A',
+        backgroundColor: '#FFFAF5',
         alignItems: 'center',
         justifyContent: 'center',
         gap: 16,
         padding: 32,
     },
     notLoggedInIcon: { fontSize: 64 },
-    notLoggedInTitle: { color: '#F1F5F9', fontSize: 20, fontWeight: '700' },
+    notLoggedInTitle: { color: '#1F1C1A', fontSize: 20, fontWeight: '700' },
     signInBtn: {
-        backgroundColor: '#F59E0B',
+        backgroundColor: '#C6453E',
         borderRadius: 12,
         paddingHorizontal: 32,
         paddingVertical: 12,
     },
-    signInBtnText: { color: '#0F172A', fontWeight: '700', fontSize: 16 },
+    signInBtnText: { color: '#FFFAF5', fontWeight: '700', fontSize: 16 },
     profileHeader: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#1E293B',
+        backgroundColor: '#F0E7DD',
         borderRadius: 16,
         padding: 20,
         marginBottom: 16,
@@ -232,15 +232,15 @@ const styles = StyleSheet.create({
     avatar: {
         width: 64,
         height: 64,
-        backgroundColor: '#F59E0B',
+        backgroundColor: '#C6453E',
         borderRadius: 32,
         alignItems: 'center',
         justifyContent: 'center',
     },
-    avatarText: { fontSize: 28, fontWeight: '800', color: '#0F172A' },
+    avatarText: { fontSize: 28, fontWeight: '800', color: '#FFFAF5' },
     profileInfo: { flex: 1, gap: 4 },
-    profileName: { color: '#F1F5F9', fontSize: 18, fontWeight: '700' },
-    profileEmail: { color: '#64748B', fontSize: 13 },
+    profileName: { color: '#1F1C1A', fontSize: 18, fontWeight: '700' },
+    profileEmail: { color: '#8F7772', fontSize: 13 },
     roleBadge: {
         alignSelf: 'flex-start',
         backgroundColor: '#1E3A5F',
@@ -257,27 +257,27 @@ const styles = StyleSheet.create({
     },
     statCard: {
         flex: 1,
-        backgroundColor: '#1E293B',
+        backgroundColor: '#F0E7DD',
         borderRadius: 12,
         padding: 14,
         alignItems: 'center',
         gap: 4,
     },
-    statValue: { color: '#F59E0B', fontSize: 18, fontWeight: '800' },
-    statLabel: { color: '#64748B', fontSize: 11, textAlign: 'center' },
+    statValue: { color: '#C6453E', fontSize: 18, fontWeight: '800' },
+    statLabel: { color: '#8F7772', fontSize: 11, textAlign: 'center' },
     section: { marginBottom: 24 },
-    sectionTitle: { color: '#F1F5F9', fontSize: 16, fontWeight: '700', marginBottom: 12 },
+    sectionTitle: { color: '#1F1C1A', fontSize: 16, fontWeight: '700', marginBottom: 12 },
     emptyOrders: {
-        backgroundColor: '#1E293B',
+        backgroundColor: '#F0E7DD',
         borderRadius: 12,
         padding: 20,
         alignItems: 'center',
         gap: 8,
     },
-    emptyOrdersText: { color: '#64748B', fontSize: 14 },
-    emptyOrdersLink: { color: '#F59E0B', fontSize: 14, fontWeight: '600' },
+    emptyOrdersText: { color: '#8F7772', fontSize: 14 },
+    emptyOrdersLink: { color: '#C6453E', fontSize: 14, fontWeight: '600' },
     orderCard: {
-        backgroundColor: '#1E293B',
+        backgroundColor: '#F0E7DD',
         borderRadius: 12,
         padding: 14,
         marginBottom: 10,
@@ -288,19 +288,19 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
     },
-    orderId: { color: '#F1F5F9', fontSize: 14, fontWeight: '700' },
+    orderId: { color: '#1F1C1A', fontSize: 14, fontWeight: '700' },
     orderStatus: { borderRadius: 6, paddingHorizontal: 8, paddingVertical: 2 },
     orderStatusText: { fontSize: 12, fontWeight: '600' },
-    orderItems: { color: '#94A3B8', fontSize: 12, lineHeight: 16 },
+    orderItems: { color: '#8F7772', fontSize: 12, lineHeight: 16 },
     orderFooter: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         marginTop: 4,
     },
-    orderDate: { color: '#64748B', fontSize: 12 },
-    orderTotal: { color: '#F59E0B', fontSize: 14, fontWeight: '700' },
-    menuOptions: { backgroundColor: '#1E293B', borderRadius: 14, overflow: 'hidden' },
+    orderDate: { color: '#8F7772', fontSize: 12 },
+    orderTotal: { color: '#C6453E', fontSize: 14, fontWeight: '700' },
+    menuOptions: { backgroundColor: '#F0E7DD', borderRadius: 14, overflow: 'hidden' },
     menuOption: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -308,8 +308,8 @@ const styles = StyleSheet.create({
         gap: 12,
     },
     menuOptionIcon: { fontSize: 20 },
-    menuOptionLabel: { flex: 1, color: '#F1F5F9', fontSize: 15 },
+    menuOptionLabel: { flex: 1, color: '#1F1C1A', fontSize: 15 },
     menuOptionLabelDanger: { color: '#EF4444' },
-    menuOptionArrow: { color: '#334155', fontSize: 20 },
-    menuOptionDivider: { height: 1, backgroundColor: '#334155', marginHorizontal: 16 },
+    menuOptionArrow: { color: '#D8C3A5', fontSize: 20 },
+    menuOptionDivider: { height: 1, backgroundColor: '#D8C3A5', marginHorizontal: 16 },
 });

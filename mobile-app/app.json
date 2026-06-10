@@ -4,14 +4,14 @@
     "slug": "icafe-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/react-logo.png",
+    "icon": "./assets/images/icafe-icon.png",
     "scheme": "icafe",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/images/react-logo.png",
+      "image": "./assets/images/icafe-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#0F172A"
+      "backgroundColor": "#FFFAF5"
     },
     "ios": {
       "supportsTablet": true,
@@ -19,23 +19,23 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/react-logo.png",
-        "backgroundColor": "#0F172A"
+        "foregroundImage": "./assets/images/icafe-icon.png",
+        "backgroundColor": "#FFFAF5"
       },
       "package": "com.icafe.mobile"
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/react-logo.png"
+      "favicon": "./assets/images/icafe-icon.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/react-logo.png",
-          "backgroundColor": "#0F172A",
+          "image": "./assets/images/icafe-icon.png",
+          "backgroundColor": "#FFFAF5",
           "resizeMode": "contain"
         }
       ],

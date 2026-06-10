@@ -55,7 +55,7 @@ export default function HomeScreen() {
       style={styles.container}
       contentContainerStyle={styles.content}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#F59E0B" />
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#C6453E" />
       }
     >
       {/* Hero */}
@@ -120,7 +120,7 @@ export default function HomeScreen() {
         </View>
 
         {loading ? (
-          <ActivityIndicator color="#F59E0B" style={{ marginVertical: 24 }} />
+          <ActivityIndicator color="#C6453E" style={{ marginVertical: 24 }} />
         ) : featured.length === 0 ? (
           <Text style={styles.emptyText}>No featured items right now.</Text>
         ) : (
@@ -180,13 +180,13 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0F172A',
+    backgroundColor: '#FFFAF5',
   },
   content: {
     paddingBottom: 32,
   },
   hero: {
-    backgroundColor: '#1E293B',
+    backgroundColor: '#F0E7DD',
     paddingHorizontal: 24,
     paddingTop: 48,
     paddingBottom: 28,
@@ -198,25 +198,25 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   greeting: {
-    color: '#94A3B8',
+    color: '#8F7772',
     fontSize: 14,
     marginBottom: 4,
   },
   heroTitle: {
-    color: '#F1F5F9',
+    color: '#1F1C1A',
     fontSize: 26,
     fontWeight: '800',
     lineHeight: 34,
     marginBottom: 8,
   },
   heroSubtitle: {
-    color: '#64748B',
+    color: '#8F7772',
     fontSize: 14,
   },
   heroBadge: {
     width: 64,
     height: 64,
-    backgroundColor: '#F59E0B',
+    backgroundColor: '#C6453E',
     borderRadius: 32,
     alignItems: 'center',
     justifyContent: 'center',
@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
   },
   quickActionBtn: {
     flex: 1,
-    backgroundColor: '#1E293B',
+    backgroundColor: '#F0E7DD',
     borderRadius: 12,
     paddingVertical: 14,
     alignItems: 'center',
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
   },
   quickActionLabel: {
-    color: '#94A3B8',
+    color: '#8F7772',
     fontSize: 11,
     fontWeight: '600',
     textAlign: 'center',
@@ -259,12 +259,12 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   sectionTitle: {
-    color: '#F1F5F9',
+    color: '#1F1C1A',
     fontSize: 18,
     fontWeight: '700',
   },
   seeAll: {
-    color: '#F59E0B',
+    color: '#C6453E',
     fontSize: 14,
     fontWeight: '600',
   },
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   featuredCard: {
-    backgroundColor: '#1E293B',
+    backgroundColor: '#F0E7DD',
     borderRadius: 16,
     width: 200,
     marginRight: 14,
@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
   featuredImagePlaceholder: {
     width: '100%',
     height: 120,
-    backgroundColor: '#334155',
+    backgroundColor: '#D8C3A5',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -298,13 +298,13 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   featuredName: {
-    color: '#F1F5F9',
+    color: '#1F1C1A',
     fontSize: 15,
     fontWeight: '700',
     marginBottom: 4,
   },
   featuredDesc: {
-    color: '#64748B',
+    color: '#8F7772',
     fontSize: 12,
     lineHeight: 16,
     marginBottom: 10,
@@ -315,37 +315,37 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   featuredPrice: {
-    color: '#F59E0B',
+    color: '#C6453E',
     fontSize: 13,
     fontWeight: '700',
   },
   addBtn: {
-    backgroundColor: '#F59E0B',
+    backgroundColor: '#C6453E',
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 5,
   },
   addBtnText: {
-    color: '#0F172A',
+    color: '#FFFAF5',
     fontSize: 12,
     fontWeight: '700',
   },
   emptyText: {
-    color: '#64748B',
+    color: '#8F7772',
     fontSize: 14,
     textAlign: 'center',
     paddingVertical: 24,
   },
   infoBanner: {
     marginHorizontal: 24,
-    backgroundColor: '#1E293B',
+    backgroundColor: '#F0E7DD',
     borderRadius: 14,
     padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
     borderLeftWidth: 4,
-    borderLeftColor: '#F59E0B',
+    borderLeftColor: '#C6453E',
   },
   infoIcon: {
     fontSize: 24,
@@ -354,13 +354,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   infoTitle: {
-    color: '#F1F5F9',
+    color: '#1F1C1A',
     fontSize: 15,
     fontWeight: '700',
     marginBottom: 2,
   },
   infoText: {
-    color: '#94A3B8',
+    color: '#8F7772',
     fontSize: 13,
   },
 });

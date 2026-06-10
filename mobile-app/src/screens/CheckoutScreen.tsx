@@ -74,7 +74,7 @@ export default function CheckoutScreen() {
                 <TextInput
                     style={styles.input}
                     placeholder="Table number (leave blank for takeaway)"
-                    placeholderTextColor="#64748B"
+                    placeholderTextColor="#8F7772"
                     value={tableNumber}
                     onChangeText={setTableNumber}
                     keyboardType="numeric"
@@ -87,7 +87,7 @@ export default function CheckoutScreen() {
                 <TextInput
                     style={[styles.input, styles.textArea]}
                     placeholder="Any special requests?"
-                    placeholderTextColor="#64748B"
+                    placeholderTextColor="#8F7772"
                     value={notes}
                     onChangeText={setNotes}
                     multiline
@@ -142,7 +142,7 @@ export default function CheckoutScreen() {
                 accessibilityRole="button"
             >
                 {loading ? (
-                    <ActivityIndicator color="#0F172A" />
+                    <ActivityIndicator color="#FFFAF5" />
                 ) : (
                     <Text style={styles.orderBtnText}>Place Order 🎉</Text>
                 )}
@@ -158,7 +158,7 @@ export default function CheckoutScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0F172A',
+        backgroundColor: '#FFFAF5',
     },
     content: {
         padding: 20,
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     sectionTitle: {
-        color: '#F1F5F9',
+        color: '#1F1C1A',
         fontSize: 16,
         fontWeight: '700',
         marginBottom: 12,
@@ -180,28 +180,28 @@ const styles = StyleSheet.create({
         paddingVertical: 6,
     },
     summaryItemName: {
-        color: '#94A3B8',
+        color: '#8F7772',
         fontSize: 14,
         flex: 1,
     },
     summaryItemPrice: {
-        color: '#F1F5F9',
+        color: '#1F1C1A',
         fontSize: 14,
         fontWeight: '600',
     },
     divider: {
         height: 1,
-        backgroundColor: '#1E293B',
+        backgroundColor: '#F0E7DD',
         marginBottom: 20,
     },
     input: {
-        backgroundColor: '#1E293B',
+        backgroundColor: '#F0E7DD',
         borderWidth: 1,
-        borderColor: '#334155',
+        borderColor: '#D8C3A5',
         borderRadius: 10,
         paddingHorizontal: 14,
         paddingVertical: 12,
-        color: '#F1F5F9',
+        color: '#1F1C1A',
         fontSize: 15,
     },
     textArea: {
@@ -209,35 +209,35 @@ const styles = StyleSheet.create({
         textAlignVertical: 'top',
     },
     customerCard: {
-        backgroundColor: '#1E293B',
+        backgroundColor: '#F0E7DD',
         borderRadius: 10,
         padding: 14,
         gap: 4,
     },
     customerName: {
-        color: '#F1F5F9',
+        color: '#1F1C1A',
         fontSize: 15,
         fontWeight: '600',
     },
     customerEmail: {
-        color: '#64748B',
+        color: '#8F7772',
         fontSize: 13,
     },
     paymentOption: {
-        backgroundColor: '#1E293B',
+        backgroundColor: '#F0E7DD',
         borderRadius: 10,
         padding: 14,
         flexDirection: 'row',
         alignItems: 'center',
         gap: 12,
         borderWidth: 1,
-        borderColor: '#F59E0B',
+        borderColor: '#C6453E',
     },
     paymentIcon: {
         fontSize: 22,
     },
     paymentLabel: {
-        color: '#F1F5F9',
+        color: '#1F1C1A',
         fontSize: 14,
         flex: 1,
         fontWeight: '500',
@@ -245,18 +245,18 @@ const styles = StyleSheet.create({
     paymentCheckmark: {
         width: 24,
         height: 24,
-        backgroundColor: '#F59E0B',
+        backgroundColor: '#C6453E',
         borderRadius: 12,
         alignItems: 'center',
         justifyContent: 'center',
     },
     paymentCheckmarkText: {
-        color: '#0F172A',
+        color: '#FFFAF5',
         fontWeight: '700',
         fontSize: 14,
     },
     totalSection: {
-        backgroundColor: '#1E293B',
+        backgroundColor: '#F0E7DD',
         borderRadius: 14,
         padding: 16,
         gap: 10,
@@ -267,31 +267,31 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     totalLabel: {
-        color: '#94A3B8',
+        color: '#8F7772',
         fontSize: 14,
     },
     totalValue: {
-        color: '#F1F5F9',
+        color: '#1F1C1A',
         fontSize: 14,
     },
     grandTotalRow: {
         paddingTop: 10,
         borderTopWidth: 1,
-        borderTopColor: '#334155',
+        borderTopColor: '#D8C3A5',
         marginTop: 4,
     },
     grandTotalLabel: {
-        color: '#F1F5F9',
+        color: '#1F1C1A',
         fontSize: 16,
         fontWeight: '700',
     },
     grandTotalValue: {
-        color: '#F59E0B',
+        color: '#C6453E',
         fontSize: 18,
         fontWeight: '800',
     },
     orderBtn: {
-        backgroundColor: '#F59E0B',
+        backgroundColor: '#C6453E',
         borderRadius: 12,
         paddingVertical: 16,
         alignItems: 'center',
@@ -301,7 +301,7 @@ const styles = StyleSheet.create({
         opacity: 0.6,
     },
     orderBtnText: {
-        color: '#0F172A',
+        color: '#FFFAF5',
         fontSize: 16,
         fontWeight: '700',
     },
@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
     },
     backBtnText: {
-        color: '#64748B',
+        color: '#8F7772',
         fontSize: 14,
     },
 });

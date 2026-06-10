@@ -34,10 +34,10 @@ function RootLayout() {
         <AuthGuard>
           <Stack
             screenOptions={{
-              headerStyle: { backgroundColor: '#1E293B' },
-              headerTintColor: '#F1F5F9',
+              headerStyle: { backgroundColor: '#F0E7DD' },
+              headerTintColor: '#1F1C1A',
               headerTitleStyle: { fontWeight: '700' },
-              contentStyle: { backgroundColor: '#0F172A' },
+              contentStyle: { backgroundColor: '#FFFAF5' },
             }}
           >
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -63,7 +63,7 @@ function RootLayout() {
               }}
             />
           </Stack>
-          <StatusBar style="light" />
+          <StatusBar style="dark" />
         </AuthGuard>
       </CartProvider>
     </AuthProvider>

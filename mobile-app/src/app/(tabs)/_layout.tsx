@@ -34,12 +34,12 @@ export default function TabsLayout() {
     return (
         <Tabs
             screenOptions={{
-                headerStyle: { backgroundColor: '#1E293B' },
-                headerTintColor: '#F1F5F9',
+                headerStyle: { backgroundColor: '#F0E7DD' },
+                headerTintColor: '#1F1C1A',
                 headerTitleStyle: { fontWeight: '700' },
                 tabBarStyle: {
-                    backgroundColor: '#1E293B',
-                    borderTopColor: '#334155',
+                    backgroundColor: '#F0E7DD',
+                    borderTopColor: '#D8C3A5',
                     height: 64,
                     paddingBottom: 8,
                 },
@@ -109,11 +109,11 @@ const styles = StyleSheet.create({
     },
     tabLabel: {
         fontSize: 10,
-        color: '#64748B',
+        color: '#8F7772',
         fontWeight: '500',
     },
     tabLabelActive: {
-        color: '#F59E0B',
+        color: '#C6453E',
         fontWeight: '700',
     },
     cartBadge: {
