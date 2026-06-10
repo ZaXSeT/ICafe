@@ -168,6 +168,20 @@ export default function LoginScreen() {
               <Text style={styles.forgotText}>Forgot password?</Text>
             </TouchableOpacity>
           )}
+
+          <View style={styles.dividerContainer}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>or continue with</Text>
+            <View style={styles.dividerLine} />
+          </View>
+
+          <TouchableOpacity
+            style={styles.googleButton}
+            onPress={() => Alert.alert('Notice', 'Google Sign-In is coming soon!')}
+          >
+            <Text style={styles.googleIcon}>G</Text>
+            <Text style={styles.googleButtonText}>Continue with Google</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Mode toggle */}
@@ -286,6 +300,41 @@ const styles = StyleSheet.create({
   toggleLink: {
     color: '#F59E0B',
     fontSize: 14,
+    fontWeight: '700',
+  },
+  dividerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#334155',
+  },
+  dividerText: {
+    color: '#94A3B8',
+    paddingHorizontal: 10,
+    fontSize: 14,
+  },
+  googleButton: {
+    flexDirection: 'row',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    paddingVertical: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 8,
+  },
+  googleIcon: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#4285F4',
+    marginRight: 10,
+  },
+  googleButtonText: {
+    color: '#334155',
+    fontSize: 16,
     fontWeight: '700',
   },
 });
