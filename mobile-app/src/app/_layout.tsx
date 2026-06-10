@@ -3,13 +3,15 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 import { CartProvider } from '../context/CartContext';
-import { router, useSegments } from 'expo-router';
+import { router, useSegments, useRootNavigationState } from 'expo-router';
 
 function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const segments = useSegments();
+  const rootNavigationState = useRootNavigationState();
 
   useEffect(() => {
+    if (!rootNavigationState?.key) return; // Wait until navigation is ready
     if (loading) return;
 
     const inAuthGroup = segments[0] === 'login';
@@ -22,7 +24,7 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
       // Redirect to home if already authenticated
       router.replace('/(tabs)');
     }
-  }, [user, loading, segments]);
+  }, [user, loading, segments, rootNavigationState?.key]);
 
   return <>{children}</>;
 }
