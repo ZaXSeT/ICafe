@@ -152,7 +152,7 @@ export default function LoginScreen() {
             accessibilityLabel={mode === 'login' ? 'Sign In' : 'Create Account'}
           >
             {loading ? (
-              <ActivityIndicator color=\"#FFFAF5\" />
+              <ActivityIndicator color="#FFFAF5" />
             ) : (
               <Text style={styles.buttonText}>
                 {mode === 'login' ? 'Sign In' : 'Create Account'}
